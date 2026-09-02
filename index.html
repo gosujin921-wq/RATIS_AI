@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RATIS AI</title>
+
+    <!--
+      본문 서체 — KRDS 권장 Pretendard GOV (자체 호스팅, public/fonts).
+
+      ★ CDN 을 걸지 않는다. 공공 시스템은 망분리·폐쇄망일 수 있어 외부 요청이 막히면
+        서체가 통째로 폴백되고, design.md §2 의 자간(-0.5px)까지 어긋난다.
+
+      ★ **동적 서브셋** 판을 쓴다. 통짜 가변 폰트는 5.4MB 라 첫 화면에서 다 내려받는데,
+        서브셋은 unicode-range 로 120 조각으로 나뉘어 **화면에 실제로 쓴 글자가 든 조각만**
+        받는다. 한글 UI 는 보통 열 조각 안쪽이다.
+
+      라이선스: SIL OFL 1.1 (public/fonts/pretendard-gov/LICENSE) — 자체 호스팅 허용.
+      갱신: orioncactus/pretendard 의 packages/pretendard-gov/dist/web/variable 에서 받는다.
+    -->
+    <link
+      rel="stylesheet"
+      href="./fonts/pretendard-gov/pretendardvariable-gov-dynamic-subset.css"
+    />
+    <!-- 로고 락업의 「AI」 전용 서체 (Apache-2.0, public/fonts/roboto/LICENSE).
+         라틴 두 자에만 쓰므로 latin 서브셋 두 굵기(22KB × 2)면 충분하다 -->
+    <link rel="stylesheet" href="./fonts/roboto/roboto.css" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

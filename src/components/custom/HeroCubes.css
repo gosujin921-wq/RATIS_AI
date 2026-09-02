@@ -1,0 +1,8 @@
+/* 히어로 큐브 캔버스 — 히어로 섹션 위에 깔리는 배경 레이어.
+   부모가 position: relative 와 높이를 잡아줘야 보인다.
+   (원본 목업은 Tailwind 의 `absolute inset-0` 이었으나, 이 앱은 KRDS 와의 충돌 때문에
+    Tailwind 제네릭 클래스를 쓰지 않는다 — src/index.css 주의사항 참조) */
+.hero-cubes {
+  position: absolute;
+  inset: 0;
+}

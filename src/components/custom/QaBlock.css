@@ -1,0 +1,76 @@
+@charset "utf-8";
+/* Q·A 덩이 (표식 + 제목 + 내용).
+   표식 값(치수·라운드·색)은 krds-theme.css 의 --klid-qa-mark-* 가 정본이다 —
+   FAQ 아코디언의 ::before 표식과 **같은 값을 본다.** 여기서 다시 정하면 둘이 어긋난다 */
+
+.klid-qa-block {
+  display: flex;
+  gap: var(--klid-qa-mark-gap);
+}
+
+.klid-qa-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--klid-qa-mark-size);
+  height: var(--klid-qa-mark-size);
+  flex-shrink: 0;
+  border-radius: var(--klid-qa-mark-radius);
+  font-size: var(--klid-qa-mark-font-size);
+  font-weight: 600;
+  line-height: 1;
+}
+.klid-qa-block[data-kind='question'] .klid-qa-mark {
+  background-color: var(--klid-qa-mark-q-surface);
+  color: var(--klid-qa-mark-q-ink);
+}
+.klid-qa-block[data-kind='answer'] .klid-qa-mark {
+  background-color: var(--klid-qa-mark-a-surface);
+  color: var(--klid-qa-mark-a-ink);
+}
+
+.klid-qa-body {
+  min-width: 0; /* 긴 파일명·URL 이 덩이를 밀어 넓히지 않게 */
+  display: flex;
+  flex-direction: column;
+  gap: var(--krds-gap-3);
+}
+
+/* 제목 줄은 표식과 **가운데를 맞춘다** — 표식이 정사각(2.8)이라 글줄만 두면 위로 떠 보인다.
+   표식 높이를 최소 높이로 물려 첫 줄이 표식 한가운데에 선다. 제목이 두 줄이 돼도
+   표식은 위에 붙어 있다 */
+.klid-qa-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--krds-gap-3);
+  min-height: var(--klid-qa-mark-size);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--krds-color-light-gray-90);
+}
+/* 답변 시각 같은 곁말 — 제목보다 한 단 낮게 */
+.klid-qa-when {
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: var(--krds-color-light-gray-50);
+}
+
+.klid-qa-content {
+  font-size: 1.5rem;
+  line-height: 1.7;
+  color: var(--krds-color-light-gray-80);
+}
+/* 본문 다음에 첨부 목록이 오는 식으로 여럿이 쌓일 때 */
+.klid-qa-content > * + * {
+  margin-top: var(--krds-gap-5);
+}
+
+/* 잇달아 서는 두 덩이(문의 → 답변)는 **구분선**으로 가른다 — 상자를 걷어낸 자리라
+   여백만으로는 둘이 한 덩어리로 흐른다. 선 위아래를 같은 값으로 비워 선이 가운데 선다.
+   규격은 내부 구분선 그대로(0.1 · gray-20) */
+.klid-qa-block + .klid-qa-block {
+  padding-top: var(--krds-gap-7);
+  border-top: 0.1rem solid var(--krds-color-light-gray-20);
+}

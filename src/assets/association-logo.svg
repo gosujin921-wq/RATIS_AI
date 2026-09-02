@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40" role="img" aria-label="한국방사선진흥협회">
+  <!--
+    ★ 자리표시 심볼마크 — 협회 공식 로고 파일을 받으면 이 파일만 교체한다.
+    뷰박스 40×40 정사각, 단색 currentColor 기준으로 그려 헤더 색 토큰을 따른다.
+    방사선 심볼(중심 원 + 3엽)을 단순화한 형태.
+  -->
+  <circle cx="20" cy="20" r="19" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.25" />
+  <circle cx="20" cy="20" r="4.2" fill="currentColor" />
+  <g fill="currentColor">
+    <path d="M20 6.6a13.4 13.4 0 0 1 11.6 6.7l-7.3 4.2A5 5 0 0 0 20 15z" />
+    <path d="M31.6 26.7A13.4 13.4 0 0 1 20 33.4v-8.4a5 5 0 0 0 4.3-2.5z" />
+    <path d="M8.4 26.7 15.7 22.5A5 5 0 0 0 20 25v8.4A13.4 13.4 0 0 1 8.4 26.7z" transform="rotate(180 14.2 28)" />
+  </g>
+</svg>

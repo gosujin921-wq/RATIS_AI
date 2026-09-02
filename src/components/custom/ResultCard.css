@@ -1,0 +1,134 @@
+@charset "utf-8";
+/* 검색 결과 카드 (design.md §5 표면 · §4 배지 4종) */
+
+/* 바깥 상자. 즐겨찾기가 카드 위에 떠야 해서 기준점을 만든다.
+   `container-type` 은 그 자리를 **칸 폭**에서 잡기 위한 것이다 — 대표 이미지 높이가
+   비율(21:9)에서 나오는데 top 백분율은 부모 **높이** 기준이라 쓸 수 없다 */
+.klid-result-card {
+  position: relative;
+  container-type: inline-size;
+  height: 100%;
+}
+
+.klid-result-card > .card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  border: 0.1rem solid var(--krds-color-light-gray-20);
+  border-radius: 1.6rem; /* §5 표면 라운드 16 */
+  background-color: var(--krds-color-light-gray-0);
+  text-decoration: none;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+.klid-result-card > .card:hover {
+  border-color: var(--krds-color-light-primary-30);
+  box-shadow: 0 0.2rem 0.8rem rgb(15 23 42 / 0.06);
+}
+
+/* 대표 이미지 21:9. 원본 CCTV 프레임은 16:9 지만 그대로 쓰면 1280 기준 209 가 되어 카드 한 판이
+   화면을 다 먹는다. 목록에서 그림은 "어떤 장면인지"만 알면 되는 자리라 위아래를 잘라 낮춘다.
+   높이 대신 비율로 두면 폭이 바뀌어도 여러 장이 같은 모양으로 선다 */
+.klid-result-card .thumb {
+  display: block;
+  width: 100%;
+  aspect-ratio: 21 / 9;
+  background-color: var(--krds-color-light-gray-10);
+  object-fit: cover;
+}
+
+/* 본문 — 카드 패딩은 여기가 갖는다 (§5 밀집 목록 20) */
+.klid-result-card .body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: var(--krds-padding-7);
+}
+
+/* 배지 줄. 오른쪽 끝은 즐겨찾기 자리라 비워 둔다 (버튼 32 + 여백) */
+.klid-result-card .badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  min-height: 2.4rem;
+  padding-right: 3.6rem;
+}
+
+.klid-result-card .title {
+  margin-top: 0.6rem; /* 배지 줄→제목 밀착 (§6) */
+  font-size: 1.7rem; /* 카드 제목 17 (§2) */
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--krds-color-light-gray-90);
+}
+.klid-result-card .summary {
+  display: -webkit-box;
+  overflow: hidden;
+  margin-top: 0.6rem;
+  font-size: 1.5rem;
+  line-height: 1.6;
+  color: var(--krds-color-light-gray-70);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+/* 바닥 줄 — 왼쪽 사실값, 오른쪽 수치. `margin-top: auto` 로 카드 바닥에 붙여
+   요약 길이가 달라도 카드끼리 아래 선이 맞는다 */
+.klid-result-card .foot {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--krds-gap-4);
+  margin-top: auto;
+  padding-top: var(--krds-padding-5);
+  font-size: 1.3rem; /* 메타 하한 13 (§2) */
+  color: var(--krds-color-light-gray-50);
+}
+.klid-result-card .meta {
+  min-width: 0;
+  overflow: hidden;
+  font-variant-numeric: tabular-nums; /* 날짜·용량 자리폭 고정 (§2) */
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+/* 다운로드 수 — 아이콘은 인라인 14 (배지 안 아이콘과 같은 급, §4).
+   메타보다 한 단계 진하게 둔다: 사실 나열 중 유일하게 **크기를 비교하는** 값이다 */
+.klid-result-card .count {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--krds-gap-2);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--krds-color-light-gray-60);
+}
+.klid-result-card .count svg {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+/* 카드 위에 얹는 조작 (즐겨찾기). 배지 줄과 세로 가운데를 맞춘다 —
+   top = 이미지 높이(칸 폭의 42.857% = 21:9) + 본문 패딩 20 − 배지(24)와 버튼(32)의 차 절반 4.
+   right = 패딩 20 − 버튼 안 아이콘 여백 (32−18)/2 = 7 → 13 */
+.klid-result-card > .klid-icon-btn {
+  position: absolute;
+  top: calc(42.857cqw + 1.6rem);
+  right: 1.3rem;
+}
+/* 그림 없는 카드 — 이미지 높이가 없으니 본문 첫 줄(배지 줄)에 바로 맞춘다 */
+.klid-result-card[data-no-image] > .klid-icon-btn {
+  top: 1.6rem;
+}
+
+/* 메타 아랫줄 — 그 화면에만 있는 값 (즐겨찾기의 등록일).
+   메타(사실 나열)보다 한 급 눌러 둔다. 카드가 지는 값의 차례는 배지 → 이름 → 메타 이고,
+   이 줄은 그 뒤에 붙는 덧말이라 같은 무게로 서면 차례가 흐려진다.
+   메타와 밀착(6)한다 — 둘 다 사실값이라 한 묶음으로 읽혀야 한다 */
+.klid-result-card .note {
+  margin-top: 0.6rem;
+  font-size: 1.3rem;
+  color: var(--krds-color-light-gray-50);
+  font-variant-numeric: tabular-nums;
+}

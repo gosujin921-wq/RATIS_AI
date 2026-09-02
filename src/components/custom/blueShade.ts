@@ -1,0 +1,38 @@
+/**
+ * 파랑 농도 척도 — **수가 많을수록 진하다**를 색으로 말하는 자리가 함께 쓴다
+ * (분포 지도 · 순위 막대 차트). 두 그림이 같은 척도를 써야 같은 규칙으로 읽힌다.
+ *
+ * 네 칸을 **밝기가 고르게 벌어지도록** 고른다 (30·40·50·80). 팔레트 번호는 밝기와 등간이
+ * 아니라서 번호를 등간으로(20·40·60·80) 집으면 가장 옅은 칸만 저 멀리 희게 뜨고 진한 두 칸은
+ * 붙어 버린다 — 실제로 종전 척도가 그랬고, 네 단계가 「거의 흰색 · 파랑 · 남색 · 남색」으로 읽혔다.
+ *
+ * 위 두 칸(30·40)은 글자를 본문 색으로, 아래 두 칸(50·80)은 흰 글자로 받는다. 색 위에 값을
+ * 적는 자리(버블 지도)가 이 경계로 글자색을 뒤집는다 — 네 칸 모두 대비 하한 4.5 를 넘는다.
+ *
+ * ★ 분포 지도(RegionChoropleth)에만 있던 것을 올렸다 (2026-08-31). 학습데이터 상세의
+ *   지역 분포 막대 · 데이터 현황의 버블 지도가 같은 위계를 쓰게 되면서 세 곳이 됐는데,
+ *   여기에 옮겨 적어 두면 한쪽 톤만 바뀌어 같은 뜻이 여러 색으로 갈린다.
+ */
+export const BLUE_SHADES = [
+  'var(--krds-color-light-primary-30)',
+  'var(--krds-color-light-primary-40)',
+  'var(--krds-color-light-primary-50)',
+  'var(--krds-color-light-primary-80)',
+]
+
+/**
+ * 구간을 **값이 아니라 순위**로 나눈다. 값으로 자르면 상위 한둘이 척도를 다 먹어
+ * (경기 214 대 대전 8) 나머지가 같은 한 색이 되고, 그림이 "수도권만 진하다" 한 마디만
+ * 하고 끝난다. 순위로 자르면 어느 데이터가 와도 네 단계가 고르게 선다.
+ *
+ * 0 이하는 척도 밖이다 — 부르는 쪽이 '없음'을 따로 칠한다.
+ */
+export function makeShadeOf(values: number[]) {
+  const sorted = [...values].filter((v) => v > 0).sort((a, b) => a - b)
+  return (value: number) => {
+    /* 한 곳뿐이면 나눌 순위가 없다 — 혼자 가장 진한 색을 쓰면 그 수가 큰 값처럼 읽힌다 */
+    if (sorted.length < 2) return 0
+    const rank = sorted.findIndex((v) => v >= value) / (sorted.length - 1)
+    return Math.min(BLUE_SHADES.length - 1, Math.floor(rank * BLUE_SHADES.length))
+  }
+}

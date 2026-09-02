@@ -1,0 +1,85 @@
+/* AI 답변 본문 (기획 §7). KRDS 1rem = 10px */
+.answer-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  font-size: 1.5rem;
+  line-height: 1.75;
+  color: var(--krds-color-light-gray-80);
+}
+
+.answer-body > p {
+  margin: 0;
+  /* 긴 답변·긴 낱말 처리 (기획 §11) */
+  overflow-wrap: anywhere;
+}
+
+/* 답변 안 제목은 h3·h4 다 — 대화 로그가 h2 아래에 있어 그 밑을 이어받는다 */
+.answer-h2,
+.answer-h3 {
+  margin: 0.8rem 0 0;
+  font-weight: 700;
+  color: var(--krds-color-light-gray-90);
+}
+
+.answer-h2 {
+  font-size: 1.7rem;
+}
+
+.answer-h3 {
+  font-size: 1.5rem;
+}
+
+.answer-ul,
+.answer-ol {
+  margin: 0;
+  padding-left: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.answer-ul {
+  list-style: disc;
+}
+
+.answer-ol {
+  list-style: decimal;
+}
+
+.answer-quote {
+  margin: 0;
+  padding: 0.8rem 0 0.8rem 1.6rem;
+  border-left: 3px solid var(--krds-color-light-primary-20);
+  color: var(--krds-color-light-gray-60);
+}
+
+/* 표가 화면보다 넓으면 가로로 민다 (기획 §11) */
+.answer-table {
+  overflow-x: auto;
+  border: 1px solid var(--krds-color-light-gray-20);
+  border-radius: 0.8rem;
+}
+
+.answer-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1.4rem;
+}
+
+.answer-table :is(th, td) {
+  padding: 1.2rem;
+  border-bottom: 1px solid var(--krds-color-light-gray-10);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.answer-table th {
+  background: var(--krds-color-light-gray-5);
+  font-weight: 600;
+  color: var(--krds-color-light-gray-70);
+}
+
+.answer-table tr:last-child :is(th, td) {
+  border-bottom: 0;
+}

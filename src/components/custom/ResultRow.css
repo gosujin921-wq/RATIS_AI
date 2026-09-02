@@ -1,0 +1,221 @@
+@charset "utf-8";
+/* 검색 결과 로우 (design.md §5 표면 · §2 타이포 · §3 호버 사다리) */
+
+/* 로우 목록. 카드 그리드(.klid-card-grid)의 가로 대응이라 간격도 같은 16 을 쓴다 (§6) */
+.klid-row-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--krds-gap-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* 표면은 카드와 같다 — 흰 면 + gray-20 보더 + 라운드 16 (§5).
+   가로 짜임: [갈래 타일] [제목·요약] [등록일·다운로드]. 가운데만 남는 폭을 먹는다 */
+.klid-result-row > .card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--krds-gap-4) var(--krds-gap-6);
+  padding: var(--krds-padding-7); /* §5 밀집 목록 20 */
+  border: 0.1rem solid var(--krds-color-light-gray-20);
+  border-radius: 1.6rem;
+  background-color: var(--krds-color-light-gray-0);
+  text-decoration: none;
+  transition: background-color 0.15s;
+}
+/* 면을 가진 조작 갈래 — 흰 면은 틴트 50 (§3 호버 사다리 2026-08-07).
+   자리마다 따로 정하지 않으므로 보더·그림자는 건드리지 않는다 */
+.klid-result-row > .card:hover {
+  background-color: var(--krds-color-light-primary-5);
+}
+
+.klid-result-row .body {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+.klid-result-row .title {
+  font-size: 1.7rem; /* 카드 제목 17 (§2) */
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--krds-color-light-gray-90);
+}
+/* 카드는 두 줄로 접었지만 로우는 폭이 넓어 한 줄에 더 담긴다.
+   줄 수가 항목마다 달라지면 로우 높이가 들쭉날쭉해져 훑는 리듬이 깨진다 */
+.klid-result-row .summary {
+  overflow: hidden;
+  /* 제목→설명 밀착 (§6 4~6). 6 은 간격 척도에 없는 값이지만 **데스크톱은 이대로 둔다**
+     (2026-08-31 사용자 확정 — 좁은 폭만 척도로 맞췄다). 지나가다 고치지 말 것 */
+  margin-top: 0.6rem;
+  font-size: 1.5rem;
+  line-height: 1.6;
+  color: var(--krds-color-light-gray-70);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* 오른쪽 사실값 줄 — 등록일 다음 다운로드 수. 자리폭을 고정해 로우끼리 세로로 줄이 선다.
+   설명 줄과 같은 높이에 서도록 아래로 맞춘다 (아래 baseline 보정) */
+.klid-result-row .foot {
+  align-self: end;
+  display: flex;
+  align-items: baseline;
+  gap: var(--krds-gap-7);
+  /* 3 은 간격이 아니라 **baseline 보정**이다. 아래로 맞추면(align-self: end) 글자 크기가 달라
+     설명(15)보다 메타(13)의 글줄이 3 만큼 내려앉는다. 세로 리듬 3단(§6)과 무관한 값 */
+  padding-bottom: 0.3rem;
+  font-size: 1.3rem; /* 메타 하한 13 (§2) */
+  color: var(--krds-color-light-gray-50);
+}
+.klid-result-row .meta {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+/* 다운로드 수 — 메타보다 한 단계 진하게. 사실 나열 중 유일하게 크기를 비교하는 값이다
+   (ResultCard 와 같은 값이라 카드 목록에서 넘어와도 같은 것으로 읽힌다) */
+.klid-result-row .count {
+  display: inline-flex;
+  min-width: 5.6rem;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--krds-gap-2);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--krds-color-light-gray-60);
+}
+.klid-result-row .count svg {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+/* 등록일·다운로드 수 사이의 세로선은 좁은 폭에서만 선다 (아래 모바일 구획).
+   넓은 폭에서는 둘이 줄 오른쪽 끝에 24 떨어져 서므로 선이 없어도 갈래가 보인다 */
+.klid-result-row .foot .klid-meta-div {
+  display: none;
+}
+
+/* ── 모바일 (§9 767 이하) ──
+   갈래 타일이 **면을 벗고 제목 글자 바로 앞에 붙는다** (2026-08-31). 좁은 폭에서 56 정사각이
+   왼쪽 열을 통째로 차지하면 제목·설명이 쓸 폭이 그만큼 깎이고, 줄마다 회색 면이 세로로 늘어서
+   목록이 글이 아니라 면 덩어리로 읽힌다. 면을 걷고 글리프만 제목 앞에 세우면 유형이 이름
+   하나를 꾸미는 수식어가 된다 — 대시보드 「받을 수 있는 데이터」 목록과 같은 짜임이다.
+
+   본문 묶음(.body)은 display:contents 로 풀어 제목·설명을 로우 그리드에 직접 앉힌다. 그래야
+   아이콘이 제목 줄에만 붙고 설명·사실값 줄은 카드 왼쪽 선에서 시작한다 — 아이콘을 그냥 왼쪽
+   열로 두면 아래 두 줄이 그 폭만큼 안으로 밀려 들어간다 */
+@media (max-width: 767px) {
+  .klid-result-row > .card {
+    /* 왼쪽 열은 아이콘 폭(20)으로 못 박는다. auto 로 두면 두 열을 가로지르는 설명·사실값 줄의
+       최소폭이 이 열로 흘러들어 열이 제멋대로 넓어진다 */
+    grid-template-columns: 2rem minmax(0, 1fr);
+    /* 세로: 제목·설명·캡션 세 줄은 한 덩어리라 줄 사이를 한 칸(4)으로 맞춘다 (§6 밀착 4~6).
+       데스크톱은 캡션이 오른쪽에 서서 이 물음이 없지만, 좁은 폭에서 셋이 세로로 쌓이면
+       간격이 갈리는 순간 어디까지가 한 항목인지가 흐려진다.
+       가로: 아이콘과 제목도 한 낱말처럼 같은 칸으로 붙는다 */
+    gap: var(--krds-gap-2);
+  }
+  .klid-result-row .body {
+    display: contents;
+  }
+  .klid-result-row .title {
+    grid-column: 2;
+  }
+  /* 설명·사실값은 아이콘 아래까지 내려와 카드 왼쪽 선에서 시작한다.
+     줄 사이는 위 row-gap 하나가 잡으므로 각자 갖고 있던 여백은 걷는다 */
+  .klid-result-row .summary {
+    grid-column: 1 / -1;
+    margin-top: 0;
+  }
+  /* 설명 옆이 아니라 아래로 내려오므로 baseline 보정도 걷는다.
+     두 값을 세로선으로 가른다 — 왼쪽에 나란히 서면 사이가 그냥 비어 있을 뿐이라 어디까지가
+     한 값인지 흐리다. 줄 간격은 0 으로 두고 선이 제 좌우 여백(8)으로 잡는다 — 둘 다 주면
+     간격이 두 번 들어간다 */
+  .klid-result-row .foot {
+    grid-column: 1 / -1;
+    align-self: start;
+    gap: 0;
+    padding-bottom: 0;
+  }
+  .klid-result-row .foot .klid-meta-div {
+    display: inline-block;
+    /* 줄이 baseline 정렬이라 글자 없는 선은 기준이 없다. 글줄 한가운데로 세운다 */
+    align-self: center;
+  }
+  /* 자리폭 5.6 은 오른쪽 끝에서 로우끼리 줄을 맞추려고 잡아 둔 것이다. 왼쪽에 붙는 좁은
+     폭에서는 선과 아이콘 사이만 벌어져 보이므로 걷는다 */
+  .klid-result-row .count {
+    min-width: 0;
+  }
+
+  /* 타일이 아니라 맨 아이콘 — 면·라운드를 걷고 글리프 제 크기만 남긴다 */
+  .klid-result-row .klid-event-tile {
+    width: auto;
+    height: auto;
+    /* 줄 높이는 제목이 정하므로 가운데 정렬이 곧 제목 글줄에 맞추는 일이다 */
+    align-self: center;
+    border-radius: 0;
+    background-color: transparent;
+  }
+  /* 면 없이 글자 옆에 서는 크기 — 아이콘 척도 lg 20 (56 면 안의 xxl 24 는 면을 채우는 값이다) */
+  .klid-result-row .klid-event-tile .klid-event-icon {
+    width: 2rem;
+    height: 2rem;
+  }
+}
+
+/* ── 관리 조작 (즐겨찾기 SCREEN-006 만) ──
+   링크(.card) 밖에 서야 해서 형제로 두고, 줄 오른쪽 안쪽에 겹쳐 앉힌다.
+   링크를 그리드 칸으로 쪼개 조작을 끼워 넣지 않는 이유는 **줄 전체가 상세로 가는 링크**라는
+   성질을 유지하기 위해서다 — 칸을 내주면 링크가 줄의 일부로 줄어들어, 어디를 눌러야 상세로
+   가는지가 폭에 따라 달라진다.
+
+   대신 링크의 오른쪽 여백을 넓혀 조작이 설 자리를 비운다. 겹쳐 놓기만 하면 다운로드 수와
+   조작이 같은 자리를 다툰다 */
+.klid-result-row[data-has-actions] {
+  position: relative;
+}
+.klid-result-row[data-has-actions] > .card {
+  padding-right: 13rem;
+}
+.klid-result-row > .acts {
+  position: absolute;
+  top: 50%;
+  right: 2rem; /* 링크 패딩과 같은 선 */
+  transform: translateY(-50%);
+  display: flex;
+  gap: var(--krds-gap-3);
+}
+
+@media (max-width: 767px) {
+  /* 좁은 폭에서는 겹쳐 둘 자리가 안 나와 조작을 줄 아래로 내린다. 그때 **면을 바깥 상자로
+     옮긴다** — 링크만 카드 면을 갖고 있으면 버튼이 그 면 밖에 떠서, 위 줄의 것인지 아래 줄의
+     것인지가 간격으로만 판가름난다. 면이 둘을 함께 감싸면 그 물음이 아예 생기지 않는다 */
+  .klid-result-row[data-has-actions] {
+    display: flex;
+    flex-direction: column;
+    border: 0.1rem solid var(--krds-color-light-gray-20);
+    border-radius: 1.6rem;
+    background-color: var(--krds-color-light-gray-0);
+    transition: background-color 0.15s;
+  }
+  .klid-result-row[data-has-actions]:has(> .card:hover) {
+    background-color: var(--krds-color-light-primary-5);
+  }
+  /* 안쪽 링크는 면을 벗는다 — 카드 안의 카드가 되지 않게 */
+  .klid-result-row[data-has-actions] > .card {
+    padding: var(--krds-padding-7) var(--krds-padding-7) 0;
+    border: 0;
+    border-radius: 0;
+    background-color: transparent;
+  }
+  .klid-result-row[data-has-actions] > .card:hover {
+    background-color: transparent;
+  }
+  .klid-result-row[data-has-actions] > .acts {
+    position: static;
+    transform: none;
+    justify-content: flex-end;
+    padding: var(--krds-padding-5) var(--krds-padding-7) var(--krds-padding-7);
+  }
+}

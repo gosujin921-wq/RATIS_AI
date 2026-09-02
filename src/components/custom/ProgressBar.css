@@ -1,0 +1,21 @@
+@charset "utf-8";
+/* 진행률 막대. 트랙 gray-10 + 바 primary-45 (밝은 포인트 톤) */
+
+.klid-progress {
+  overflow: hidden;
+  border-radius: var(--krds-radius-max);
+  background-color: var(--krds-color-light-gray-10);
+}
+.klid-progress[data-size='md'] {
+  height: 0.8rem;
+}
+.klid-progress[data-size='sm'] {
+  height: 0.6rem;
+}
+
+.klid-progress .bar {
+  height: 100%;
+  border-radius: var(--krds-radius-max);
+  background-color: var(--krds-color-light-primary-45);
+  transition: width 0.3s;
+}

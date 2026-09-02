@@ -1,0 +1,61 @@
+@charset "utf-8";
+/* 순서 있는 문서의 앞·다음 이동 (design.md §5 표면 · §6 세로 리듬) */
+
+.klid-step-pager {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--krds-gap-5);
+  margin-top: 3.2rem; /* 본문과 다른 성격의 단락 (design.md §6) */
+}
+
+.klid-step-pager-link {
+  display: flex;
+  align-items: center;
+  gap: var(--krds-gap-4);
+  padding: var(--krds-padding-7) var(--krds-padding-8);
+  border: 0.1rem solid var(--krds-color-light-gray-20);
+  border-radius: 1.6rem;
+  background-color: var(--krds-color-light-gray-0);
+  text-decoration: none;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+.klid-step-pager-link:hover {
+  border-color: var(--krds-color-light-primary-30);
+  background-color: var(--krds-color-light-primary-5);
+}
+/* 다음은 오른쪽 끝에 붙어 진행 방향과 같이 읽힌다 */
+.klid-step-pager-link[data-dir='next'] {
+  justify-content: flex-end;
+  text-align: right;
+}
+.klid-step-pager-link svg {
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  color: var(--krds-color-light-primary-60);
+}
+.klid-step-pager-link .body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--krds-gap-2); /* 라벨 안쪽 밀착 (design.md §6) */
+  min-width: 0;
+}
+.klid-step-pager-link .dir {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--krds-color-light-primary-60);
+}
+.klid-step-pager-link .label {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--krds-color-light-gray-90);
+}
+
+@media (max-width: 767px) {
+  .klid-step-pager {
+    grid-template-columns: 1fr;
+  }
+  .klid-step-pager-link[data-dir='next'] {
+    justify-content: space-between;
+  }
+}

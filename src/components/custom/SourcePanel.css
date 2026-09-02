@@ -1,0 +1,318 @@
+/* 출처 원문 패널 (기획 §5.5). KRDS 1rem = 10px
+
+   폭에 따라 서는 방식이 갈린다. 세 갈래 모두 **대화는 그대로 살아 있다** —
+   기획이 "페이지를 벗어나지 않고" 를 못박았기 때문이다. */
+.src-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--krds-color-light-gray-0);
+  border-left: 1px solid var(--krds-color-light-gray-20);
+}
+
+/* ── 머리 ─────────────────────────────────────────────────────────────── */
+.src-head {
+  flex: none;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.2rem;
+  padding: 1.6rem 1.6rem 1.2rem 2rem;
+  border-bottom: 1px solid var(--krds-color-light-gray-10);
+}
+
+.src-head-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.src-path {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 0 0 0.4rem;
+  font-size: 1.2rem;
+  color: var(--krds-color-light-gray-50);
+}
+
+.src-path > span + span::before {
+  content: '›';
+  margin-right: 0.6rem;
+}
+
+/* 긴 문서명 처리 (기획 §11) — 두 줄까지 보이고 그 뒤는 줄임표 */
+.src-title {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--krds-color-light-gray-90);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.src-close {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  border: 0;
+  border-radius: 0.8rem;
+  background: none;
+  color: var(--krds-color-light-gray-60);
+  cursor: pointer;
+}
+
+.src-close:hover {
+  background: var(--krds-color-light-gray-10);
+}
+
+/* ── 도구 줄 ──────────────────────────────────────────────────────────── */
+.src-tools {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+  padding: 0.8rem 1.6rem;
+  border-bottom: 1px solid var(--krds-color-light-gray-10);
+  background: var(--krds-color-light-gray-5);
+}
+
+.src-pager,
+.src-zoom {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.src-tool {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  border: 1px solid var(--krds-color-light-gray-20);
+  border-radius: 0.8rem;
+  background: var(--krds-color-light-gray-0);
+  color: var(--krds-color-light-gray-70);
+  cursor: pointer;
+}
+
+.src-tool:hover:not(:disabled) {
+  border-color: var(--krds-color-light-primary-30);
+  background: var(--krds-color-light-primary-5);
+}
+
+.src-tool:disabled {
+  color: var(--krds-color-light-gray-30);
+  cursor: not-allowed;
+}
+
+.src-page {
+  min-width: 8rem;
+  text-align: center;
+  font-size: 1.3rem;
+  color: var(--krds-color-light-gray-70);
+}
+
+/* 배율은 눌러서 100% 로 되돌린다 — 되돌리는 자리를 따로 만들지 않는다 */
+.src-zoom-value {
+  min-width: 5.6rem;
+  height: 3.2rem;
+  border: 0;
+  border-radius: 0.8rem;
+  background: none;
+  font-size: 1.3rem;
+  color: var(--krds-color-light-gray-70);
+  cursor: pointer;
+}
+
+.src-zoom-value:hover {
+  background: var(--krds-color-light-gray-10);
+}
+
+/* ── 본문 ─────────────────────────────────────────────────────────────── */
+.src-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 2rem;
+}
+
+.src-page-view {
+  /* 확대·축소는 지면만 키운다. 도구 줄·머리는 그대로 있어야 조작을 잃지 않는다 */
+  width: calc(100% * var(--src-zoom, 1));
+  min-width: 100%;
+  transition: width 0.15s ease;
+}
+
+.src-sheet {
+  padding: 2.4rem;
+  border: 1px solid var(--krds-color-light-gray-20);
+  border-radius: 0.8rem;
+  background: var(--krds-color-light-gray-0);
+  font-size: calc(1.4rem * var(--src-zoom, 1));
+}
+
+.src-sheet-meta {
+  margin: 0 0 1.6rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid var(--krds-color-light-gray-10);
+  font-size: 1.2rem;
+  color: var(--krds-color-light-gray-50);
+}
+
+.src-sheet-text {
+  margin: 0;
+  line-height: 1.7;
+  color: var(--krds-color-light-gray-80);
+}
+
+/* 표가 패널보다 넓으면 가로로 민다 (기획 §11) */
+.src-sheet-table {
+  overflow-x: auto;
+}
+
+.src-sheet-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1.3rem;
+}
+
+.src-sheet-table :is(th, td) {
+  padding: 1rem 1.2rem;
+  border-bottom: 1px solid var(--krds-color-light-gray-10);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.src-sheet-table th {
+  background: var(--krds-color-light-gray-5);
+  font-weight: 600;
+}
+
+.src-sheet-caption {
+  margin: 1.2rem 0 0;
+  font-size: 1.2rem;
+  color: var(--krds-color-light-gray-50);
+}
+
+/* ── 상태 (로딩 · 표시 불가 · 삭제됨) ───────────────────────────────── */
+.src-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.src-state-icon {
+  color: var(--krds-color-light-gray-40);
+}
+
+.src-state-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--krds-color-light-gray-80);
+}
+
+.src-state-text {
+  margin: 0;
+  font-size: 1.3rem;
+  line-height: 1.6;
+  color: var(--krds-color-light-gray-50);
+}
+
+.src-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.src-skeleton > span {
+  height: 1.6rem;
+  border-radius: 0.4rem;
+  background: linear-gradient(
+    90deg,
+    var(--krds-color-light-gray-10) 25%,
+    var(--krds-color-light-gray-5) 50%,
+    var(--krds-color-light-gray-10) 75%
+  );
+  background-size: 200% 100%;
+  animation: srcShimmer 1.4s linear infinite;
+}
+
+.src-skeleton > span:nth-child(2) {
+  width: 88%;
+}
+.src-skeleton > span:nth-child(4) {
+  width: 62%;
+}
+
+@keyframes srcShimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .src-skeleton > span {
+    animation: none;
+  }
+}
+
+/* 원문을 못 열어도 인용 근거는 남는다 */
+.src-fallback {
+  margin-top: 0.8rem;
+  padding: 1.6rem;
+  border: 1px solid var(--krds-color-light-gray-20);
+  border-radius: 0.8rem;
+  background: var(--krds-color-light-gray-5);
+}
+
+.src-fallback-title {
+  margin: 0 0 1rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--krds-color-light-gray-60);
+}
+
+/* ── 폭에 따른 세 갈래 (기획 §5.5) ──────────────────────────────────── */
+
+/* 태블릿 — 대화 위에 덮되 왼쪽을 남겨 맥락이 비친다 */
+@media (max-width: 1279px) {
+  .src-panel {
+    /* 셸이 떠 있는 카드라 fixed 는 카드 밖으로 걸친다 — 카드 안에 가둔다 */
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(52rem, 100%);
+    z-index: 20;
+    box-shadow: -4px 0 24px rgb(15 23 42 / 12%);
+  }
+}
+
+/* 모바일 — 전체 화면 */
+@media (max-width: 767px) {
+  .src-panel {
+    left: 0;
+    width: 100%;
+    border-left: 0;
+  }
+
+  .src-body {
+    padding: 1.6rem;
+  }
+
+  .src-sheet {
+    padding: 1.6rem;
+  }
+}

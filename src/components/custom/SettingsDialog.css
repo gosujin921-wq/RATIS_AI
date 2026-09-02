@@ -1,0 +1,156 @@
+/* 설정 창 — 왼쪽 갈래 + 오른쪽 줄. KRDS 1rem = 10px */
+/* 킷 헤더·푸터를 쓰지 않고 본문 하나로 두 칸을 나눈다 — 왼쪽 갈래가 창 위끝까지 닿아야
+   ChatGPT·정부24 설정처럼 「칸이 둘인 창」으로 읽힌다.
+
+   ★ `Modal.Content` 의 className 은 **바깥 오버레이**(.krds-modal)에 붙는다.
+     보이는 흰 패널은 안쪽 `.modal-content` 이고 라운드(16)도 거기 있다 (2026-09-02 실측).
+
+   ★ 그 패널을 `overflow: hidden` 으로 자르지 **않는다.** 자르면 모서리는 깔끔해지지만
+     설정 줄의 드롭다운 목록이 패널 밖으로 못 나가 잘린다. 대신 삐져나오던 왼쪽 칸에
+     같은 라운드를 직접 물려 모서리를 맞춘다 — 자르는 쪽이 아니라 맞추는 쪽이다 */
+.set-dialog .set-side {
+  border-radius: 1.6rem 0 0 1.6rem;
+}
+
+/* 설정 창은 **자리를 미리 잡아 둔다.** 갈래가 늘어도 창 크기가 그때그때 달라지지 않아야
+   같은 창으로 읽힌다 — 내용에 맞춰 줄이면 갈래를 옮길 때마다 창이 출렁인다 */
+.set-body {
+  display: flex;
+  min-height: 44rem;
+  max-height: min(72rem, 82vh);
+}
+
+/* ── 왼쪽 ─────────────────────────────────────────────────────────────── */
+.set-side {
+  flex: none;
+  width: 21rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  padding: 5.6rem 1.2rem 1.6rem;
+  border-right: 1px solid var(--krds-color-light-gray-20);
+  background: var(--krds-color-light-gray-5);
+}
+
+.set-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  overflow-y: auto;
+}
+
+.set-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-height: 4rem;
+  padding: 0 1.2rem;
+  border: 0;
+  border-radius: 0.8rem;
+  background: none;
+  font-size: 1.4rem;
+  color: var(--krds-color-light-gray-70);
+  text-align: left;
+  cursor: pointer;
+}
+
+.set-nav-item:hover {
+  background: var(--krds-color-light-gray-10);
+  color: var(--krds-color-light-gray-90);
+}
+
+/* 고른 갈래 — 색만으로 구분하지 않는다. 굵기까지 함께 바뀐다 (기획 §11) */
+.set-nav-item[aria-current='true'] {
+  background: var(--krds-color-light-gray-0);
+  color: var(--krds-color-light-primary-60);
+  font-weight: 600;
+}
+
+/* ── 오른쪽 ───────────────────────────────────────────────────────────── */
+.set-main {
+  flex: 1;
+  min-width: 0;
+  padding: 2.4rem 2.8rem;
+  overflow-y: auto;
+}
+
+.set-title {
+  margin: 0 0 0.8rem;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--krds-color-light-gray-90);
+}
+
+.set-rows {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 세그먼트가 길어 좁은 폭에서는 줄이 두 단으로 접힌다 */
+.set-row-control {
+  flex: none;
+}
+
+/* 한 줄 = 이름(+설명) 좌, 조작 우. 줄마다 아래 선을 둬 어디까지가 한 설정인지 보이게 한다 */
+.set-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2.4rem;
+  padding: 1.8rem 0;
+  border-bottom: 1px solid var(--krds-color-light-gray-10);
+}
+
+.set-row:last-child {
+  border-bottom: 0;
+}
+
+.set-row-text {
+  min-width: 0;
+}
+
+.set-row-label {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--krds-color-light-gray-90);
+}
+
+.set-row-desc {
+  margin: 0.4rem 0 0;
+  font-size: 1.3rem;
+  line-height: 1.6;
+  color: var(--krds-color-light-gray-50);
+}
+
+.set-row-control {
+  flex: none;
+}
+
+
+/* ── 좁은 화면 — 갈래를 위로 눕힌다 ─────────────────────────────────── */
+@media (max-width: 767px) {
+  .set-body {
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .set-side {
+    width: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--krds-color-light-gray-20);
+  }
+
+  .set-nav {
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .set-nav-item {
+    flex: none;
+  }
+
+  .set-main {
+    padding: 2rem 1.6rem;
+  }
+}

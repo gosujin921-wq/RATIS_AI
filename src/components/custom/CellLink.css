@@ -1,0 +1,18 @@
+@charset "utf-8";
+/* 표 안 제목 링크 */
+
+.klid-cell-link {
+  /* button 으로 그릴 때 브라우저 기본 모양 제거 — a 와 같은 룩으로 맞춘다 */
+  border: 0;
+  padding: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  color: var(--krds-color-light-gray-90);
+  text-decoration: none;
+  cursor: pointer;
+}
+.klid-cell-link:hover,
+.klid-cell-link:focus-visible {
+  text-decoration: underline;
+}

@@ -1,0 +1,193 @@
+@charset "utf-8";
+/* =============================================================================
+   RATIS CI 팔레트 — 방사선기술정보시스템 공식 지정색
+
+   출처: ratis.or.kr → RATIS 소개 → CI
+     · Blue  #273996  (CMYK 100/94/0/0 · RGB 39,57,150)  — 신뢰 · 미래 · 직관
+     · Green #91c73d  (CMYK 48/0/100/0 · RGB 145,199,61) — 성장 · 친절 · 안정감
+   앵커(50)에는 **고시값을 그대로** 넣는다. 나머지 칸은 이 앵커에서 뽑은 것이다.
+
+   krds-theme.css 가 첫 줄에서 import 한다. 단독으로 로드하지 않는다.
+   프리미티브만 덮으면 시맨틱 190종이 전부 따라오므로 이 파일 하나로 브랜드가
+   바뀐다(컴포넌트 → 시맨틱 → 프리미티브 3단 참조 구조).
+   고대비 모드(--krds-color-high-contrast-*)는 손대지 않는다.
+
+   ★ 옅은 칸(5~45)은 CI 블루를 흰색에 그냥 타서 만들지 않았다. #273996 은 채도가
+     낮은 네이비라 흰색에 타면 회색으로 죽는다. 같은 색상각(230°)에서 채도를 올린
+     #1736d3 을 타서 옅은 칸도 파랗게 유지한다. 진한 칸(60~95)은 CI 블루를 어둡게만 한다.
+
+   ⚠ 그린은 **장식 전용**이다. 흰 배경 위 2.01:1 로 글자·아이콘·테두리에 쓸 수 없다
+     (WCAG 텍스트 4.5:1 · 비텍스트 3:1 미달). 배경으로 깔고 검은 글자를 얹는 칩,
+     또는 로고·오브 같은 그래픽에만 쓴다. 글자에 써야 하면 green-70 이상을 쓴다.
+   ============================================================================= */
+
+:root {
+  /* Gray — 거의 중립. 아주 옅은 쿨 기운만 남긴다 (2026-09-01 리톤)
+
+     종전에는 KLID 에서 그대로 가져온 **Tailwind slate** 였다. slate 는 파란 기운이
+     상당히 센 회색이라(본문 자리 gray-90 = #0f172a 는 채도 47%, gray-95 는 84% 로
+     사실상 남색이다) KLID 의 밝은 코발트와는 맞았지만, RATIS CI 블루가 이미 어두운
+     네이비(#273996)라 둘이 겹쳐 **화면 전체가 남색으로 읽혔다.**
+
+     밝기(HSL 의 L)는 한 칸도 건드리지 않고 **채도만 4분의 1로** 낮췄다. 테두리·배경의
+     무게와 대비가 그대로라 다른 결정이 딸려 움직이지 않는다. 결과 채도는 9~10% 로
+     KRDS 기본 회색과 같은 수준이다(KRDS 기본을 그대로 쓰지 않은 건 밝기 단계가 달라
+     테두리가 눈에 띄게 진해지기 때문). 파랑은 브랜드가 지고, 회색은 회색이 진다. */
+  --krds-color-light-gray-0: #ffffff;
+  --krds-color-light-gray-5: #f9fafb;
+  --krds-color-light-gray-10: #f4f5f6;
+  --krds-color-light-gray-20: #e7e9eb;
+  --krds-color-light-gray-30: #d3d6d9;
+  --krds-color-light-gray-40: #a1a5ab;
+  --krds-color-light-gray-50: #72777d;
+  --krds-color-light-gray-60: #54575c;
+  --krds-color-light-gray-70: #404348;
+  --krds-color-light-gray-80: #292c30;
+  --krds-color-light-gray-90: #191b20;
+  --krds-color-light-gray-95: #0a0b0f;
+  --krds-color-light-gray-100: #000000;
+
+  /* Primary — CI 블루. 앵커 50 = #273996 (CI 고시값 그대로) */
+  --krds-color-light-primary-5: #f2f4fd;
+  --krds-color-light-primary-10: #e7eafa;
+  --krds-color-light-primary-20: #cdd4f6;
+  --krds-color-light-primary-30: #a8b4ef;
+  --krds-color-light-primary-40: #7183e4;
+  /* 45 — ★커스텀 슬롯 (KRDS 표준 스케일엔 없는 칸). 40↔50 사이가 붙어 있어 탈락한
+     중간톤을 보존한다: 칩 선택 보더·진행바·별점·포인트 아이콘·그라데이션 중간 스탑 용.
+     KRDS 시맨틱은 이 칸을 참조하지 않는다 */
+  --krds-color-light-primary-45: #425bdb;
+  --krds-color-light-primary-50: #273996; /* CI Blue — 흰 글자 9.94:1 */
+  --krds-color-light-primary-60: #223181;
+  --krds-color-light-primary-70: #1c296c;
+  --krds-color-light-primary-80: #17225a;
+  --krds-color-light-primary-90: #111942;
+  --krds-color-light-primary-95: #0b102a;
+
+  /* Secondary — CI 블루를 낮춘 더스키 네이비 (다크 밴드·강조 구간 톤) */
+  --krds-color-light-secondary-5: #f6f6f9;
+  --krds-color-light-secondary-10: #edeef3;
+  --krds-color-light-secondary-20: #d6d8e5;
+  --krds-color-light-secondary-30: #b5bad0;
+  --krds-color-light-secondary-40: #848bb0;
+  --krds-color-light-secondary-50: #535d90;
+  --krds-color-light-secondary-60: #36427e;
+  --krds-color-light-secondary-70: #2a3568;
+  --krds-color-light-secondary-80: #212a53;
+  --krds-color-light-secondary-90: #171e3d;
+  --krds-color-light-secondary-95: #0e1328;
+
+  /* Danger — red */
+  --krds-color-light-danger-5: #fef2f2;
+  --krds-color-light-danger-10: #fee2e2;
+  --krds-color-light-danger-20: #fecaca;
+  --krds-color-light-danger-30: #fca5a5;
+  --krds-color-light-danger-40: #f87171;
+  --krds-color-light-danger-50: #dc2626;
+  --krds-color-light-danger-60: #b91c1c;
+  --krds-color-light-danger-70: #991b1b;
+  --krds-color-light-danger-80: #7f1d1d;
+  --krds-color-light-danger-90: #450a0a;
+  --krds-color-light-danger-95: #2c0606;
+
+  /* Point — 강조 적색. red 로 정렬 */
+  --krds-color-light-point-5: #fef2f2;
+  --krds-color-light-point-10: #fee2e2;
+  --krds-color-light-point-20: #fecaca;
+  --krds-color-light-point-30: #fca5a5;
+  --krds-color-light-point-40: #f87171;
+  --krds-color-light-point-50: #dc2626;
+  --krds-color-light-point-60: #b91c1c;
+  --krds-color-light-point-70: #991b1b;
+  --krds-color-light-point-80: #7f1d1d;
+  --krds-color-light-point-90: #450a0a;
+  --krds-color-light-point-95: #2c0606;
+
+  /* Warning — amber */
+  --krds-color-light-warning-5: #fffbeb;
+  --krds-color-light-warning-10: #fef3c7;
+  --krds-color-light-warning-20: #fde68a;
+  --krds-color-light-warning-30: #fcd34d;
+  --krds-color-light-warning-40: #fbbf24;
+  --krds-color-light-warning-50: #d97706;
+  --krds-color-light-warning-60: #b45309;
+  --krds-color-light-warning-70: #92400e;
+  --krds-color-light-warning-80: #78350f;
+  --krds-color-light-warning-90: #451a03;
+  --krds-color-light-warning-95: #2e1102;
+
+  /* Success — emerald (green→emerald 리톤). 프리미티브만 덮으면 시맨틱 success 전부 따라온다 */
+  --krds-color-light-success-5: #ecfdf5;
+  --krds-color-light-success-10: #d1fae5;
+  --krds-color-light-success-20: #a7f3d0;
+  --krds-color-light-success-30: #6ee7b7;
+  --krds-color-light-success-40: #34d399;
+  --krds-color-light-success-50: #047857; /* 5.6:1 — 배지 흰글자·흰 배경 텍스트 대비 확보 (2026-07-29 감사) */
+  --krds-color-light-success-60: #065f46;
+  --krds-color-light-success-70: #065f46;
+  --krds-color-light-success-80: #064e3b;
+  --krds-color-light-success-90: #022c22;
+  --krds-color-light-success-95: #011a14;
+
+  /* Information — info 는 CI 블루로 쓴다 (primary 미러) */
+  --krds-color-light-information-5: #f2f4fd;
+  --krds-color-light-information-10: #e7eafa;
+  --krds-color-light-information-20: #cdd4f6;
+  --krds-color-light-information-30: #a8b4ef;
+  --krds-color-light-information-40: #7183e4;
+  --krds-color-light-information-50: #273996;
+  --krds-color-light-information-60: #223181;
+  --krds-color-light-information-70: #1c296c;
+  --krds-color-light-information-80: #17225a;
+  --krds-color-light-information-90: #111942;
+  --krds-color-light-information-95: #0b102a;
+
+  /* Graphic — 일러스트·차트용. CI 블루 계열로 틴트 */
+  --krds-color-light-graphic-10: #e5e8f6;
+  --krds-color-light-graphic-30: #a3abd6;
+  --krds-color-light-graphic-50: #6672ac;
+  --krds-color-light-graphic-70: #37438f;
+  --krds-color-light-graphic-90: #1f2a63;
+
+  /* ---------------------------------------------------------------------------
+     CI 그린 — KRDS 스케일 밖의 브랜드 액센트
+
+     KRDS 프리미티브에 얹지 않고 자체 이름으로 둔다. success(에메랄드)에 덮어씌우면
+     「성공/완료」 의미까지 CI 그린으로 끌려가 상태색과 브랜드색이 섞인다.
+     쓰는 곳: 로고, 히어로 오브 큐브, 그래픽 액센트.
+     ⚠ 50 이하는 흰 배경에서 글자·테두리로 쓸 수 없다 (위 주의 참조).
+     ------------------------------------------------------------------------- */
+  --ratis-green-5: #f8fdf1;
+  --ratis-green-10: #f2fbe3;
+  --ratis-green-20: #e2f6c3;
+  --ratis-green-30: #cff19b;
+  --ratis-green-40: #b6e966;
+  --ratis-green-50: #91c73d; /* CI Green — 검은 글자 10.44:1 · 흰 글자 2.01:1 */
+  --ratis-green-60: #7dab34;
+  /* 65 — ★커스텀 슬롯. 그린 버튼 pressed 전용. green-70 을 쓰면 남색 글자와 4.47:1 로
+     본문 기준(4.5:1)에 아슬하게 못 미친다. 한 칸 밝은 이 값이 5.49:1 로 통과한다 */
+  --ratis-green-65: #74a02f;
+  --ratis-green-70: #688f2c; /* 흰 글자 3.78:1 — 큰 글자(18.66px+ bold)까지만 */
+  --ratis-green-80: #547323; /* 흰 글자 5.45:1 — 본문 글자 가능 */
+  --ratis-green-90: #3a5018;
+
+  /* ---------------------------------------------------------------------------
+     주 실행(가장 높은 급) 색 — **한 곳에서만 정한다.**
+     글자 버튼(krds-btn primary)과 원형 아이콘 버튼(IconButton filled)이 같은 자리의
+     같은 급인데 색을 각자 적으면, 한쪽만 고쳤을 때 화면에서 주 동작이 두 색으로 갈린다.
+     ------------------------------------------------------------------------- */
+  --ratis-action-fill: var(--ratis-green-50);
+  --ratis-action-fill-hover: var(--ratis-green-60);
+  --ratis-action-fill-pressed: var(--ratis-green-65);
+  --ratis-action-text: var(--krds-color-light-gray-0);
+
+  /* ---------------------------------------------------------------------------
+     시맨틱 재정의 (예외 2종) — KRDS 는 "선택·활성 상태"를 secondary 로 표현한다
+     (탭·달력 선택·사이드내비 선택·드롭다운 선택 등 14개 컴포넌트).
+     우리 secondary 는 다크 밴드용 더스키 네이비라 활성 상태가 전부 흐린 남색으로
+     보이므로, 진한 활성 2종만 포털 규칙(선택 = CI 블루 primary)으로 돌린다.
+     틴트류(action-secondary-hover/-selected = secondary-5)는 옅은 틴트라 그대로 둔다.
+     ------------------------------------------------------------------------- */
+  --krds-light-color-action-secondary-active: var(--krds-color-light-primary-50);
+  --krds-light-color-text-secondary: var(--krds-color-light-primary-60);
+}

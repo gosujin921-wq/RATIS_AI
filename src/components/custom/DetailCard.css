@@ -1,0 +1,259 @@
+@charset "utf-8";
+/* 게시물 상세 카드 (design.md §5 표면 · §6 세로 리듬 · §2 타이포) */
+
+.klid-detail-card {
+  padding: var(--krds-padding-8); /* 기본 본문 카드 (§5 카드 패딩 20/24) */
+  border: 0.1rem solid var(--krds-color-light-gray-20);
+  border-radius: 1.6rem;
+  background-color: var(--krds-color-light-gray-0);
+}
+
+/* 제목 줄. 배지를 병기할 수 있게 flex */
+.klid-detail-subject {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--krds-gap-3);
+  font-size: var(--krds-pc-font-size-heading-small);
+  font-weight: 600;
+  line-height: 1.4; /* 제목권 20px 행간 (§2) */
+  color: var(--krds-color-light-gray-90);
+}
+
+/* 메타 한 줄 (작성일·조회수·게시기간 / 등록일·활용기관·활용 데이터셋) */
+.klid-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--krds-gap-2) var(--krds-gap-7);
+  margin-top: var(--krds-gap-4);
+  font-size: var(--krds-pc-font-size-body-small);
+  line-height: 1.55; /* 14px 행간 (§2). 킷 리셋이 요소마다 1.5 를 박아 둬 상속으로는 안 닿는다 */
+  font-variant-numeric: tabular-nums; /* 날짜·숫자 자리폭 고정 (§2) */
+  color: var(--krds-color-light-gray-60);
+}
+.klid-detail-meta > div {
+  display: flex;
+  gap: var(--krds-gap-2); /* 라벨→값 밀착 4 (§6) */
+}
+.klid-detail-meta dt {
+  color: var(--krds-color-light-gray-50);
+}
+
+/* 본문. 위 구분선으로 헤더와 나눈다 */
+.klid-detail-body {
+  margin-top: var(--krds-gap-6);
+  padding-top: var(--krds-padding-7);
+  border-top: 0.1rem solid var(--krds-color-light-gray-20);
+  font-size: var(--krds-pc-font-size-body-medium);
+  color: var(--krds-color-light-gray-80);
+}
+/* 본문권 15px 행간 1.6 (§2). ★ 상자에만 걸면 글에 닿지 않는다 — 킷 리셋이 p·li·div 하나하나에
+   기본 행간(--krds-line-height-base = 1.5)을 직접 박아 둬서 상속을 덮어쓴다. 문단·항목에 건다 */
+.klid-detail-body,
+.klid-detail-body p,
+.klid-detail-body li {
+  line-height: 1.6;
+}
+.klid-detail-body > * + * {
+  margin-top: var(--krds-gap-4);
+}
+.klid-detail-body ul {
+  padding-left: 1.8rem;
+  list-style: disc;
+}
+.klid-detail-body li + li {
+  margin-top: var(--krds-gap-2);
+}
+
+/* ── 라벨 │ 값 행 목록 (첨부파일 · 앞뒤 글) ────────────────────────────────
+   행마다 가로선을 긋고 라벨과 값은 세로선으로 가른다. 면을 새로 깔지 않고 선만으로
+   본문과 다른 성격의 정보임을 말한다.
+   ★ 윗선·아랫선·세로선이 **한 색**이다 (2026-09-01 사용자 확정) — 같은 판을 이루는 선이라
+     굵기나 색이 갈리면 어느 선이 판의 끝이고 어느 선이 줄의 경계인지 눈이 위계를 찾는다.
+   앞선 조각과 나누는 윗선은 판이 갖고, 줄 사이·마지막 줄 아래는 각 행이 갖는다 */
+.klid-detail-rows {
+  margin-top: var(--krds-gap-6);
+  border-top: 0.1rem solid var(--krds-color-light-gray-20);
+}
+
+/* 라벨은 글자폭만큼만 차지한다 — 칸을 못 박으면 라벨이 짧은 줄에서 세로선이 멀리 떨어져
+   라벨과 값이 한 줄로 안 읽힌다. 세로선이 라벨에 붙어 다니며 줄마다 제자리를 찾는다 */
+.klid-detail-rows .row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--krds-gap-6); /* 라벨 → 세로선 20 */
+  padding-block: var(--krds-padding-6);
+  border-bottom: 0.1rem solid var(--krds-color-light-gray-20);
+}
+
+/* 라벨 — 값보다 뒤로 물러나는 일은 굵기가 아니라 색이 맡는다 (KeyValueList 와 같은 규칙) */
+.klid-detail-rows dt {
+  flex-shrink: 0;
+  font-size: var(--krds-pc-font-size-body-small);
+  font-weight: 600;
+  line-height: 1.55; /* 14px 행간 (§2) */
+  color: var(--krds-color-light-gray-60);
+}
+
+.klid-detail-rows dd {
+  min-width: 0; /* 긴 파일명·글 제목이 줄을 밀어내지 않게 */
+  margin: 0; /* `dd` 의 브라우저 기본 왼쪽 여백 */
+  padding-left: var(--krds-padding-7); /* 세로선 → 값 20. 라벨 쪽 20 과 대칭 */
+  border-left: 0.1rem solid var(--krds-color-light-gray-20);
+  font-size: var(--krds-pc-font-size-body-medium);
+  line-height: 1.6;
+  color: var(--krds-color-light-gray-80);
+}
+
+/* 값이 비는 행 (앞뒤 글이 없을 때) — 자리는 지키되 읽는 무게를 내린다 */
+.klid-detail-rows .klid-detail-row-empty {
+  color: var(--krds-color-light-gray-50);
+}
+
+/* 값 자리의 링크 (앞뒤 글 제목) — 본문 글과 같은 크기·색으로 두고, 누를 수 있음은
+   손이 닿았을 때만 색과 밑줄로 말한다. 게시판 상세는 앞뒤 글이 늘 링크라, 줄이 처음부터
+   파랗게 서면 두 줄이 본문보다 먼저 읽힌다 */
+.klid-detail-rows dd a {
+  color: inherit;
+  text-decoration: none;
+}
+.klid-detail-rows dd a:hover,
+.klid-detail-rows dd a:focus-visible {
+  color: var(--krds-color-light-primary-60);
+  text-decoration: underline;
+}
+
+/* 행 판이 본문 위에 서면 본문의 윗선은 그 판의 마지막 줄이 이미 그었다 — 두 줄이 되지 않게 */
+.klid-detail-rows + .klid-detail-body {
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* 행 판이 잇달아 서면 한 묶음으로 이어 읽는다 — 앞 판의 마지막 줄이 그은 선이 곧 뒤 판의
+   윗선이다. 사이를 띄우거나 선을 한 번 더 그으면 같은 성격의 줄이 두 덩이로 갈린다 */
+.klid-detail-rows + .klid-detail-rows {
+  margin-top: 0;
+  border-top: 0;
+}
+
+/* ── 첨부파일 ─────────────────────────────────────────────────────────── */
+
+/* 쌓임 꼴 첨부 — **회색 면**에 올린다. 본문이 상자 없이 맨바닥에 서는 자리(문의 상세)라
+   첨부만 면을 얻어 "본문에 딸려 온 것" 으로 갈린다. 종전에는 윗선 하나로 갈랐는데,
+   그 자리에서 선은 본문의 끝처럼 읽혔다 (2026-09-01 화면 검토 지시).
+   위 여백은 갖지 않는다 — 담는 쪽(QaBlock 등)이 자기 리듬으로 정한다 */
+.klid-detail-files {
+  padding: var(--krds-padding-6);
+  border-radius: var(--krds-radius-xlarge1);
+  background-color: var(--krds-color-light-gray-5);
+}
+/* 클립 그림이 소제목 앞에 선다. 라벨(첨부파일)이 이미 무엇인지 말하므로 읽어주지 않는다 */
+.klid-detail-files h3 {
+  display: flex;
+  align-items: center;
+  gap: var(--krds-gap-3);
+  font-size: var(--krds-pc-font-size-body-small);
+  font-weight: 600;
+  color: var(--krds-color-light-gray-70);
+}
+.klid-detail-files h3 svg {
+  width: 1.6rem; /* 본문 글자 급 그림 — 폭·높이는 척도가 없어 값으로 둔다 */
+  height: 1.6rem;
+  flex-shrink: 0;
+  color: var(--krds-color-light-gray-50);
+}
+.klid-detail-files ul {
+  margin-top: var(--krds-gap-2);
+  font-size: var(--krds-pc-font-size-body-medium);
+}
+.klid-detail-files li + li {
+  margin-top: var(--krds-gap-2);
+}
+.klid-detail-file-size {
+  margin-left: var(--krds-gap-2);
+  font-size: var(--krds-pc-font-size-body-xsmall);
+  color: var(--krds-color-light-gray-50);
+}
+
+/* ── 판 꼴 첨부 ──────────────────────────────────────────────────────────
+   본문과 다른 면에 서서 **받아 갈 것**임을 면으로 말한다. 흰 구획 카드(§5)가 아니라
+   회색 틴트인 이유 — 이 카드 안은 이미 온통 흰 면이라 흰 판을 하나 더 얹으면 보더 두 줄만
+   늘고 갈리지 않는다. 옅은 회색이면 면 하나로 "여기만 성격이 다르다"가 읽힌다.
+   강조색을 쓰지 않는 것은 첨부가 이 화면의 주인공이 아니기 때문이다 — 본문을 읽고 나서
+   딸려 온 것을 챙기는 자리다. 보더는 배경보다 한 칸 진해 면의 끝이 흐려지지 않는다 (§5) */
+.klid-detail-files-panel {
+  margin-top: var(--krds-gap-9);
+  padding: var(--krds-padding-7); /* §5 밀집 카드 20 */
+  border: 0.1rem solid var(--krds-color-light-gray-10);
+  border-radius: 1.6rem;
+  background-color: var(--krds-color-light-gray-5);
+}
+
+/* 제목 — 건수를 병기해 몇 개가 딸려 왔는지를 세지 않고 안다.
+   건수는 이름보다 한 단계 옅다: 「첨부파일」이 먼저 읽히고 수가 뒤따른다 */
+.klid-detail-files-panel h3 {
+  display: flex;
+  align-items: center;
+  gap: var(--krds-gap-3);
+  font-size: var(--krds-pc-font-size-body-medium);
+  font-weight: 600; /* §2 웨이트 상한 — 700+ 는 쓰지 않는다 */
+  line-height: 1.6; /* 15px 행간 (§2). 킷 리셋이 요소마다 1.5 를 박아 둬 상속으로는 안 닿는다 */
+  color: var(--krds-color-light-gray-90);
+}
+
+/* 제목의 클립 그림 — 이 판이 무엇을 담는지를 글보다 먼저 말한다. 줄의 내려받기 그림과
+   역할이 갈린다: 제목 쪽은 「딸려 있다」, 줄 쪽은 「누르면 받는다」 */
+.klid-detail-files-panel h3 svg {
+  color: var(--krds-color-light-gray-70);
+}
+.klid-detail-files-panel h3 .count {
+  color: var(--krds-color-light-gray-60);
+}
+
+.klid-detail-files-panel ul {
+  margin-top: var(--krds-gap-5); /* 제목 → 목록, 한 컴포넌트 안 (§6) */
+}
+
+/* 줄 — 내려받기 그림이 파일명 앞에 선다. 제목(첨부파일)이 이미 무엇인지 말하므로
+   그림은 읽어주지 않고(aria-hidden) 눈으로만 "누르면 받는다"를 말한다 */
+.klid-detail-files-panel li {
+  display: flex;
+  align-items: center;
+  gap: var(--krds-gap-3);
+  font-size: var(--krds-pc-font-size-body-small);
+  line-height: 1.55; /* 14px 행간 (§2) */
+}
+.klid-detail-files-panel li + li {
+  margin-top: var(--krds-gap-4);
+}
+.klid-detail-files-panel svg {
+  width: 1.6rem; /* 본문 글자 급 그림 — 폭·높이는 척도가 없어 값으로 둔다 */
+  height: 1.6rem;
+  flex-shrink: 0;
+  color: var(--krds-color-light-gray-60);
+}
+.klid-detail-files-panel a {
+  color: var(--krds-color-light-gray-80);
+  text-decoration: none;
+}
+.klid-detail-files-panel a:hover,
+.klid-detail-files-panel a:focus-visible {
+  color: var(--krds-color-light-primary-60);
+  text-decoration: underline;
+}
+
+/* ── 하단 버튼 (목록 등) ──────────────────────────────────────────────── */
+
+.klid-detail-action {
+  display: flex;
+  margin-top: var(--krds-gap-6);
+}
+.klid-detail-action[data-align='center'] {
+  justify-content: center;
+}
+.klid-detail-action[data-align='start'] {
+  justify-content: flex-start;
+}
+.klid-detail-action[data-align='end'] {
+  justify-content: flex-end;
+}

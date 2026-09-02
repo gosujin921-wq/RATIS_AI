@@ -1,0 +1,167 @@
+/* 이전 대화 목록. 이 영역만 세로로 스크롤한다. KRDS 1rem = 10px
+
+   좌우는 셸이 정한 줄 기준(--side-gutter / --side-pad)을 따른다.
+   단독으로 쓰면 1.2rem 으로 떨어진다 */
+.conv-list {
+  flex: 1;
+  min-height: 0;
+  padding: 0.4rem var(--side-gutter, 1.2rem) 1.2rem;
+  /* ★ overflow-y: auto 는 x 축까지 clip 으로 만든다 — 줄 메뉴 팝오버가 목록 밖으로
+     못 나가 잘린다. 가로는 넉넉히 열어 두고 세로만 스크롤한다 */
+  overflow-x: visible;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+.conv-list-empty {
+  margin: 0;
+  padding: 1.2rem var(--side-pad, 1.2rem);
+  font-size: 1.3rem;
+  color: var(--krds-color-light-gray-50);
+}
+
+.conv-group + .conv-group {
+  margin-top: 1.6rem;
+}
+
+/* 시각은 여기 한 번만 적힌다 — 줄마다 달면 목록이 날짜로 가득 찬다 */
+.conv-group-title {
+  margin: 0 0 0.4rem;
+  padding: 0 var(--side-pad, 1.2rem);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--krds-color-light-gray-50);
+}
+
+.conv-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.conv-row {
+  position: relative;
+}
+
+/* 한 줄짜리 제목. 넘치면 줄임표 — 긴 제목 처리 (기획 §11) */
+.conv-item {
+  display: block;
+  width: 100%;
+  min-height: 3.6rem;
+  padding: 0.8rem var(--side-pad, 1.2rem);
+  /* 삭제 버튼이 앉을 자리를 비워 둔다 — 제목이 그 밑으로 흘러가지 않게 */
+  padding-right: 3.6rem;
+  border: 0;
+  border-radius: 0.8rem;
+  background: none;
+  font-size: 1.4rem;
+  line-height: 1.45;
+  color: var(--krds-color-light-gray-70);
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.conv-item:hover {
+  background: var(--krds-color-light-gray-10);
+  color: var(--krds-color-light-gray-90);
+}
+
+.conv-item[aria-current='true'] {
+  background: var(--krds-color-light-primary-5);
+  color: var(--krds-color-light-primary-60);
+  font-weight: 600;
+}
+
+/* 줄 메뉴(⋯) — 평소엔 숨고 마우스·초점이 닿을 때만 나온다. 버튼이 줄마다 늘 서 있으면
+   제목을 읽으러 온 목록이 조작으로 뒤덮인다. 숨기되 초점으로는 늘 닿는다 */
+/* ★ transform 이 **쌓임 맥락**을 만든다. 그래서 안쪽 팝오버에 z-index 를 아무리 줘도
+   그 맥락 안에서만 유효하고, 트리 순서상 뒤에 오는 다음 줄이 위로 올라와 팝오버를
+   가로막는다 (2026-09-02 실측 — 메뉴 항목이 눌리지 않았다).
+   맥락을 만드는 이 요소 자체를 띄워야 한다 */
+.conv-menu {
+  position: absolute;
+  top: 50%;
+  right: 0.4rem;
+  z-index: 1;
+  transform: translateY(-50%);
+}
+
+.conv-menu:has([aria-expanded='true']) {
+  z-index: 20;
+}
+
+.conv-menu-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  border: 0;
+  border-radius: 0.6rem;
+  background: none;
+  color: var(--krds-color-light-gray-50);
+  cursor: pointer;
+  opacity: 0;
+}
+
+.conv-row:hover .conv-menu-trigger,
+.conv-menu-trigger:focus-visible,
+.conv-menu-trigger[aria-expanded='true'] {
+  opacity: 1;
+}
+
+.conv-menu-trigger:hover {
+  background: var(--krds-color-light-gray-20);
+  color: var(--krds-color-light-gray-80);
+}
+
+/* 팝오버 — 줄 오른쪽 아래로 편다 */
+.conv-menu-pop {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  z-index: 10;
+  min-width: 16rem;
+  padding: 0.6rem;
+  border: 1px solid var(--krds-color-light-gray-20);
+  border-radius: 1.2rem;
+  background: var(--krds-color-light-gray-0);
+  box-shadow: 0 4px 16px rgb(15 23 42 / 12%);
+}
+
+.conv-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  min-height: 3.6rem;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: 0.8rem;
+  background: none;
+  font-size: 1.4rem;
+  color: var(--krds-color-light-gray-80);
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.conv-menu-item:hover {
+  background: var(--krds-color-light-gray-10);
+}
+
+/* 되돌릴 수 없는 걸음은 색으로도 갈린다. 다만 글자로도 「삭제」라고 적혀 있어
+   색만으로 구분하지 않는다 (기획 §11) */
+.conv-menu-item[data-tone='danger'] {
+  color: var(--krds-color-light-danger-60);
+}
+
+.conv-menu-item[data-tone='danger']:hover {
+  background: var(--krds-color-light-danger-5);
+}

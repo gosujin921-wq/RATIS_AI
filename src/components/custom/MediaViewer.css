@@ -1,0 +1,64 @@
+@charset "utf-8";
+/* 그림 확대 뷰 (design.md §5 표면 — 모달) */
+
+/* 그림을 보러 여는 창이라 본문이 화면 세로를 최대한 쓴다. 킷이 선언하지 않은 속성이라 더한다 */
+.klid-viewer .modal-conts {
+  max-height: 72vh;
+  overflow-y: auto;
+}
+
+.klid-viewer figure {
+  position: relative; /* 영상 재생 표식의 기준점 */
+}
+
+/* 도식은 잘리면 뜻이 깨지고, 사진도 확대 뷰에서는 전체를 보러 온다 — 늘 contain */
+.klid-viewer img {
+  display: block;
+  width: 100%;
+  max-height: 62vh;
+  border-radius: 1.2rem;
+  background-color: var(--krds-color-light-gray-5);
+  object-fit: contain;
+}
+
+/* 영상 재생 표식 — 그림 한가운데 */
+.klid-viewer .play {
+  display: grid;
+  position: absolute;
+  place-items: center;
+  inset: 50% auto auto 50%;
+  translate: -50% -50%;
+  width: 4.4rem;
+  height: 4.4rem;
+  border-radius: 999rem;
+  background-color: var(--krds-color-light-alpha-black50);
+  color: var(--krds-color-light-gray-0);
+}
+.klid-viewer .play svg {
+  width: 2rem;
+  height: 2rem;
+  fill: currentColor;
+}
+
+.klid-viewer figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--krds-gap-4);
+  margin-top: 1.6rem;
+  font-size: 1.5rem;
+  color: var(--krds-color-light-gray-80);
+}
+.klid-viewer figcaption .dur {
+  font-size: 1.3rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--krds-color-light-gray-50);
+}
+
+/* 몇 장 중 몇 번째인지. 버튼 줄 왼쪽 끝에 남겨 넘기는 손과 눈이 같은 줄에 있게 한다 */
+.klid-viewer-count {
+  margin-right: auto;
+  font-size: 1.4rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--krds-color-light-gray-60);
+}
