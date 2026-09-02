@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { ChatMessage, ChatProblem, ChatProblemKind, ConversationSummary } from '../api/types'
 import { AppShell } from '../app/AppShell'
 import { ChatPage } from '../pages/chat/ChatPage'
-import { DEMO_CONVERSATIONS, DEMO_ME, DEMO_MESSAGES, makeDemoReply } from './data/chat'
+import { DEMO_CONVERSATIONS, DEMO_ME, DEMO_THREADS, makeDemoReply } from './data/chat'
 
 /**
  * 데모 응답 흉내 — 스트리밍 버전.
@@ -53,7 +53,7 @@ const BATCH_DELAY_MS = 1600
 export function DemoApp() {
   /* ★ 진입 상태는 **빈 대화**다 — 화면에 들어오면 시작 화면(오브 + 문구 + 입력창)이 나온다.
      이전 대화는 사이드바 목록에 있고, 골랐을 때만 스트림에 실린다.
-     여기에 DEMO_MESSAGES 를 미리 넣어 두면 앱이 뜰 때마다(홈 진입 · 새로고침 · /chat 직접 접속)
+     여기에 스레드를 미리 넣어 두면 앱이 뜰 때마다(홈 진입 · 새로고침 · /chat 직접 접속)
      대화 화면으로 떨어져 시작 화면을 볼 수 없다. */
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [pendingQuestion, setPendingQuestion] = useState<string | null>(null)
@@ -142,12 +142,19 @@ export function DemoApp() {
     ask(next)
   }
 
-  /** 마지막 답변 다시 생성 — 그 턴을 걷고 같은 질문을 다시 보낸다 (기획 §5.4) */
-  const regenerate = () => {
-    const last = messages[messages.length - 1]
-    if (!last) return
-    setMessages((prev) => prev.slice(0, -1))
-    ask(last.question)
+  /**
+   * 다시 생성 (기획 §5.4) — 누른 턴부터 **뒤를 걷고** 같은 질문을 다시 보낸다.
+   *
+   * 마지막 턴만 집지 않는다: 아이콘이 모든 답변에 서 있어서 위쪽 답변에서 눌릴 수 있고,
+   * 그때 마지막 턴을 다시 만들면 누른 자리와 바뀌는 자리가 어긋난다.
+   * 뒤를 걷는 것은 editResend 와 같은 까닭이다 — 남겨 두면 뒤 대화가 옛 답변을 전제로 이어진다.
+   */
+  const regenerate = (messageId: string) => {
+    const at = messages.findIndex((m) => m.id === messageId)
+    if (at < 0) return
+    cancel()
+    setMessages((prev) => prev.slice(0, at))
+    ask(messages[at].question)
   }
 
   /** 대화 삭제 — 실연동 시 삭제 API 를 부른다. 열려 있던 대화면 시작 화면으로 되돌린다 */
@@ -171,7 +178,9 @@ export function DemoApp() {
   const selectConversation = (id: string) => {
     cancel()
     setActiveConversationId(id)
-    setMessages(id === 'v1' ? DEMO_MESSAGES : [])
+    /* 대화마다 다른 상태가 열린다 — 목록을 눌러 내려가면 화면 상태가 하나씩 나온다.
+       스레드가 없는 대화는 시작 화면으로 떨어진다 (DEMO_THREADS 주석의 상태 표 참조) */
+    setMessages(DEMO_THREADS[id] ?? [])
   }
 
   return (

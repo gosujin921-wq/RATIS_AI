@@ -1,6 +1,47 @@
 /* SCREEN-001 대화 화면. KRDS 1rem = 10px */
 
 .chat-page {
+  /* ★ 입력창 팔레트 — **빛무리와 테두리가 같은 값을 본다.** 한쪽만 고치면 선과 빛이
+     다른 색이 되어 따로 놀기 때문에 여기 한 곳에서 정한다.
+
+     ★ 청록은 이 화면에서만 쓰는 값이다. CI 그린과 CI 블루 사이를 잇는 다리인데 팔레트에
+       그 사이 색이 없다. success(에메랄드)를 끌어 쓰면 「성공/완료」 의미색이 장식으로
+       새어 나온다. 명도를 CI 그린과 같은 단(L* 75 안팎)에 맞췄다 */
+  --chat-accent-green: var(--ratis-green-50);
+  --chat-accent-teal: #2fd4b6;
+  --chat-accent-blue: var(--krds-color-light-primary-30);
+
+  /* 번지는 빛에 쓰는 값은 위 색에 **흰 면을 섞어 채도를 내린** 것이다. 원색 그대로
+     뭉개면 흰 카드 위에서 형광펜처럼 튄다. 셋에 같은 비율을 먹여야 서로의 밝기 차가
+     유지된다 (한 색만 내리면 그 색만 뒤로 물러난다).
+     ★ 1px 선은 안 내린다. 같은 값을 쓰면 선이 아니라 흐린 자국으로 보인다 —
+       면적이 없는 선은 원래 색보다 훨씬 옅게 읽힌다 */
+  --chat-glow-mix: 46%;
+  --chat-glow-green: color-mix(
+    in srgb,
+    var(--chat-accent-green) var(--chat-glow-mix),
+    var(--krds-color-light-gray-0)
+  );
+  --chat-glow-teal: color-mix(
+    in srgb,
+    var(--chat-accent-teal) var(--chat-glow-mix),
+    var(--krds-color-light-gray-0)
+  );
+  --chat-glow-blue: color-mix(
+    in srgb,
+    var(--chat-accent-blue) var(--chat-glow-mix),
+    var(--krds-color-light-gray-0)
+  );
+
+  /* 빛과 선이 같은 방향·같은 순서로 흐른다 */
+  --chat-accent-sweep: linear-gradient(
+    100deg,
+    var(--chat-accent-green) 0%,
+    var(--chat-accent-teal) 38%,
+    var(--chat-accent-blue) 72%,
+    var(--chat-accent-teal) 100%
+  );
+
   /* 추천 질문 앞 표식 (lucide `sparkles`) */
   --chat-icon-spark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z'/%3E%3C/svg%3E");
 }
@@ -82,6 +123,19 @@
   background: transparent; /* 도킹이 아니라 화면 가운데라 바닥 띠가 필요 없다 */
 }
 
+/* ★ 정확한 한가운데가 아니라 **광학 중심**에 세운다. 위아래를 반씩 나누면 덩어리가
+   아래로 가라앉아 보인다 — 아래 여백이 시선에 더 무겁게 걸리기 때문이다.
+   아래쪽에 여백을 먹여 위·아래 auto 마진이 나눠 가질 몫을 줄이면, 덩어리는 그 절반만큼
+   위로 올라간다 (덩어리 자체의 간격은 건드리지 않는다).
+
+   ★ 화면이 낮으면 걸지 않는다. 여백이 곧 높이라, 자리가 빠듯한 화면에서 올리면
+     덩어리 아래가 잘린다. 그때는 한가운데가 가장 안전하다 */
+@media (min-height: 760px) {
+  .chat-page[data-empty='true'] {
+    padding-bottom: min(12vh, 12rem);
+  }
+}
+
 .chat-stream {
   display: flex;
   flex-direction: column;
@@ -107,6 +161,20 @@
   height: 20rem;
   margin: 0 auto 0.4rem;
   pointer-events: none;
+}
+
+/* ★ 캔버스를 오브 박스 **밖으로** 넓힌다. 큐브는 떠다니는 중에 박스 위쪽을 넘어서는데,
+   캔버스 가장자리가 곧 그리는 한계라 거기서 잘린다.
+
+   ★ 박스 높이를 키우는 걸로는 안 고쳐진다. 시야각이 세로 기준이라 보이는 세계 크기는
+     카메라 거리로만 정해진다 — 캔버스가 커지면 같은 장면이 더 큰 픽셀로 그려질 뿐이고
+     잘리는 **비율**은 그대로다. 그래서 캔버스를 넓힌 배율(1.6배)만큼 카메라도 뒤로
+     물린다 (ChatPage.tsx 의 cameraZ). 그래야 여유만 늘고 큐브 크기는 그대로다.
+
+   ★ 위아래는 %로 준다. 움직임을 줄인 화면에서 오브가 16rem 으로 줄어도 배율이 같아야
+     카메라 값과 어긋나지 않는다. 좌우는 잘릴 일이 없어 고정값으로 넉넉히 둔다 */
+.chat-orb .hero-cubes {
+  inset: -30% -8rem;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -153,19 +221,6 @@
   gap: 1.2rem;
 }
 
-.chat-answer-meta {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-/* 근거 유형 배지 — 색만이 아니라 라벨로 구분 (AC-085·AC-110) */
-.chat-composition {
-  font-size: 1.3rem;
-  color: var(--krds-color-light-gray-50);
-}
-
 .chat-answer-body {
   display: flex;
   flex-direction: column;
@@ -180,45 +235,73 @@
 }
 
 /* 답변별 고지 */
+/* ── 답변 안내 줄 (외부 LLM 응답 · 차단) ──
+   면·선 없이 글로만 선다. 위 배지가 이미 근거 유형을 말한 뒤라 면까지 두르면 같은 말이
+   두 번 되고, 답변 본문보다 무거워진다.
+   아래 고지(.chat-disclaimer)와 **같은 꼴이되 한 급 진하다** — 둘이 같은 회색이면
+   읽고 넘어가야 하는 안내가 상시 잔글씨에 묻힌다.
+   여러 줄로 넘어가도 글리프는 **첫 줄에 선다** — 덩어리 가운데에 세우면 글이 길어질수록
+   아래로 흘러 글머리와 어긋난다 (Alert 이 표식을 세우는 것과 같은 까닭) */
+.chat-notice {
+  display: flex;
+  align-items: flex-start;
+  /* 아이콘과 글 사이 — 4. 글리프가 글의 머리글자처럼 붙어 한 덩어리로 읽힌다 */
+  gap: 0.4rem;
+  margin: 0;
+  font-size: 1.4rem;
+  line-height: 1.55;
+  color: var(--krds-color-light-gray-70);
+}
+/* 글리프를 첫 줄 한가운데에 — 글과 같은 활자를 물려 높이를 한 줄로 잡는다 (실측 상수 없음) */
+.chat-notice svg {
+  flex: none;
+  height: 1lh;
+}
+
+/* 차단 — 답변을 못 받은 자리다. 면이 없으니 성격은 **색과 글리프**가 짊어진다.
+   배지(차단됨)와 같은 갈래로 물들여 둘이 짝으로 읽히게 한다.
+   danger-50(#dc2626)은 흰 바탕에서 4.83:1 로 본문 대비 기준(4.5)을 넘는다 —
+   면 위에 얹던 색을 그대로 맨바닥에 내리면 대비가 모자라는 일이 흔해 값을 확인해 두었다 */
+.chat-notice[data-tone='danger'] {
+  color: var(--krds-color-light-danger-50);
+}
+
+/* 범위를 좁혀 못 찾음 — 못 받은 게 아니라 **다시 해 볼 여지가 있는** 상태다.
+   차단(빨강)과 갈라 보이되 평범한 안내(회색)보다는 눈에 걸려야 한다 */
+.chat-notice[data-tone='warning'] {
+  color: var(--krds-color-light-warning-60);
+}
+
 .chat-disclaimer {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.4rem;
   margin: 0;
   font-size: 1.3rem;
   color: var(--krds-color-light-gray-50);
 }
 
-/* 액션 행 — 마지막 답변만 상시, 나머지는 hover (autohide="not-last") */
+/* 액션 행 — **답변에는 늘 서 있다.**
+   종전에는 마지막 답변만 상시고 나머지는 턴 hover 였다. 그러면 지난 답변을 복사하려면
+   먼저 마우스를 올려 아이콘이 있다는 걸 발견해야 한다 — 있는 줄 모르면 찾지 않는다.
+   질문 쪽(.chat-question-actions)만 hover 로 남긴다 */
 .chat-actions {
   display: flex;
   gap: 0.4rem;
-  opacity: 0;
-  transition: opacity 0.15s;
 }
 
-.chat-answer[data-last='true'] .chat-actions,
-.chat-turn:hover .chat-actions,
-.chat-actions:focus-within {
-  opacity: 1;
+/* ── 액션 아이콘 (답변·질문 공용) ──
+   글자를 떼고 글리프만 세운다. 이름은 aria-label·title 이 진다 (ChatPage.tsx CopyButton).
+   IconButton 기본 톤은 gray-60 인데, 라벨이 사라진 자리에서는 배경에 묻혀 "누를 수 있는 것"
+   으로 안 읽힌다. 한 단 진한 **다크 그레이(gray-70)** 로 세우고 hover 에서 gray-90 까지 간다.
+   ★ 특정도를 [data-tone] 까지 얹어 (0,3,0) 으로 맞춘다 — IconButton.css 의
+     `.klid-icon-btn[data-tone='default']` 과 같은 (0,2,0) 이면 파일 로드 순서에 색이 걸린다 */
+.chat-action.klid-icon-btn[data-tone='default'] {
+  color: var(--krds-color-light-gray-70);
 }
-
-.chat-action {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  min-height: 3.2rem;
-  padding: 0 1rem;
-  border: 0;
-  border-radius: 0.6rem;
-  background: none;
-  font-size: 1.3rem;
-  color: var(--krds-color-light-gray-60);
-  cursor: pointer;
-}
-
-.chat-action:hover {
-  background: var(--krds-color-light-gray-10);
+.chat-action.klid-icon-btn[data-tone='default']:hover {
+  background-color: var(--krds-color-light-gray-10);
+  color: var(--krds-color-light-gray-90);
 }
 
 /* ── 질문 수정 (기획 §6.1) ──────────────────────────────────────────── */
@@ -229,15 +312,19 @@
   gap: 0.4rem;
 }
 
-/* 수정 버튼은 말풍선 왼쪽에 숨어 있다가 마우스·초점이 닿을 때 나온다 */
-.chat-question-edit-open {
+/* 복사·수정은 말풍선 왼쪽에 숨어 있다가 마우스·초점이 닿을 때 나온다.
+   버튼 하나가 아니라 **묶음**을 여닫는다 — 낱개로 걸면 둘 중 초점이 간 것만 나타나고
+   나머지는 계속 투명해, 키보드로 옮겨 다닐 때 아이콘이 하나씩 깜빡인다 */
+.chat-question-actions {
   order: -1;
+  display: flex;
+  gap: 0.4rem;
   opacity: 0;
   transition: opacity 0.15s;
 }
 
-.chat-turn:hover .chat-question-edit-open,
-.chat-question-edit-open:focus-visible {
+.chat-turn:hover .chat-question-actions,
+.chat-question-actions:focus-within {
   opacity: 1;
 }
 
@@ -267,6 +354,11 @@
 /* 입력창 아래 **카드 셋이 나란히**. 무엇을 물어야 할지 모를 때 고를 수 있는 예시라,
    줄로 눕히면 안내문처럼 읽히고 카드로 세우면 「고르는 것」으로 읽힌다 */
 .chat-suggest {
+  /* ★ 빛무리보다 위에 선다. 빛은 absolute 라 그냥 두면 뒤에 오는 정적 요소를 덮는다 —
+     캡슐 아래로 1.4rem 흘러내리는 빛이 첫 줄 카드에 얹혀 위쪽만 뿌옇게 뜬다.
+     자리를 잡아 주는 position 이 있어야 z-index 가 먹는다 */
+  position: relative;
+  z-index: 1;
   list-style: none;
   margin: 1.6rem 0 0;
   padding: 0;
@@ -282,9 +374,16 @@
   width: 100%;
   height: 100%;
   padding: 1.4rem 1.6rem;
-  border: 1px solid var(--krds-color-light-gray-20);
+  /* ★ 유리면 — 흰 면을 반쯤 비우고 뒤를 흐린다. 입력창에서 흘러내린 빛이 카드 위로
+     지나가는데, 불투명한 흰 상자면 빛이 카드 앞에서 뚝 끊긴다. 반투명이라야 빛이
+     카드를 **통과해** 아래까지 이어진다.
+     ★ 채도를 올려 받는다(saturate). 흐리기만 하면 뒤의 옅은 색이 회색으로 주저앉는다.
+     ★ 테두리도 같이 비운다. 선만 불투명하면 유리면 위에 그린 테만 또렷해 겉돈다 */
+  border: 1px solid color-mix(in srgb, var(--krds-color-light-gray-30) 55%, transparent);
   border-radius: 1.2rem;
-  background: var(--krds-color-light-gray-0);
+  background: color-mix(in srgb, var(--krds-color-light-gray-0) 55%, transparent);
+  backdrop-filter: blur(12px) saturate(1.6);
+  -webkit-backdrop-filter: blur(12px) saturate(1.6);
   font-size: 1.3rem;
   line-height: 1.5;
   color: var(--krds-color-light-gray-70);
@@ -303,14 +402,22 @@
   mask: var(--chat-icon-spark) no-repeat center / contain;
 }
 
+/* 손이 얹히면 유리가 **닫힌다** — 반투명이 짙어지며 뒤가 덜 비친다. 고를 수 있는 것 중
+   지금 겨냥한 하나가 앞으로 나오는 것처럼 읽힌다.
+
+   ★ 색을 갈아 끼우지 않는다. 선도 글자도 남색으로 바꾸면 카드 하나만 다른 색 부품이
+     되어, 「지금 가리키는 것」이 아니라 「종류가 다른 것」으로 읽힌다.
+     호버에서 바뀌는 건 **또렷함**뿐이다 — 면이 닫히고, 선이 진해지고, 글자가 짙어진다 */
 .chat-suggest-item:hover {
-  border-color: var(--krds-color-light-primary-30);
-  background: var(--krds-color-light-primary-5);
-  color: var(--krds-color-light-primary-60);
+  border-color: color-mix(in srgb, var(--krds-color-light-gray-40) 60%, transparent);
+  background: color-mix(in srgb, var(--krds-color-light-gray-0) 88%, transparent);
+  color: var(--krds-color-light-gray-90);
 }
 
+/* 표식만 CI 그린으로 켠다. 브랜드색 한 점이면 「이걸 고르는 중」이라는 뜻이 서고,
+   글자까지 물들일 때처럼 카드가 통째로 다른 부품이 되지는 않는다 */
 .chat-suggest-item:hover::before {
-  background-color: var(--krds-color-light-primary-50);
+  background-color: var(--chat-accent-green);
 }
 
 /* 답변 아래 후속 질문은 셋이 아닐 수 있다 — 칸을 채우는 대신 흐르게 둔다 */
@@ -677,10 +784,20 @@
 .chat-composer {
   position: relative; /* 빛(형제) 위에 선다 */
   cursor: text;
-  /* 레퍼런스처럼 **순백이 아니라 아주 옅은 청회색 면**이다. 흰 카드 위에 흰 상자를 얹으면
-     경계가 테두리 선 하나에만 걸려 입력칸이 면으로 안 읽힌다 */
-  background: var(--krds-color-light-gray-5);
-  border: 1px solid var(--krds-color-light-gray-20);
+  /* ★ 안쪽 면은 **순백 단색**이다. 색도 그라데이션도 얹지 않는다 — 글을 받는 자리라
+     뒤가 조용해야 친 글자가 먼저 읽힌다. 색은 테두리와 바깥 빛이 진다.
+     ★ 이 면과 선은 **초기 화면과 답변 화면이 같다.** 같은 일을 하는 컨트롤이 화면마다
+       다른 옷을 입으면 대화를 시작한 순간 입력창이 바뀐 걸로 보인다.
+
+     ★ 테두리가 **그라데이션**이다. border-color 로는 한 색밖에 못 준다 — 흰 면은
+       padding-box 에, 색띠는 border-box 에 깔고 테두리를 투명으로 비워 그 띠가
+       1px 만큼 드러나게 한다. 두 layer 의 순서가 뒤집히면 색띠가 면을 덮는다.
+       흰 면도 단색이지만 layer 로 깔아야 해서 linear-gradient 형태를 쓴다 —
+       background-color 로 주면 border-box 색띠를 통째로 가린다 */
+  background:
+    linear-gradient(var(--krds-color-light-gray-0), var(--krds-color-light-gray-0)) padding-box,
+    var(--chat-accent-sweep) border-box;
+  border: 1px solid transparent;
   padding: 0.8rem;
   display: flex;
   flex-direction: column;
@@ -688,93 +805,103 @@
   /* 한 줄이면 캡슐, 늘어나면 라운드 스퀘어. 모양이 곧 상태다 —
      한 줄일 때는 「한 마디 묻는 자리」로, 길어지면 「글을 쓰는 자리」로 읽힌다 */
   border-radius: var(--krds-radius-max);
-  transition: border-radius 0.18s ease;
+  /* ★ 캡슐을 카드 면에서 한 겹 띄운다. 두 겹으로 나눠 까는 이유는 klid-effects 의
+     `.card-soft` 와 같다 — 붙어 있는 얇은 그림자가 접지면을 만들고, 퍼지는 쪽이
+     높이를 만든다. 한 겹만 쓰면 캡슐이 뜬 게 아니라 흐려 보인다.
+     ★ 두 번째 겹은 짧게 둔다. 입력창은 판 위에 살짝 얹힌 컨트롤이지 떠 있는 카드가 아니다 */
+  box-shadow:
+    0 0.1rem 0.2rem color-mix(in srgb, var(--krds-color-light-gray-90) 6%, transparent),
+    0 0.4rem 1.2rem -0.4rem color-mix(in srgb, var(--krds-color-light-gray-90) 16%, transparent);
+  /* ★ 캡슐 ↔ 라운드 스퀘어 전환. 0.18s ease 로는 글이 두 줄로 넘어가는 순간 모서리가
+     「딸깍」 바뀌는 걸로 읽힌다. 시간을 늘리고 **처음 빠르고 끝이 느린** 곡선을 쓴다 —
+     모양이 자리를 잡아 가는 것처럼 보인다.
+     높이는 여기서 못 태운다 — 상자 높이는 auto 이고, 실제로 자라는 건 안의 입력칸이다
+     (JS 가 줄 수를 재서 textarea 의 height 를 직접 박는다). 전환은 그쪽에 건다 */
+  transition:
+    border-radius 0.32s cubic-bezier(0.2, 0, 0, 1),
+    box-shadow 0.24s ease,
+    border-color 0.24s ease,
+    background 0.24s ease;
+}
+
+/* 커서가 들어오면 **선이 진다.** 색띠를 단색 CI 블루로 갈아 끼운다 — 여러 색이 흐르는
+   선은 「장식」이고, 한 색으로 굳은 선은 「지금 여기」다. border-color 로는 못 바꾼다
+   (테두리가 투명이고 색은 배경 layer 가 지고 있다).
+   그림자를 같이 키우지 않는다. 상자가 커진 것처럼 보여 글자 자리가 흔들린 걸로 읽힌다 */
+.chat-composer-shell:focus-within .chat-composer {
+  background:
+    linear-gradient(var(--krds-color-light-gray-0), var(--krds-color-light-gray-0)) padding-box,
+    linear-gradient(var(--krds-color-light-primary-50), var(--krds-color-light-primary-50))
+      border-box;
+  box-shadow:
+    0 0.1rem 0.2rem color-mix(in srgb, var(--krds-color-light-gray-90) 8%, transparent),
+    0 0.4rem 1.2rem -0.4rem color-mix(in srgb, var(--krds-color-light-primary-80) 14%, transparent);
 }
 
 .chat-composer:not([data-lines='1']) {
   border-radius: 1.4rem;
 }
 
-/* ★ 상자 둘레로 번지는 빛. 테두리에 색을 칠하는 게 아니다.
-   테두리는 옅은 중립선이고 형태는 그 선이 잡는다. 색은 상자 **바깥**에만 깔린다.
-
-   ★ 빛을 컴포저의 자식(::before + z-index:-1)으로 두면 안 된다. 쌓임 맥락 안에서
-     음수 z-index 자식은 **부모 배경 위**에 칠해져 캡슐 안쪽까지 물든다
-     (2026-09-02 실측 — 캡슐 전체가 초록빛으로 떴다).
-     형제로 빼고 컴포저를 그 위에 올려야 흰 면이 빛을 덮는다. */
+/* 컴포저를 감싸는 자리. 포커스가 안쪽 어디에 들어가든 :focus-within 으로 한 번에 잡는다 */
 .chat-composer-shell {
   position: relative;
 }
 
+/* ── 빛무리 — 초기 화면 전용, 정지 ──────────────────────────────────────
+   ★ 상자 둘레로 번지는 빛. 테두리에 색을 칠하는 게 아니다. 테두리는 중립선이고 형태는
+     그 선이 잡는다. 색은 상자 **바깥**에만 깔린다.
+
+   ★ 빛을 컴포저의 자식(::before + z-index:-1)으로 두면 안 된다. 쌓임 맥락 안에서
+     음수 z-index 자식은 **부모 배경 위**에 칠해져 캡슐 안쪽까지 물든다
+     (2026-09-02 실측 — 캡슐 전체가 초록빛으로 떴다).
+     형제로 빼고 컴포저를 그 위에 올려야 흰 면이 빛을 덮는다.
+
+   ★ **움직이지 않는다.** 도는 동안에는 conic 의 각도 배치가 필요했지만, 정지 상태에서
+     각도로 색을 나누면 왼쪽 위와 오른쪽 아래가 같은 색이 되어 배치가 안 읽힌다.
+     가로로 한 번 흐르는 linear 로 바꾼다 — 왼쪽 초록(CI)에서 오른쪽 파랑까지. */
 .chat-composer-glow {
   position: absolute;
-  /* 타이트하게 — 넓게 퍼지면 상자를 감싼 구름이 되고, 레퍼런스는 가장자리에 붙어 있다 */
-  inset: -0.2rem;
+  /* ★ 사방을 똑같이 넓히지 않는다. 위 0.6 · 좌우 1.2 · 아래 3 —
+     빛은 **아래로 흘러내린다**. 고르게 두르면 「빛나는 테두리」라는 장식이 되고,
+     아래로 몰면 캡슐이 면 위에 떠서 빛을 흘리는 것처럼 읽힌다.
+     아래 3rem 은 추천 질문 첫 줄까지 닿는 길이다 — 카드가 유리면이라 그 빛을 받는다 */
+  inset: -0.6rem -1.2rem -3rem;
   border-radius: var(--krds-radius-max);
-  /* 두 색이 고르게 돌게 스탑을 번갈아 둔다. 옅은 초록만 남으면 초록 조명처럼 보인다 */
-  background: conic-gradient(
-    from var(--chat-glow-angle),
-    var(--ratis-green-40) 0deg,
-    var(--krds-color-light-primary-40) 72deg,
-    var(--ratis-green-30) 144deg,
-    var(--krds-color-light-primary-30) 216deg,
-    var(--ratis-green-40) 288deg,
-    var(--krds-color-light-primary-40) 360deg
+  /* 이웃한 색끼리만 붙인다 — 초록 → 청록 → 파랑. 어느 경계를 봐도 색상환에서 옆자리라
+     blur 가 두 색을 섞어도 중간색이 그대로 나온다. 옐로그린과 인디고처럼 먼 색을
+     맞붙이면 섞인 자리가 회색으로 죽는다 */
+  background: linear-gradient(
+    100deg,
+    var(--chat-glow-green) 0%,
+    var(--chat-glow-teal) 38%,
+    var(--chat-glow-blue) 72%,
+    var(--chat-glow-teal) 100%
   );
-  filter: blur(5px);
-  opacity: 0.45;
-  animation: chatGlow 12s linear infinite;
+  /* 색 덩어리가 안 보일 만큼 뭉갠다. 색이 아니라 **빛이 번진 자국**으로 읽혀야 한다.
+     자리를 넓힌 만큼 흐림도 같이 키운다 — 넓은 면에 좁은 흐림을 쓰면 색이 덩어리로 뭉친다 */
+  filter: blur(26px);
+  opacity: 0.85;
   pointer-events: none;
+  /* 모양만 캡슐을 따라간다. 색은 그대로 서 있는다 */
+  transition: border-radius 0.32s cubic-bezier(0.2, 0, 0, 1);
 }
 
 .chat-composer-shell:has(.chat-composer:not([data-lines='1'])) .chat-composer-glow {
   border-radius: 1.4rem;
 }
 
-.chat-composer-shell:focus-within .chat-composer-glow {
-  opacity: 0.55;
+/* ★ 빛무리는 **초기 화면 전용**이다. 초기 화면에서 입력창은 그 화면의 주인공이라
+   시선을 끌어야 한다. 답변 화면에서는 읽는 글이 주인공이고 입력창은 도구다.
+   캡슐 자체(면·선·그림자·포커스)는 두 화면이 같다 — 달라지는 건 이 빛 하나뿐이다 */
+.chat-page:not([data-empty='true']) .chat-composer-glow {
+  display: none;
 }
 
-@property --chat-glow-angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
-
-@keyframes chatGlow {
-  to {
-    --chat-glow-angle: 360deg;
-  }
-}
-
-@property --chat-glow-angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
-
-@keyframes chatGlow {
-  to {
-    --chat-glow-angle: 360deg;
-  }
-}
-
-/* 움직임을 줄이면 색만 남기고 회전은 멈춘다 */
+/* 움직임을 줄이면 모양·높이 전환도 멈춘다 — 결과 상태는 같고 과정만 사라진다 */
 @media (prefers-reduced-motion: reduce) {
+  .chat-composer,
+  .chat-composer textarea,
   .chat-composer-glow {
-    animation: none;
-  }
-}
-
-/* 움직임을 줄이면 색만 남기고 회전은 멈춘다 */
-@media (prefers-reduced-motion: reduce) {
-  .chat-composer::before {
-    animation: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .chat-composer {
     transition: none;
   }
 }
@@ -875,6 +1002,9 @@
   background: transparent !important;
   box-shadow: none !important;
   overflow-y: hidden;
+  /* 상자 모서리가 펴지는 것과 **같은 곡선·같은 시간**. 글자 자리가 먼저 툭 내려가고
+     상자가 뒤따라 펴지면 두 개가 따로 노는 걸로 보인다 */
+  transition: height 0.32s cubic-bezier(0.2, 0, 0, 1);
   /* 들여쓰기는 캡슐이 진다 — 여기서 또 주면 상단 여백과 어긋난다 */
   padding: 0 !important;
 }

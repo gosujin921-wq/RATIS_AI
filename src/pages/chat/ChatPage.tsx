@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { ComponentProps, ReactNode } from 'react'
-import { Badge, Button, Disclosure, Textarea } from 'krds-react'
-import { ArrowUp, Check, ChevronDown, Copy, FileText, Flag, Frown, Info, Pencil, RotateCcw, Smile, Square, Table2, X } from 'lucide-react'
+import { Button, Disclosure, Textarea } from 'krds-react'
+import { ArrowUp, Check, ChevronDown, CircleX, Copy, FileText, Flag, Frown, Info, Pencil, RotateCcw, Smile, Square, Table2, X } from 'lucide-react'
 
 /**
  * 킷 1.1.1 타입은 Disclosure 의 buttonText 를 string 으로 잡아 뒀다. 런타임은 그대로
@@ -31,7 +31,14 @@ import './ChatPage.css'
  *   컴포저와 스트림은 **같은 max-width 를 공유**한다 (ChatGPT 관례).
  *
  * 화면이 반드시 구분해 표시하는 것 (SCREEN-001 ★):
- *   ① evidenceType INTERNAL / EXTERNAL / BLOCKED — 배지 문구로 구분 (AC-085)
+ *   ① evidenceType INTERNAL / EXTERNAL / BLOCKED — 문구로 구분 (AC-085)
+ *      ★ 답변 위 배지를 쓰지 않는다 (2026-09-02). 안내 줄이 있으면 배지를 접는 규칙이라
+ *        배지가 실제로 뜨는 경우는 **내부 자료 하나뿐**이었다. 세 유형을 가르려고 만든
+ *        자리에 늘 같은 문구 하나만 서니 구분이 아니라 상수였고, 바로 아래 「근거 N건」과
+ *        같은 말이기도 했다. 지금은 내부 자료 → 근거 목록이 붙는다는 사실이,
+ *        외부·차단 → 안내 줄 문구가 유형을 말한다.
+ *      ★ 「적용된 구성」도 같이 걷었다. 이 화면엔 구성을 고르는 컨트롤이 없어
+ *        (형식 선택은 DFEAT-021 로 폐기) 고른 적 없는 값을 되읊는 줄이었다.
  *   ② 「접근 가능한 자료 없음」과 「근거를 못 찾음」은 다른 문구 (AC-016)
  *   ③ scopeNarrowed → 범위를 넓혀 재시도 안내 (AC-034)
  */
@@ -107,27 +114,6 @@ const MAX_INPUT_LINES = 5
 
 /** 질의문 최대 길이 — 0자·초과는 400 이다 (AC-025) */
 const QUERY_MAX = 2000
-
-const EVIDENCE_TYPE_LABEL = {
-  INTERNAL: '내부 자료 근거',
-  EXTERNAL: '외부 LLM 응답',
-  BLOCKED: '차단됨',
-} as const
-
-/** 근거 유형별 배지 색 — 내부는 브랜드, 외부는 주의, 차단은 경고 */
-const EVIDENCE_TYPE_COLOR = {
-  INTERNAL: 'primary',
-  EXTERNAL: 'warning',
-  BLOCKED: 'danger',
-} as const
-
-function EvidenceTypeBadge({ type }: { type: ChatMessage['evidenceType'] }) {
-  return (
-    <Badge variant="light" color={EVIDENCE_TYPE_COLOR[type]} size="small" rounded>
-      {EVIDENCE_TYPE_LABEL[type]}
-    </Badge>
-  )
-}
 
 function EvidenceCard({
   evidence,
@@ -315,22 +301,30 @@ function FeedbackBar({ id, onSubmit }: { id: string; onSubmit?: (f: Feedback) =>
   )
 }
 
-function CopyButton({ text }: { text: string }) {
+/**
+ * 복사 — 답변과 질문이 같이 쓴다 (`label` 로 어느 쪽인지 가른다).
+ *
+ * 글자 없이 글리프 하나로 서므로 **이름은 aria-label 이 진다.** 복사 직후엔 글리프뿐
+ * 아니라 이름도 같이 바뀌어야 한다 — 체크로 바뀐 것만으로는 눈으로 보는 사람에게만
+ * 결과가 전해진다. `title` 은 마우스 쪽 몫이다(라벨이 없으니 무엇인지 물을 데가 필요하다).
+ */
+function CopyButton({ text, label = '답변 복사' }: { text: string; label?: string }) {
   const [done, setDone] = useState(false)
+  const name = done ? '복사됨' : label
   return (
-    <Button
-      variant="text"
-      size="small"
+    <IconButton
+      size="sm"
       className="chat-action"
+      aria-label={name}
+      title={name}
       onClick={() => {
         void navigator.clipboard?.writeText(text)
         setDone(true)
         setTimeout(() => setDone(false), 1600)
       }}
     >
-      {done ? <Check size={15} aria-hidden /> : <Copy size={15} aria-hidden />}
-      {done ? '복사됨' : '복사'}
-    </Button>
+      {done ? <Check aria-hidden /> : <Copy aria-hidden />}
+    </IconButton>
   )
 }
 
@@ -347,7 +341,7 @@ function Answer({
   isLast: boolean
   onAsk?: (q: string) => void
   onFeedback?: (f: Feedback) => void
-  onRegenerate?: () => void
+  onRegenerate?: (messageId: string) => void
   onOpenSource?: (e: Evidence) => void
 }) {
   return (
@@ -355,21 +349,38 @@ function Answer({
       {/* 스크린리더가 화자를 알 수 있게 — 위치로만 구분하면 WCAG 1.3.1·1.3.3 위반 */}
       <span className="visually-hidden">RATIS AI 답변:</span>
 
-      <div className="chat-answer-meta">
-        <EvidenceTypeBadge type={message.evidenceType} />
-        {message.composition && <span className="chat-composition">적용된 구성: {message.composition}</span>}
-      </div>
+      {/* 답변 안내 — 차단이든 아니든 **면·선 없이 한 줄**로 선다. 이 줄이 서면 위 배지가
+          접히므로, 여기 적힌 문구가 근거 유형을 말하는 **유일한 자리**다 (AC-085).
+          박스를 두르지 않는 것은 답변 본문보다 무거워지지 않기 위해서다.
+          차단만 성격이 갈린다: 글리프는 ✕, 색은 danger — 배지(차단됨)와 짝이 맞아야
+          "못 받았다"가 색·모양 둘로 읽힌다 (색만으로 구분하지 않는다, WCAG 1.4.1).
+          live 도 갈린다 — 차단은 요청이 거절된 결과라 즉시 읽어 주고(alert), 나머지는
+          응답과 함께 확정되는 안내라 하던 말 끝나고 읽는다(status) */}
+      {message.notice &&
+        (() => {
+          const blocked = message.evidenceType === 'BLOCKED'
+          return (
+            <p
+              className="chat-notice"
+              data-tone={blocked ? 'danger' : 'info'}
+              role={blocked ? 'alert' : 'status'}
+            >
+              {blocked ? <CircleX size={14} aria-hidden /> : <Info size={14} aria-hidden />}
+              {message.notice}
+            </p>
+          )
+        })()}
 
-      {message.notice && (
-        <Alert tone={message.evidenceType === 'BLOCKED' ? 'danger' : 'primary'} title={message.notice}>
-          {null}
-        </Alert>
-      )}
-
+      {/* 범위를 좁혀 못 찾음 (AC-034) — **차단 안내와 같은 줄 모양**이다. 성격은 색이 진다.
+          면을 두른 상자로 세우면 같은 갈래의 안내인데 하나는 상자, 하나는 줄이 되어
+          둘 중 어느 쪽이 더 무거운 말인지 모양이 거짓말을 한다.
+          warning-60(#b45309)은 흰 바탕에서 5.02:1 로 본문 대비 기준(4.5)을 넘는다 —
+          한 단 밝은 50(#d97706)은 3.02:1 이라 본문 색으로 못 쓴다 */}
       {message.scopeNarrowed && (
-        <Alert tone="info" title="선택한 범위에서 찾지 못했습니다">
-          검색 범위를 넓혀 다시 시도해 보세요.
-        </Alert>
+        <p className="chat-notice" data-tone="warning" role="status">
+          <Info size={14} aria-hidden />
+          선택한 검색 범위에서 근거를 찾지 못했습니다. 범위를 넓혀 다시 시도해 보세요.
+        </p>
       )}
 
       {/* 제목·목록·표·인용까지 그린다 (기획 §7) */}
@@ -394,18 +405,32 @@ function Answer({
       {message.answer && (
         <div className="chat-actions">
           <CopyButton text={message.answer} />
-          {/* 다시 생성 — 마지막 답변에만. 중간 턴을 다시 만들면 뒤 대화와 어긋난다 */}
-          {isLast && onRegenerate && (
-            <Button variant="text" size="small" className="chat-action" onClick={onRegenerate}>
-              <RotateCcw size={15} aria-hidden />
-              다시 생성
-            </Button>
+          {/* 다시 생성 — **모든 답변에** 선다. 어느 턴을 눌렀는지 id 로 실어 보낸다:
+              받는 쪽이 마지막 턴을 집으면, 위쪽 답변에서 눌렀을 때 엉뚱한 턴이 다시 만들어진다.
+              중간 턴을 다시 만들면 뒤 대화가 옛 답변을 전제로 이어지므로, 받는 쪽은
+              질문 수정(onEditResend)과 같이 **그 턴부터 뒤를 걷고** 새로 묻는다 */}
+          {onRegenerate && (
+            <IconButton
+              size="sm"
+              className="chat-action"
+              aria-label="다시 생성"
+              title="다시 생성"
+              onClick={() => onRegenerate(message.id)}
+            >
+              <RotateCcw aria-hidden />
+            </IconButton>
           )}
         </div>
       )}
 
-      {/* 피드백 — 차단된 답변에는 묻지 않는다 (평가할 답변이 없다) */}
-      {message.evidenceType !== 'BLOCKED' && <FeedbackBar id={message.id} onSubmit={onFeedback} />}
+      {/* 피드백 — **마지막 답변에만** 묻는다 (2026-09-02).
+          답변마다 세우면 세 번 이어 물은 대화에서 「이 답변이 도움이 되었나요?」가 세 번
+          겹쳐 나와, 읽는 흐름이 매 턴 설문으로 끊긴다. 지난 답변을 되짚어 평가하는 일은
+          드물고, 물어야 할 자리는 방금 받은 답 하나다 (후속 추천 질문도 같은 규칙이다).
+          차단된 답변에는 묻지 않는다 — 평가할 답변이 없다 */}
+      {isLast && message.evidenceType !== 'BLOCKED' && (
+        <FeedbackBar id={message.id} onSubmit={onFeedback} />
+      )}
 
       {/* 후속 추천 질문 — 마지막 답변 아래에만 세운다 */}
       {isLast && message.followUps && message.followUps.length > 0 && (
@@ -474,7 +499,7 @@ export function ChatPage({
   /** 답변 피드백 (기획 §9). 저장·관리자 연계는 개발 영역이라 화면은 넘기기만 한다 */
   onFeedback?: (feedback: Feedback) => void
   /** 마지막 답변 다시 생성 */
-  onRegenerate?: () => void
+  onRegenerate?: (messageId: string) => void
   /** 생성 중단. 넘기지 않으면 중단 버튼이 서지 않는다 */
   onStop?: () => void
   /** 질문 수정 후 다시 전송 (기획 §6.1). 그 턴부터 뒤를 걷고 새로 묻는다 */
@@ -614,7 +639,9 @@ export function ChatPage({
             <section className="chat-intro" aria-label="시작 안내">
               {/* 장식 전용 — 시스템이 살아 있다는 신호. 의미는 아래 문구가 진다 */}
               <div className="chat-orb" aria-hidden>
-                <HeroCubes centered />
+                {/* 캔버스를 오브 박스보다 세로 1.6배로 넓혀 띄운다 (아래 .chat-orb 참조).
+                    카메라도 같은 배율만큼 물려야 큐브가 커지지 않는다 — 13 × 1.6 */}
+                <HeroCubes centered cameraZ={20.8} />
               </div>
               <h1 className="chat-intro-title">무엇을 찾아드릴까요?</h1>
               {/* 시스템이 무엇을 할 수 있는지 밝힌다 — HAX G1 */}
@@ -668,18 +695,24 @@ export function ChatPage({
                         <span className="visually-hidden">질문:</span>
                         {m.question}
                       </div>
-                      <Button
-                        variant="text"
-                        size="small"
-                        className="chat-action chat-question-edit-open"
-                        onClick={() => {
-                          setEditing(m.id)
-                          setDraft(m.question)
-                        }}
-                      >
-                        <Pencil size={14} aria-hidden />
-                        수정
-                      </Button>
+                      {/* 질문 액션 — 말풍선 왼쪽에 숨어 있다가 마우스·초점이 닿을 때 나온다.
+                          답변 쪽과 달리 상시로 두지 않는다: 질문은 사용자가 쓴 문장이라
+                          되읽을 일이 드물고, 턴마다 아이콘이 서면 대화가 조작으로 뒤덮인다 */}
+                      <div className="chat-question-actions">
+                        <CopyButton text={m.question} label="질문 복사" />
+                        <IconButton
+                          size="sm"
+                          className="chat-action"
+                          aria-label="질문 수정"
+                          title="질문 수정"
+                          onClick={() => {
+                            setEditing(m.id)
+                            setDraft(m.question)
+                          }}
+                        >
+                          <Pencil aria-hidden />
+                        </IconButton>
+                      </div>
                     </div>
                   )}
                   <Answer

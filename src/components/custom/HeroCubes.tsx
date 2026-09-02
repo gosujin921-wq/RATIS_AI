@@ -19,6 +19,7 @@ import './HeroCubes.css'
  *
  * 부모가 position: relative 와 높이를 잡아 줘야 보인다 (캔버스가 absolute inset:0).
  * centered 를 주면 클러스터가 캔버스 한가운데 온다 — 대화 시작 화면(SCREEN-001)의 오브 용도.
+ * cameraZ 는 캔버스를 부모 박스 밖으로 넓혀 쓸 때 큐브 크기를 지키는 값이다 (아래 주석 참조).
  */
 
 /**
@@ -500,13 +501,28 @@ function Cluster({ offsetX }: { offsetX: number }) {
   )
 }
 
-export function HeroCubes({ centered = false }: { centered?: boolean }) {
+/**
+ * 카메라 기본 거리. 시야각(fov)이 세로 기준이라 **보이는 세로 세계 크기는 이 거리로만
+ * 정해진다** — 캔버스를 키우면 같은 세계가 더 큰 픽셀로 그려질 뿐이라 잘리는 비율은
+ * 그대로다. 캔버스를 바깥으로 넓혀 여유를 만들려면 넓힌 배율만큼 이 값을 같이 키워야
+ * 큐브 크기가 유지된다 (`cameraZ` prop).
+ */
+const CAMERA_Z = 13
+
+export function HeroCubes({
+  centered = false,
+  cameraZ = CAMERA_Z,
+}: {
+  centered?: boolean
+  /** 카메라를 뒤로 물리는 거리. 캔버스를 부모 밖으로 넓혀 쓸 때 그 배율만큼 키운다 */
+  cameraZ?: number
+}) {
   const offsetX = centered ? 0 : OFFSET_X
   return (
     <div className="hero-cubes">
       <Canvas
         shadows
-        camera={{ position: [0, 0, 13], fov: 40 }}
+        camera={{ position: [0, 0, cameraZ], fov: 40 }}
         dpr={[1, 2]}
         gl={{ alpha: true, antialias: true }}
       >

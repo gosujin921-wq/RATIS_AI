@@ -7,8 +7,10 @@ import {
   ExternalLink,
   LogOut,
   Menu,
+  MessageCircle,
   PanelLeftClose,
   PanelLeftOpen,
+  Pin,
   Plus,
   Settings,
   User,
@@ -109,6 +111,10 @@ export function AppShell({
   const [settings, setSettings] = useState(false)
   const [userMenu, setUserMenu] = useState(false)
   const userMenuRef = useRef<HTMLDivElement>(null)
+  /** 레일에서 연 목록. 접었을 때만 쓴다 — 펼친 사이드바에는 목록이 이미 서 있다 */
+  const [railPanel, setRailPanel] = useState<'pinned' | 'recent' | null>(null)
+  const railRef = useRef<HTMLDivElement>(null)
+  const railPanelRef = useRef<HTMLDivElement>(null)
 
   /* 바깥 누르기·Esc 로 닫는다 — 열어 두고 다른 곳을 볼 수 있어야 한다 */
   useEffect(() => {
@@ -126,6 +132,32 @@ export function AppShell({
       document.removeEventListener('keydown', onKey)
     }
   }, [userMenu])
+
+  /* 레일 목록도 같은 규칙으로 닫는다. 여는 단추와 목록이 서로 다른 자리에 있어
+     (단추는 사이드바 안, 목록은 그 옆) 두 곳을 다 확인해야 한다 */
+  useEffect(() => {
+    if (!railPanel) return
+    const onDown = (e: globalThis.MouseEvent) => {
+      const t = e.target as Node
+      if (railRef.current?.contains(t) || railPanelRef.current?.contains(t)) return
+      setRailPanel(null)
+    }
+    const onKey = (e: globalThis.KeyboardEvent) => {
+      if (e.key === 'Escape') setRailPanel(null)
+    }
+    document.addEventListener('mousedown', onDown)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onDown)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [railPanel])
+
+  /* 사이드바를 다시 펼치면 레일 목록은 뜻을 잃는다 — 같은 목록이 두 곳에 서면 안 된다 */
+  useEffect(() => {
+    if (!collapsed) setRailPanel(null)
+  }, [collapsed])
+
   const target = conversations.find((c) => c.conversationId === pendingDelete)
 
   return (
@@ -236,6 +268,39 @@ export function AppShell({
           <span className="ratis-new-label">새 대화</span>
         </Button>
 
+        {/* ★ 레일 전용 줄 — **접었을 때만** 선다.
+            접으면 대화 목록이 통째로 걷히는데, 그러면 레일에 남는 길이 「새 대화」뿐이라
+            지난 대화로 돌아갈 방법이 사라진다. 사이드바를 도로 펼치는 것 말고는 길이
+            없으면 접는 기능 자체가 반쪽이 된다.
+            고정과 최근을 나눈 이유: 고정은 「내가 표시해 둔 것」이라 목록이 짧고 늘 같은
+            자리에 있다. 최근에 섞어 두면 스무 줄을 훑어야 찾는다 */}
+        {collapsed && (
+          <div className="ratis-rail" ref={railRef}>
+            <button
+              type="button"
+              className="ratis-rail-btn"
+              aria-label="고정한 대화"
+              aria-haspopup="dialog"
+              aria-expanded={railPanel === 'pinned'}
+              data-on={railPanel === 'pinned' || undefined}
+              onClick={() => setRailPanel(railPanel === 'pinned' ? null : 'pinned')}
+            >
+              <Pin size={18} aria-hidden />
+            </button>
+            <button
+              type="button"
+              className="ratis-rail-btn"
+              aria-label="최근 채팅"
+              aria-haspopup="dialog"
+              aria-expanded={railPanel === 'recent'}
+              data-on={railPanel === 'recent' || undefined}
+              onClick={() => setRailPanel(railPanel === 'recent' ? null : 'recent')}
+            >
+              <MessageCircle size={18} aria-hidden />
+            </button>
+          </div>
+        )}
+
         {/* 이전 채팅 — 사이드바에서 바로 고른다. 목록 자체는 컴포넌트가 진다 */}
         <ConversationList
           conversations={conversations}
@@ -320,6 +385,40 @@ export function AppShell({
           </button>
         </div>
       </div>
+
+      {/* ★ 레일 목록 — 사이드바 **바깥**에 둔다. 사이드바는 접힘 폭을 흘리느라
+          overflow: hidden 이라, 안에 두면 옆으로 나온 목록이 7.2rem 에서 잘린다.
+          닫는 규칙(바깥 누르기·Esc)은 위 useEffect 가 두 자리를 함께 본다 */}
+      {collapsed && railPanel && (
+        <div
+          className="ratis-rail-panel"
+          ref={railPanelRef}
+          role="dialog"
+          aria-label={railPanel === 'pinned' ? '고정한 대화' : '최근 채팅'}
+        >
+          <ConversationList
+            conversations={
+              railPanel === 'pinned' ? conversations.filter((c) => c.pinned) : conversations
+            }
+            activeId={activeConversationId}
+            emptyText={
+              railPanel === 'pinned' ? '고정한 대화가 없습니다.' : '아직 대화가 없습니다.'
+            }
+            onSelect={(id) => {
+              onSelectConversation?.(id)
+              setRailPanel(null)
+            }}
+            onDelete={
+              onDeleteConversation &&
+              ((id) => {
+                setRailPanel(null)
+                setPendingDelete(id)
+              })
+            }
+            onTogglePin={onTogglePinConversation}
+          />
+        </div>
+      )}
 
       {/* ── 본문 ───────────────────────────────────────────────────────── */}
       <main id="main" className="ratis-main">
