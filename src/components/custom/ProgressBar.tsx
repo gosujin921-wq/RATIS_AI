@@ -24,7 +24,7 @@ export function ProgressBar({
       aria-valuemin={0}
       aria-valuemax={100}
       aria-label={label}
-      className={cx('klid-progress', className)}
+      className={cx('ratis-progress', className)}
       data-size={size}
     >
       <div className="bar" style={{ width: `${pct}%` }} />

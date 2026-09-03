@@ -32,9 +32,9 @@ export function StepPager({
   if (!prev && !next) return null
 
   return (
-    <nav className={cx('klid-step-pager', className)} aria-label={label}>
+    <nav className={cx('ratis-step-pager', className)} aria-label={label}>
       {prev ? (
-        <a className="klid-step-pager-link" href={withBase(prev.href)} data-dir="prev">
+        <a className="ratis-step-pager-link" href={withBase(prev.href)} data-dir="prev">
           <ChevronLeft aria-hidden />
           <span className="body">
             <span className="dir">이전 {prev.ordinal}</span>
@@ -46,7 +46,7 @@ export function StepPager({
       )}
 
       {next ? (
-        <a className="klid-step-pager-link" href={withBase(next.href)} data-dir="next">
+        <a className="ratis-step-pager-link" href={withBase(next.href)} data-dir="next">
           <span className="body">
             <span className="dir">다음 {next.ordinal}</span>
             <span className="label">{next.label}</span>

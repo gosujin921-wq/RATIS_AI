@@ -1,0 +1,181 @@
+/* =============================================================================
+   Table — 목록 표
+
+   자립 컴포넌트다. 색·여백은 ratis-theme-ci.css 의 팔레트 토큰만 부르고,
+   치수는 이 파일이 직접 갖는다.
+
+   ★ 1rem = 10px 기준으로 읽는다 (index.css 의 전역 font-size 62.5%).
+
+   두 겹으로 나뉜다.
+     .ratis-table        표 자체 — 머리 줄 · 셀 여백 · 행 구분선
+     .ratis-table-shell  표를 감싸는 카드 껍데기 — 면 · 보더 · 라운드 · 행 짚기
+   두 칸짜리 정보 표처럼 껍데기가 필요 없는 자리는 셸 없이 표만 쓴다.
+   ========================================================================== */
+
+.ratis-table {
+  --ratis-table-border-width: 0.1rem;
+
+  /* 머리 줄은 면을 갖는다. 표가 시작되는 자리를 면이 알린다.
+     아주 옅은 그레이라 값 쪽(상태 배지 등)의 색과 다투지 않는다 */
+  --ratis-table-thead-surface: var(--ratis-gray-5);
+  --ratis-table-thead-border: var(--ratis-gray-20);
+
+  /* ★ 머리 글자색은 600 이 하한이다. 머리에 면이 들어온 뒤로 500 은 대비 4.40:1 로
+     하한에 미달한다. 머리가 뒤로 물러나는 일은 색이 아니라 크기 13 · 굵기 400 이 맡는다 */
+  --ratis-table-thead-text: var(--ratis-gray-60);
+
+  --ratis-table-tbody-surface: var(--ratis-gray-0);
+  --ratis-table-tbody-text: var(--ratis-gray-70);
+  /* 행 사이 선. gray-5 는 흰 면 위에서 거의 안 보여 줄을 가르지 못한다 */
+  --ratis-table-tbody-divider: var(--ratis-gray-10);
+
+  /* 셀 여백 — 머리 · 본문 모두 세로 12, 가로 12.
+     본문 행 높이가 글자 15×1.6 + 상하 12 = 44 로 떨어진다 */
+  --ratis-table-cell-padding: 1.2rem;
+
+  /* 머리 글자는 13, 값은 15 */
+  --ratis-table-thead-font-size: 1.3rem;
+  --ratis-table-tbody-font-size: 1.5rem;
+
+  width: 100%;
+}
+
+.ratis-table > table {
+  width: 100%;
+  border-collapse: collapse;
+  /* 표 안 숫자는 자리폭 고정 — 번호 · 건수 · 날짜가 행마다 흔들리지 않게 */
+  font-variant-numeric: tabular-nums;
+}
+
+.ratis-table th,
+.ratis-table td {
+  vertical-align: middle;
+  text-align: left;
+  padding: var(--ratis-table-cell-padding);
+}
+
+.ratis-table thead th {
+  background-color: var(--ratis-table-thead-surface);
+  border-bottom: var(--ratis-table-border-width) solid var(--ratis-table-thead-border);
+  font-size: var(--ratis-table-thead-font-size);
+  /* 굵기를 빼면 같은 색도 한 단 연하게 보인다 */
+  font-weight: 400;
+  color: var(--ratis-table-thead-text);
+}
+
+.ratis-table tbody th,
+.ratis-table tbody td {
+  background-color: var(--ratis-table-tbody-surface);
+  border-bottom: var(--ratis-table-border-width) solid var(--ratis-table-tbody-divider);
+  font-size: var(--ratis-table-tbody-font-size);
+  font-weight: 400;
+  color: var(--ratis-table-tbody-text);
+}
+
+/* 화면보다 넓은 표는 표 상자가 직접 민다 (셸이 없는 자리용) */
+.ratis-table.is-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* -----------------------------------------------------------------------------
+   카드 셸 — 목록 표를 감싸는 껍데기
+   -------------------------------------------------------------------------- */
+.ratis-table-shell {
+  --ratis-table-shell-border: 0.1rem solid var(--ratis-gray-20);
+  --ratis-table-shell-radius: 1.6rem;
+  --ratis-table-shell-surface: var(--ratis-gray-0);
+
+  /* 컬럼 폭 척도 — 값 길이가 정해진 칸(유형 · 상태 · 날짜 · 수치 · 버튼)은 내용 폭으로
+     못 박고, 길이가 들쭉날쭉한 칸(제목 · 이름)이 남는 폭을 다 먹는다. 못 박지 않으면
+     남는 폭이 모든 칸에 고루 퍼져서 제목은 일찍 접히는데 등록일은 필요 없이 벌어진다.
+     못 박는 자리는 각 화면이 고르고, 폭 값은 여기 한 곳에 둔다 */
+  --ratis-table-col-xs: 7rem;  /* 순위 · 첨부 표시 */
+  --ratis-table-col-s: 9rem;   /* 번호 · 건수 · 용량 */
+  --ratis-table-col-m: 11rem;  /* 날짜 · 조회수 */
+  --ratis-table-col-l: 12rem;  /* 유형 · 상태 배지 · 버튼 한 개 */
+
+  overflow: hidden;
+  border: var(--ratis-table-shell-border);
+  border-radius: var(--ratis-table-shell-radius);
+  background-color: var(--ratis-table-shell-surface);
+}
+
+/* ★ 목록 표의 줄은 마우스가 얹히면 짚어 준다. 값이 여럿인 줄을 가로로 읽는 동안 눈이
+   줄을 놓치지 않게 하는 장치라, 셸을 가진 목록 표에만 준다 — 두 칸짜리 정보 표에는
+   짚을 줄이 없다. 면은 토큰을 다시 정의해서 준다. CSS 변수는 쓰이는 요소(td)에서
+   해석되므로 행(tr)에서 갈라치면 그 줄만 면이 바뀐다 */
+.ratis-table-shell .ratis-table tbody tr:hover {
+  --ratis-table-tbody-surface: var(--ratis-blue-5);
+}
+
+/* 줄이 창을 여는 표 — 줄 전체가 누를 자리다 (부품은 custom/rowOpen.ts).
+   얹힘 표시(면 바뀜)는 바로 위 규칙이 이미 주므로 여기서는 손 모양과 초점 자리만 더한다.
+   초점 링은 box-shadow 가 아니라 outline 으로 그린다 — 표는 셀 테두리를 겹쳐 그려서(collapse)
+   tr 의 섀도가 셀 밑으로 잘린다. 안쪽으로 당겨(offset 음수) 줄 폭 안에 링이 든다 */
+.ratis-row-open {
+  cursor: pointer;
+}
+.ratis-row-open:focus-visible {
+  outline: 0.2rem solid var(--ratis-blue-50);
+  outline-offset: -0.2rem;
+}
+
+/* 표 안 배지는 칸에서 접히지 않는다 — 두 줄로 접히면 그 줄만 키가 커진다 */
+.ratis-table-shell .ratis-badge {
+  white-space: nowrap;
+}
+
+
+/* 셸 안 표의 첫 · 끝 열만 좌우 20 (카드 패딩과 정렬해 셸에 딱 붙지 않게)
+   ＋ 시각 보정 — 셸이 둥근 면이라 끝 열 글자가 그냥 붙으면 밖으로 새 보인다.
+   표에서는 열 하나를 반쯤 밀 수 없어 열이 통째로 움직인다 */
+.ratis-table-shell .ratis-table th:first-child,
+.ratis-table-shell .ratis-table td:first-child {
+  padding-left: calc(2rem + var(--ratis-text-optical, 0rem));
+}
+.ratis-table-shell .ratis-table th:last-child,
+.ratis-table-shell .ratis-table td:last-child {
+  padding-right: calc(2rem + var(--ratis-text-optical, 0rem));
+}
+
+/* -----------------------------------------------------------------------------
+   모바일 — 미는 것은 카드다
+
+   셸이 껍데기(면 · 보더 · 라운드)를 벗어 미는 상자가 되고, 그 껍데기는 표를 감싼 안쪽
+   상자가 그대로 입는다. 그래야 처음 자리에서 카드 왼쪽 둥근 모서리가 여백 뒤에 서고,
+   미는 동안 카드가 화면 끝까지 차고, 마지막 자리에서 오른쪽 모서리가 선다.
+   껍데기를 셸에 남겨 두면 카드가 제자리에 못 박혀 그 셋이 서지 않는다.
+   -------------------------------------------------------------------------- */
+@media (max-width: 767px) {
+  .ratis-table-shell.is-swipe-edge {
+    overflow-x: auto;
+    overflow-y: hidden;
+    border: 0;
+    border-radius: 0;
+    background-color: transparent;
+    margin-inline: calc(-1 * var(--ratis-page-pad, 0px));
+    padding-inline: var(--ratis-page-pad, 0px);
+    /* 늘 뜨는 막대는 카드 밑변에서 4 띄운다 */
+    padding-bottom: 0.4rem;
+  }
+  /* 막대는 내용과 같은 선에서 시작하고 끝난다. 상자가 화면 끝까지 나가 있어 그대로 두면
+     막대만 화면 이쪽 끝에서 저쪽 끝까지 그어져, 카드보다 긴 줄이 하나 더 생긴다 */
+  .ratis-table-shell.is-swipe-edge::-webkit-scrollbar-track {
+    margin-inline: var(--ratis-page-pad, 0px);
+  }
+  .ratis-table-shell.is-swipe-edge .ratis-table {
+    /* 미는 일은 바깥(셸)이 맡으므로 여기서는 굴리지 않는다. 껍데기가 둥근 모서리 밖으로
+       새지 않게 감싸기만 한다 — 머리 줄 회색 면이 모서리를 네모로 덮는 것을 막는다.
+       폭은 표가 요구하는 만큼 갖되, 표가 화면보다 좁을 때는 자리를 다 채운다 */
+    width: min-content;
+    min-width: 100%;
+    overflow: hidden;
+    border: var(--ratis-table-shell-border);
+    border-radius: var(--ratis-table-shell-radius);
+    background-color: var(--ratis-table-shell-surface);
+  }
+  .ratis-table-shell.is-swipe-edge .ratis-table > table {
+    min-width: 73.2rem;
+  }
+}

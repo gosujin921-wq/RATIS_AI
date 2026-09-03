@@ -25,7 +25,7 @@ export function StatCard({
   href?: string
   className?: string
 }) {
-  const cls = cx('klid-stat-card', 'card-soft', className)
+  const cls = cx('ratis-stat-card', 'card-soft', className)
   const inner = (
     <>
       <div className="head">

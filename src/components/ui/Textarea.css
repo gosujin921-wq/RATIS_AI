@@ -1,0 +1,20 @@
+@charset "utf-8";
+/* 여러 줄 입력칸 — 골격·색은 Field.css 가 준다. 여기서는 여러 줄이라 달라지는 것만 적는다 */
+
+.ratis-textarea {
+  /* 높이는 rows 가 정한다. 손으로 늘리는 것은 막지 않되 가로로는 못 늘리게 한다 —
+     가로로 늘리면 폼 칸이 서로 어긋난다 */
+  resize: vertical;
+  min-height: calc(var(--ratis-control-height-md) * 1.4);
+  padding-block: var(--ratis-space-10);
+  line-height: 1.6;
+}
+
+/* 글자 수 — 칸 아래 오른쪽. 오류·도움말과 같은 줄을 다투지 않게 제 줄을 갖는다 */
+.ratis-textarea-count {
+  margin: var(--ratis-space-4) 0 0;
+  font-size: var(--ratis-font-sm);
+  color: var(--ratis-text-subtle);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}

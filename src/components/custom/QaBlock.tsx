@@ -7,7 +7,7 @@ import './QaBlock.css'
  * FAQ 카드형 아코디언이 CSS 로 자동으로 그리던 그 표식을, 아코디언이 아닌 자리에서도 쓴다.
  * 문의 상세가 첫 쓰임이다 — 질문과 답변이 표식으로 갈리므로 글을 상자에 가둘 필요가 없다.
  *
- * 표식의 치수·라운드·색은 **krds-theme.css 의 `--klid-qa-mark-*` 가 정본**이다.
+ * 표식의 치수·라운드·색은 **이 부품의 CSS(`--ratis-qa-mark-*`)가 정본**이다.
  * 여기서 따로 정하지 않는다 — FAQ 와 늘 같은 얼굴이어야 하기 때문이다.
  *
  * 표식 글자(Q·A)는 그림이라 보조기술이 읽지 않는다. 무엇인지는 옆 제목이 말한다.
@@ -29,17 +29,17 @@ export function QaBlock({
   className?: string
 }) {
   return (
-    <div className={cx('klid-qa-block', className)} data-kind={kind}>
-      <span className="klid-qa-mark" aria-hidden>
+    <div className={cx('ratis-qa-block', className)} data-kind={kind}>
+      <span className="ratis-qa-mark" aria-hidden>
         {kind === 'question' ? 'Q' : 'A'}
       </span>
-      <div className="klid-qa-body">
+      <div className="ratis-qa-body">
         {/* 상세 화면·모달의 제목(h3) 아래 구획이라 h4 다 */}
-        <h4 className="klid-qa-title">
+        <h4 className="ratis-qa-title">
           {title}
-          {meta && <span className="klid-qa-when">{meta}</span>}
+          {meta && <span className="ratis-qa-when">{meta}</span>}
         </h4>
-        <div className="klid-qa-content">{children}</div>
+        <div className="ratis-qa-content">{children}</div>
       </div>
     </div>
   )

@@ -51,7 +51,7 @@ export function ResultRow({
   className?: string
 }) {
   return (
-    <div className={cx('klid-result-row', className)} data-has-actions={actions ? true : undefined}>
+    <div className={cx('ratis-result-row', className)} data-has-actions={actions ? true : undefined}>
       <a className="card" href={withBase(href)}>
         {lead}
         <span className="body">
@@ -60,9 +60,9 @@ export function ResultRow({
         </span>
         <span className="foot">
           {meta && <span className="meta">{meta}</span>}
-          {/* 등록일과 다운로드 수를 가르는 세로선 (공용 `.klid-meta-div`). **좁은 폭에서만
+          {/* 등록일과 다운로드 수를 가르는 세로선 (공용 `.ratis-meta-div`). **좁은 폭에서만
               보인다** — 넓은 폭은 둘이 줄 오른쪽 끝에 떨어져 서서 선 없이도 갈래가 읽힌다 */}
-          {meta && downloadCount !== undefined && <span className="klid-meta-div" aria-hidden />}
+          {meta && downloadCount !== undefined && <span className="ratis-meta-div" aria-hidden />}
           {downloadCount !== undefined && (
             <span className="count">
               <Download aria-hidden />

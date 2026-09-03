@@ -1,76 +1,90 @@
 @charset "utf-8";
-/* Q·A 덩이 (표식 + 제목 + 내용).
-   표식 값(치수·라운드·색)은 krds-theme.css 의 --klid-qa-mark-* 가 정본이다 —
-   FAQ 아코디언의 ::before 표식과 **같은 값을 본다.** 여기서 다시 정하면 둘이 어긋난다 */
-
-.klid-qa-block {
-  display: flex;
-  gap: var(--klid-qa-mark-gap);
+/* Q·A 표식 값 — 이 부품이 정본이다 (2026-09-03 테마에서 내려왔다) */
+:root {
+  --ratis-qa-mark-size: 2.8rem;
+  --ratis-qa-mark-radius: 0.8rem;
+  --ratis-qa-mark-font-size: 1.4rem;
+  --ratis-qa-mark-gap: var(--ratis-space-12);
+  --ratis-qa-mark-q-surface: var(--ratis-blue-5);
+  --ratis-qa-mark-q-ink: var(--ratis-blue-60);
+  --ratis-qa-mark-a-surface: var(--ratis-gray-20);
+  /* gray-50 on gray-20 은 3.86:1 로 미달 (배지 disabled 에서도 같은 조합을 gray-60 으로 올렸다).
+     ::before 로 그린 글자라 대비 감사 스크립트가 훑지 못해 남아 있던 자리 → 6.15:1 */
+  --ratis-qa-mark-a-ink: var(--ratis-gray-60);
 }
 
-.klid-qa-mark {
+/* Q·A 덩이 (표식 + 제목 + 내용).
+   표식 값(치수·라운드·색)은 이 파일 맨 위 --ratis-qa-mark-* 가 정본이다 —
+   FAQ 아코디언의 ::before 표식과 **같은 값을 본다.** 여기서 다시 정하면 둘이 어긋난다 */
+
+.ratis-qa-block {
+  display: flex;
+  gap: var(--ratis-qa-mark-gap);
+}
+
+.ratis-qa-mark {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: var(--klid-qa-mark-size);
-  height: var(--klid-qa-mark-size);
+  width: var(--ratis-qa-mark-size);
+  height: var(--ratis-qa-mark-size);
   flex-shrink: 0;
-  border-radius: var(--klid-qa-mark-radius);
-  font-size: var(--klid-qa-mark-font-size);
+  border-radius: var(--ratis-qa-mark-radius);
+  font-size: var(--ratis-qa-mark-font-size);
   font-weight: 600;
   line-height: 1;
 }
-.klid-qa-block[data-kind='question'] .klid-qa-mark {
-  background-color: var(--klid-qa-mark-q-surface);
-  color: var(--klid-qa-mark-q-ink);
+.ratis-qa-block[data-kind='question'] .ratis-qa-mark {
+  background-color: var(--ratis-qa-mark-q-surface);
+  color: var(--ratis-qa-mark-q-ink);
 }
-.klid-qa-block[data-kind='answer'] .klid-qa-mark {
-  background-color: var(--klid-qa-mark-a-surface);
-  color: var(--klid-qa-mark-a-ink);
+.ratis-qa-block[data-kind='answer'] .ratis-qa-mark {
+  background-color: var(--ratis-qa-mark-a-surface);
+  color: var(--ratis-qa-mark-a-ink);
 }
 
-.klid-qa-body {
+.ratis-qa-body {
   min-width: 0; /* 긴 파일명·URL 이 덩이를 밀어 넓히지 않게 */
   display: flex;
   flex-direction: column;
-  gap: var(--krds-gap-3);
+  gap: var(--ratis-space-8);
 }
 
 /* 제목 줄은 표식과 **가운데를 맞춘다** — 표식이 정사각(2.8)이라 글줄만 두면 위로 떠 보인다.
    표식 높이를 최소 높이로 물려 첫 줄이 표식 한가운데에 선다. 제목이 두 줄이 돼도
    표식은 위에 붙어 있다 */
-.klid-qa-title {
+.ratis-qa-title {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--krds-gap-3);
-  min-height: var(--klid-qa-mark-size);
+  gap: var(--ratis-space-8);
+  min-height: var(--ratis-qa-mark-size);
   font-size: 1.5rem;
   font-weight: 600;
   line-height: 1.45;
-  color: var(--krds-color-light-gray-90);
+  color: var(--ratis-gray-90);
 }
 /* 답변 시각 같은 곁말 — 제목보다 한 단 낮게 */
-.klid-qa-when {
+.ratis-qa-when {
   font-size: 1.4rem;
   font-weight: 400;
-  color: var(--krds-color-light-gray-50);
+  color: var(--ratis-gray-50);
 }
 
-.klid-qa-content {
+.ratis-qa-content {
   font-size: 1.5rem;
   line-height: 1.7;
-  color: var(--krds-color-light-gray-80);
+  color: var(--ratis-gray-80);
 }
 /* 본문 다음에 첨부 목록이 오는 식으로 여럿이 쌓일 때 */
-.klid-qa-content > * + * {
-  margin-top: var(--krds-gap-5);
+.ratis-qa-content > * + * {
+  margin-top: var(--ratis-space-16);
 }
 
 /* 잇달아 서는 두 덩이(문의 → 답변)는 **구분선**으로 가른다 — 상자를 걷어낸 자리라
    여백만으로는 둘이 한 덩어리로 흐른다. 선 위아래를 같은 값으로 비워 선이 가운데 선다.
    규격은 내부 구분선 그대로(0.1 · gray-20) */
-.klid-qa-block + .klid-qa-block {
-  padding-top: var(--krds-gap-7);
-  border-top: 0.1rem solid var(--krds-color-light-gray-20);
+.ratis-qa-block + .ratis-qa-block {
+  padding-top: var(--ratis-space-24);
+  border-top: 0.1rem solid var(--ratis-gray-20);
 }

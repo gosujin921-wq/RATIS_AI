@@ -1,0 +1,84 @@
+@charset "utf-8";
+/* 쪽 넘김 줄 — 목록 아래 가운데.
+
+   ★ 낱개는 **정사각 아이콘 버튼 사다리**를 쓴다 (36). 컨트롤 사다리(44)로 두면 숫자
+     열두 개가 줄을 가득 채워 목록보다 무거워진다. */
+
+.ratis-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ratis-space-4);
+  margin-top: var(--ratis-space-24);
+}
+
+.ratis-pagination-pages {
+  display: flex;
+  align-items: center;
+  gap: var(--ratis-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ratis-pagination-page,
+.ratis-pagination-step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--ratis-iconbtn-box-lg);
+  height: var(--ratis-iconbtn-box-lg);
+  padding-inline: var(--ratis-space-4);
+  border: 0.1rem solid transparent;
+  border-radius: var(--ratis-radius-control);
+  background: none;
+  color: var(--ratis-text-muted);
+  font-size: var(--ratis-font-md);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.ratis-pagination-page:hover,
+.ratis-pagination-step:hover:not(:disabled) {
+  background: var(--ratis-surface-hover);
+  color: var(--ratis-text-strong);
+}
+
+/* 지금 쪽 — 면이 차고 글자가 뒤집힌다. 색만으로 말하지 않게 aria-current 가 함께 선다 */
+.ratis-pagination-page[aria-current='page'] {
+  background: var(--ratis-blue-50);
+  color: var(--ratis-text-inverse);
+  font-weight: var(--ratis-weight-bold);
+}
+.ratis-pagination-page[aria-current='page']:hover {
+  background: var(--ratis-blue-60);
+  color: var(--ratis-text-inverse);
+}
+
+.ratis-pagination-step > svg {
+  width: var(--ratis-iconbtn-glyph-md);
+  height: var(--ratis-iconbtn-glyph-md);
+}
+/* 양끝 — 더 갈 곳이 없으면 흐려지되 자리는 지킨다. 사라지면 줄이 좌우로 흔들린다 */
+.ratis-pagination-step:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.ratis-pagination-gap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--ratis-iconbtn-box-lg);
+  height: var(--ratis-iconbtn-box-lg);
+  color: var(--ratis-text-disabled);
+}
+
+.ratis-pagination-page:focus-visible,
+.ratis-pagination-step:focus-visible {
+  outline: none;
+  box-shadow: var(--ratis-focus-ring);
+}

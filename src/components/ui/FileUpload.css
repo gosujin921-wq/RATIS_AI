@@ -1,0 +1,132 @@
+@charset "utf-8";
+/* 파일 올리는 칸.
+
+   ★ 빈 상자는 **점선**이다. 실선 상자는 「값이 들어 있는 칸」의 모양이라, 아직 아무것도
+     없는 자리에 쓰면 비어 있는 입력칸처럼 보인다. 점선은 「여기에 놓으라」는 뜻을 진다. */
+
+.ratis-upload {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ratis-space-8);
+}
+
+.ratis-upload-desc {
+  margin: 0;
+  color: var(--ratis-text-subtle);
+  font-size: var(--ratis-font-sm);
+  line-height: 1.5;
+  word-break: keep-all;
+}
+
+.ratis-upload-drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ratis-space-8);
+  padding: var(--ratis-space-24);
+  border: 0.1rem dashed var(--ratis-border-default);
+  border-radius: var(--ratis-radius-pop);
+  background: var(--ratis-surface-sunken);
+  text-align: center;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+/* 파일을 끌고 들어온 동안 — 놓을 자리임을 면과 선이 함께 말한다 */
+.ratis-upload-drop[data-over] {
+  border-color: var(--ratis-blue-50);
+  background: var(--ratis-surface-tint);
+}
+.ratis-upload-drop[data-disabled] {
+  opacity: 0.5;
+}
+
+.ratis-upload-mark {
+  width: 2.4rem;
+  height: 2.4rem;
+  color: var(--ratis-text-subtle);
+}
+.ratis-upload-text {
+  margin: 0;
+  color: var(--ratis-text-muted);
+  font-size: var(--ratis-font-md);
+  word-break: keep-all;
+}
+
+/* 걸린 파일 — 왜 걸렸는지 한 줄씩 */
+.ratis-upload-rejected {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ratis-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--ratis-danger-text);
+  font-size: var(--ratis-font-sm);
+  word-break: keep-all;
+}
+
+/* 올린 목록 — 한 줄에 한 개. 이름이 길면 줄지 않고 줄어드는 것은 이름뿐이다 */
+.ratis-upload-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ratis-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ratis-upload-item {
+  display: flex;
+  align-items: center;
+  gap: var(--ratis-space-8);
+  padding: var(--ratis-space-8) var(--ratis-space-12);
+  border: 0.1rem solid var(--ratis-border-subtle);
+  border-radius: var(--ratis-radius-control);
+  background: var(--ratis-surface-card);
+  font-size: var(--ratis-font-md);
+}
+.ratis-upload-item > svg {
+  flex: none;
+  width: 1.6rem;
+  height: 1.6rem;
+  color: var(--ratis-text-subtle);
+}
+.ratis-upload-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ratis-text-body);
+}
+.ratis-upload-size {
+  flex: none;
+  color: var(--ratis-text-subtle);
+  font-size: var(--ratis-font-sm);
+  font-variant-numeric: tabular-nums;
+}
+.ratis-upload-remove {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--ratis-iconbtn-box-sm);
+  height: var(--ratis-iconbtn-box-sm);
+  border: 0;
+  border-radius: var(--ratis-radius-control);
+  background: none;
+  color: var(--ratis-text-muted);
+  cursor: pointer;
+}
+.ratis-upload-remove:hover {
+  background: var(--ratis-surface-hover);
+  color: var(--ratis-danger-text);
+}
+.ratis-upload-remove:focus-visible {
+  outline: none;
+  box-shadow: var(--ratis-focus-ring);
+}
+.ratis-upload-remove > svg {
+  width: var(--ratis-iconbtn-glyph-sm);
+  height: var(--ratis-iconbtn-glyph-sm);
+}

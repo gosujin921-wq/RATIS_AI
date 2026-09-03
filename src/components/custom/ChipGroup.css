@@ -1,367 +1,93 @@
 @charset "utf-8";
-/* 칩 묶음. 치수·색은 krds-theme.css 의 Chip 정의를 그대로 쓰고, 여기서는 아이콘 자리만 만든다 */
+/* 칩 묶음 — 조건을 고르는 캡슐 줄.
 
-/* 킷 칩의 라벨은 글자만 담는 전제라 아이콘이 들어오면 줄이 어긋난다.
-   ★ 킷 선언 속성(display) 덮어쓰기 예외. 아이콘 슬롯이 킷에 없어 라벨을 flex 로 바꿔야
-     아이콘과 글자가 세로 가운데로 맞는다. 간격은 칩이 이미 쓰는 gap 토큰을 따른다 */
-.klid-chip-group .krds-form-chip label {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--krds-form-chip--gap);
-}
+   ★ 모양이 곧 뜻이다 (design.md §4). 낱개로 흩어지면 여러 개, 붙여 세우면 하나만.
+   ★ 선택은 **채움·틴트로** 구분하고 체크(✓) 표식을 달지 않는다 — 칩이 이미 눌린 모양을
+     갖고 있어 표식까지 있으면 같은 말이 두 번 선다.
+   ★ 색만으로 구분하지 않는다: 켜진 칩은 면·선·글자가 함께 바뀐다. */
 
-/* 선택되면 아이콘도 라벨 색을 따라간다 — 채움형(흰 글자) 위에 유형색 아이콘이 남으면 탁해진다 */
-.klid-chip-group .krds-form-chip input:checked ~ label .klid-event-icon {
-  color: currentColor;
-}
-
-/* ── look="button" — 낱개를 킷 버튼 토글로 세울 때 ── */
-
-/* 줄 간격은 칩 줄과 같은 12 (design.md §4). 버튼이 제 높이를 갖고 있어 세로 정렬은 필요 없다 */
-.klid-chip-group-button {
+.ratis-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--krds-gap-4);
+  gap: var(--ratis-space-8);
 }
-/* ★ 킷 선언 속성(display) 덮어쓰기 예외. 킷 버튼은 아이콘 슬롯이 마스크 아이콘 전제라
-   인라인 SVG(lucide)를 넣으면 gap 이 안 먹고 세로 가운데도 안 맞는다. 칩 라벨을 flex 로
-   바꾼 것과 같은 이유·같은 처리다 (위 § 아이콘 자리) */
-.klid-chip-group-button .krds-btn {
+
+/* 하나만 켜지는 축은 **붙여 세운다.** 사이를 벌리면 낱개로 읽혀 여러 개 켤 수 있어 보인다 */
+.ratis-chips.is-single {
+  gap: 0;
+  width: fit-content;
+  padding: var(--ratis-space-4);
+  border-radius: var(--ratis-radius-max);
+  background: var(--ratis-surface-sunken);
+}
+
+.ratis-chip {
   display: inline-flex;
   align-items: center;
-}
-/* 켜짐 — 킷 **칩의 checked 색**을 그대로 가져온다 (면 primary-5 · 보더 primary-50 ·
-   글자 primary-60. 킷 form-chip 의 checked 토큰이 참조하는 값이다).
-   채움(primary)을 안 쓰는 이유는 ChipGroup.tsx 주석에 적었다 — 채움은 실행 버튼의 무게다.
-   색 토큰만 다시 선언하고 컴포넌트 CSS 는 덮지 않는다. 킷이 토큰을 `.krds-btn` 자신에
-   선언하므로 하위 조합으로 조준해야 이긴다 (krds-theme.css 의 .klid-chip-fill 과 같은 방식).
-   아이콘은 유형색 그대로 둔다 — 면이 옅은 틴트라 색이 살아 있고, 그 색이 유형을 말한다 */
-.klid-chip-group-button .krds-btn[aria-pressed='true'] {
-  --krds-button--color-tertiary-fill: var(--krds-color-light-primary-5);
-  --krds-button--color-tertiary-border: var(--krds-color-light-primary-50);
-  --krds-button--color-tertiary-text: var(--krds-color-light-primary-60);
-  --krds-button--color-tertiary-fill-hover: var(--krds-color-light-primary-10);
-  --krds-button--color-tertiary-fill-pressed: var(--krds-color-light-primary-20);
-}
-
-/* 꺼짐 — 보더를 킷 tertiary 기본(gray-60 #475569)에서 **세 단계 내려** gray-30 으로 둔다
-   (2026-08-07 화면 검토). 조건이 스물이 넘게 늘어서는 줄이라 60 은 낱개마다 진한 테두리가
-   그어져 줄 전체가 격자처럼 읽힌다. 30 은 §8 보더 사다리의 **입력**과 같은 값이다 — 값을
-   받는 자리(채워야 할 곳)와 같은 무게로, 조건을 고르는 줄이 그 자리와 한 급으로 선다.
-   꺼짐 hover 는 칩 사다리와 같다 (§3): 면 틴트 50 · 보더 300. 켜짐(보더 500)보다 옅어야
-   "얹었을 뿐"과 "켜졌다"가 갈린다 — 두 상태의 면이 같은 primary-5 라 보더가 그 일을 한다 */
-.klid-chip-group-button .krds-btn[aria-pressed='false'] {
-  --krds-button--color-tertiary-border: var(--krds-color-light-gray-30);
-  --krds-button--color-tertiary-fill-hover: var(--krds-color-light-primary-5);
-}
-/* 킷은 tertiary hover 에 fill 만 선언한다 — 보더는 미선언 속성이라 덮어쓰기가 아니라 추가다 */
-.klid-chip-group-button .krds-btn[aria-pressed='false']:hover {
-  border-color: var(--krds-color-light-primary-30);
-}
-.klid-chip-group-button .krds-btn[aria-pressed='true']:hover {
-  border-color: var(--krds-color-light-primary-60);
-}
-
-/* ── look="tile" — 그림 위 · 이름 아래로 세운 네모 타일 ── */
-
-/* **격자로 선다.** 칩 줄처럼 흘려 놓으면 낱개 폭이 글자 수를 따라 제각각이 되어, 그림이 세로로
-   안 맞고 줄 오른쪽 끝도 들쭉날쭉해진다. `auto-fill` + `minmax` 로 두면 폭이 넓어질수록 한 줄에
-   드는 수만 늘고 낱개 폭은 고르게 남는다 — 반쪽 기둥(≈410)에서는 넉 장, 한 기둥으로 접히면
-   여덟 장이 한 줄에 든다.
-   140 은 **그림을 왼쪽 끝, 이름을 오른쪽 끝에 두고도 가장 긴 이름이 한 줄에 드는 폭**이다
-   (2026-08-24 조정. 값의 내력: 90 → 76 → 96 → 140). 낱개가 가로로 눕고 그림과 이름이 양 끝으로
-   갈리면서 이름이 쓸 수 있는 자리가 좁아졌다 — 96 짜리 칸에서는 `지하차도 침수`(82)가 여백과
-   그림을 빼고 남는 74 에 못 들어가 두 줄로 접혔다.
-   낱개가 셋넷인 축은 왼쪽부터 채우고 남는 자리를 비워 둔다 — 줄을 채우려 늘리면 값이 적은 축의
-   낱개만 커져 축끼리 크기가 어긋난다.
-   사이 8 은 칩 사이(§4 12)보다 좁다 — 타일은 제 면을 가져 경계가 이미 뚜렷하므로 12 로 벌리면
-   한 묶음이 아니라 낱개가 흩어진 것처럼 보인다 */
-.klid-tile-group {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
-  gap: var(--krds-gap-3);
-}
-
-/* 낱개 하나 — **그림과 이름이 왼쪽에 붙어 선다** (2026-08-24 화면 검토 지시.
-   내력: 그림 위·이름 아래로 가운데 정렬 → 양 끝으로 가름 → 왼쪽 정렬).
-   가로로 누우면서 높이가 76 에서 44 로 내려앉아 한 줄짜리 조작으로 읽히고, 세로로 쌓이던 만큼을
-   폭이 가져간다. 왼쪽에 붙이면 **그림과 이름이 한 짝으로 읽힌다** — 양 끝으로 갈라 두었을 때는
-   낱개 폭이 축마다 달라지면서 둘 사이 거리도 함께 달라져, 같은 낱개 안의 두 조각이 아니라
-   서로 다른 칸의 값처럼 보였다. 낱개마다 시작점이 같으니 세로로도 줄이 그대로 선다.
-   라운드 12 는 안쪽 요소라 폼 면 16 보다 작다 (§7).
-   보더 꺼짐 gray-30 은 `look='button'` 과 같은 값이다 — §8 보더 사다리의 **입력** 자리로,
-   값을 받는 칸과 같은 무게로 선다 */
-.klid-tile {
-  position: relative; /* 숨긴 라디오를 담아 두는 자리 */
-  display: flex;
-  align-items: center;
-  /* 그림과 이름 사이 8 (§6 「한 요소 안의 조각」). 둘이 한 짝이라 밀착 구간에 둔다 */
-  gap: var(--krds-gap-3);
-  border: 0.1rem solid var(--krds-color-light-gray-30);
-  border-radius: 1.2rem;
-  background-color: var(--krds-color-light-gray-0);
-  /* ★ **네 방향이 같은 12** (2026-08-24 화면 검토 지시).
-     종전에는 좌우 8 을 적어 두고 세로만 `min-height: 44` 로 벌려, 안쪽 여백이 위아래 12 ·
-     좌우 8 로 갈렸다 — 선언은 한 값인데 눈에는 두 값으로 보였다.
-     min-height 를 걷고 여백만으로 높이를 만든다: 줄 높이 18(그림 16 · 이름 13×1.4) + 24 + 보더 2
-     = 44 로 종전과 같은 키에 선다. 세그먼트 낱개의 여백(12)·키(44)와도 같은 수다.
-     좌우를 12 로 올려도 이름은 안 접힌다 — 가장 긴 이름(`지하차도 침수`)이 실측 67 이고,
-     122 짜리 낱개에서 남는 자리는 72 다 (122 - 보더 2 - 여백 24 - 그림 16 - 사이 8) */
-  padding: var(--krds-padding-5);
-  font-size: 1.3rem;
-  line-height: 1.4;
-  text-align: left;
-  color: var(--krds-color-light-gray-70);
-  cursor: pointer;
-}
-/* 그림 **16 — 「인라인」 값이다** (CLAUDE.md 아이콘 규칙: 배지 14 · 인라인 16 · 버튼 18 ·
-   단독 20 · KPI 칩 22). 값의 내력: 22 → 20(이름 위에 홀로 설 때는 단독) → 18(양 끝으로 갈렸을
-   때) → 16. 이름 바로 옆에 붙어 한 줄로 읽히므로 인라인이 맞는 자리다.
-   유형색 글리프(EventTypeIcon)의 `md` 와 같은 수라, 화면에서 넘기는 값과 여기 값이 서로 어긋날
-   여지가 없어졌다.
-   ★★ 그 글리프는 **크기를 제 속성으로 갖는다** — `.klid-event-icon[data-size]`(0-2-0)가 이
-     규칙(0-1-1)을 이기므로 여기서 재워도 안 먹는다. 화면에서 크기를 넘겨야 나머지 그림과 같이
-     선다 (실제로 침수·산불만 달리 서 있었던 이력이 있다).
-   꺼짐일 때 gray-50 은 이름(70)보다 한 급 물러난 값이다 — 뜻을 말하는 것은 이름이고
-   그림은 훑기를 돕는 표식이다 */
-.klid-tile > svg {
-  flex: none;
-  width: 1.6rem;
-  height: 1.6rem;
-  color: var(--krds-color-light-gray-50);
-}
-
-/* 하나만 켜지는 갈래의 라디오는 **눈에서만 지운다.** `display:none`·`visibility:hidden` 은
-   키보드 초점까지 없애 탭으로 못 고르게 만든다. 1px 로 줄여 타일 안에 두면 초점이 살아 있고,
-   포커스 링은 아래에서 타일이 대신 그린다 */
-.klid-tile-input {
-  position: absolute;
-  width: 0.1rem;
-  height: 0.1rem;
-  margin: 0;
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* 얹었을 뿐 — 면 틴트 50 · 보더 300 (§3 칩 사다리. `look='button'` 과 같다) */
-.klid-tile:hover {
-  border-color: var(--krds-color-light-primary-30);
-  background-color: var(--krds-color-light-primary-5);
-}
-
-/* 켜짐 — 면 primary-5 · 보더 primary-50 · 글자 primary-60. 킷 칩의 checked 색 그대로다.
-   ★ 보더를 **2px 로 굵히고 여백에서 1 을 뺀다.** 굵기만 바꾸면 낱개가 1px 씩 커져 격자 줄이
-     흔들린다. 뺀 값은 **네 방향 모두**에 걸어야 한다 — 종전에는 세로 12 · 가로 5 로 적혀 있어
-     (기본 여백이 `1.3rem 0.6rem` 이던 시절의 잔재다) 켜진 낱개만 좌우가 확 좁아 보였다.
-     늘 하나가 켜져 있는 축(재난 유형)에서는 그 모습이 기본 상태였다. box-shadow 로 안쪽 링을 얹는 방법도 있었지만 그 자리는 포커스 링이 쓴다 —
-     `:focus:not(:focus-visible)` 전역 규칙이 box-shadow 를 지우므로(krds-focus.css), 켜짐을
-     거기 걸면 **누른 직후 켜짐 테두리가 사라진다.**
-   글자 굵기는 올리지 않는다 — 격자 폭이 고정이라 굵어진 이름이 두 줄로 접히면서 켤 때마다
-   그 줄의 키가 뛴다 */
-.klid-tile[aria-pressed='true'],
-.klid-tile:has(.klid-tile-input:checked) {
-  border-color: var(--krds-color-light-primary-50);
-  background-color: var(--krds-color-light-primary-5);
-  color: var(--krds-color-light-primary-60);
-}
-/* 켜지면 그림도 이름 색을 따라간다 — 회색으로 남으면 낱개 안에서 그림만 안 켜진 것처럼 보인다 */
-.klid-tile[aria-pressed='true'] > svg,
-.klid-tile:has(.klid-tile-input:checked) > svg {
-  color: currentColor;
-}
-.klid-tile[aria-pressed='true']:hover,
-.klid-tile:has(.klid-tile-input:checked):hover {
-  border-color: var(--krds-color-light-primary-60);
-}
-
-/* 못 고르는 낱개. 지우지 않고 잠그는 자리라 **있다는 것은 보이되 만질 수 없다**는 것만 말한다.
-   글자 40 · 그림 30 으로 물린다 — 왜 못 고르는지는 이름이 아니라 **얹었을 때 뜨는 한 마디**
-   (`note`)가 말하므로, 이름은 읽히기보다 잠긴 것으로 보이는 편이 낫다. 잠긴 조작은 KWCAG 대비
-   규정 밖이고, 40 은 꺼진 낱개(70)와 한눈에 갈린다 */
-.klid-tile:disabled,
-.klid-tile:has(.klid-tile-input:disabled) {
-  border-color: var(--krds-color-light-gray-20);
-  background-color: var(--krds-color-light-gray-5);
-  color: var(--krds-color-light-gray-40);
-  cursor: not-allowed;
-}
-.klid-tile:disabled > svg,
-.klid-tile:has(.klid-tile-input:disabled) > svg {
-  color: var(--krds-color-light-gray-30);
-}
-
-/* 맨 요소라 킷 포커스 링이 안 따라온다 — 포털 공통 링을 직접 건다 (krds-focus.css 의 토큰).
-   `:focus:not(:focus-visible)` 전역 규칙이 마우스 클릭 때의 링을 지운다 */
-.klid-tile:focus-visible,
-.klid-tile:has(.klid-tile-input:focus-visible) {
-  box-shadow: var(--krds-box-shadow-outline);
-}
-
-/* ★ 유형색 아이콘은 타일 안에서도 **제 색을 지킨다** (EventTypeIcon — 침수 파랑 · 산불 주황).
-   위에서 타일 그림을 gray-50 으로, 켜지면 글자색으로 돌려놨는데 그 둘 다 이 아이콘에는 안 맞는다:
-   유형색이 곧 뜻이라 회색으로 눕히면 침수와 산불이 같은 그림이 되고, 켜짐 면은 옅은 틴트(primary-5)라
-   색이 그대로 살아 있다. `look='button'` 이 이미 같은 판단을 하고 있다 (위 § 켜짐).
-   켜짐·꺼짐 선택자를 모두 다시 적는 것은 위 규칙들이 0-2-1 이라 한 줄로는 못 이기기 때문이다 */
-.klid-tile > .klid-event-icon,
-.klid-tile[aria-pressed='true'] > .klid-event-icon,
-.klid-tile:has(.klid-tile-input:checked) > .klid-event-icon {
-  color: var(--klid-event-color);
-}
-
-/* ★★ 잠긴 낱개에서는 유형색도 **함께 물린다.** 아래 「제 색을 지킨다」 규칙(0-4-0)이 잠김
-   규칙(0-3-1)을 이기므로, 같은 무게로 한 번 더 적어 덮는다 (뒤에 놓아 순서로 이긴다).
-   잠긴 폼에서 이 그림만 색이 살아 있으면 그 낱개만 아직 고를 수 있는 것으로 읽힌다 —
-   실제로 조건 칸을 통째로 잠갔을 때 켜져 있던 `침수` 의 물결만 파랗게 남아 있었다 */
-.klid-tile:has(.klid-tile-input:disabled) > .klid-event-icon {
-  color: var(--krds-color-light-gray-30);
-}
-
-
-/* ── look="radio" — 라디오 표식을 단 칩 ── */
-
-/* 낱개가 흘러 서는 줄이라 격자로 묶지 않는다 — 타일과 달리 폭이 이름을 따라 제각각인 것이
-   칩의 모양이다.
-   ★ 사이는 **20** 이다 (§4 칩 줄 간격 12 가 아니다). 원이 캡슐 바깥으로 나오면서 낱개가
-     「원 + 6 + 캡슐」 한 덩어리가 됐는데, 낱개 사이가 12 면 원과 앞 캡슐 사이(12)가 원과 제
-     캡슐 사이(6)의 두 배밖에 안 돼 원이 **왼쪽 캡슐에 딸린 것처럼** 붙어 읽힌다.
-     20 이면 그 비가 3배가 넘어 원이 오른쪽 캡슐 것으로 확실히 묶인다 */
-.klid-radio-chip-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--krds-gap-4) var(--krds-gap-6);
-}
-
-/* 원은 **캡슐 바깥**에 선다 (2026-08-21 화면 검토 지시. 종전에는 캡슐 안 왼쪽이었다).
-   바깥에 두면 캡슐 자체는 다중선택 칩과 똑같은 물건으로 남고, 그 앞에 선 원 하나가 「이 줄은
-   하나만 켜진다」고 말한다 — 부품을 고쳐 갈래를 만드는 것이 아니라 표식을 덧대는 셈이다.
-   그래서 바깥 요소는 면도 테두리도 갖지 않는다 (누르는 과녁만 넓힌다) */
-.klid-radio-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  border: 0;
-  background: none;
-  padding: 0;
-  cursor: pointer;
-}
-
-/* 캡슐 — 치수는 **필터 칩 sm** 그대로다 (§4: 가로 10 · 세로 4 · 14·500 · 높이 30 · 캡슐).
-   §4 가 「조건이 여섯을 넘는 필터 패널은 한 급 내린다 — 펼쳐 둔 조건 sm」이라 정한 자리다.
-   원이 밖으로 나가면서 왼쪽 여백 보정(8)을 걷어내고 좌우를 10 으로 되돌린다.
-   보더 꺼짐 gray-30 은 §8 보더 사다리의 **입력** 자리 — 값을 받는 칸과 같은 무게다 */
-.klid-radio-chip > .cap {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  height: 3rem;
-  border: 0.1rem solid var(--krds-color-light-gray-30);
-  border-radius: 999px;
-  background-color: var(--krds-color-light-gray-0);
-  padding: 0 var(--krds-padding-4);
-  font-size: 1.4rem;
-  font-weight: 500;
-  line-height: 1.55;
-  color: var(--krds-color-light-gray-70);
-}
-
-/* 라디오 원. **이것이 이 갈래의 전부다** — 캡슐은 다중선택 칩과 같은 물건이고, 원 하나가
-   「목록 중 하나」라는 뜻을 얹는다.
-   16 은 칩 안 그림과 같은 크기다 — 원이 그림보다 크면 표식이 내용보다 먼저 읽힌다 */
-.klid-radio-chip > .dot {
-  flex: none;
-  width: 1.6rem;
-  height: 1.6rem;
-  border: 0.15rem solid var(--krds-color-light-gray-40);
-  border-radius: 50%;
-  background-color: var(--krds-color-light-gray-0);
-}
-
-/* 칩 안 그림 16 (§4 배지·칩 안 아이콘). 꺼짐 gray-50 은 이름(70)보다 한 급 물러난 값 */
-.klid-radio-chip > .cap > svg {
-  flex: none;
-  width: 1.6rem;
-  height: 1.6rem;
-  color: var(--krds-color-light-gray-50);
-}
-
-/* 얹었을 뿐 — 면 틴트 50 · 보더 300 (§3 칩 사다리). 원도 함께 짙어져 과녁이 하나로 읽힌다 */
-.klid-radio-chip:hover > .cap {
-  border-color: var(--krds-color-light-primary-30);
-  background-color: var(--krds-color-light-primary-5);
-}
-.klid-radio-chip:hover > .dot {
-  border-color: var(--krds-color-light-primary-30);
-}
-
-/* 켜짐 — 면 primary-5 · 보더 primary-50 · 글자 primary-60. 타일·세그먼트와 같은 값이다.
-   §4 는 단일선택을 **채움**으로 적지만 그건 붙인 세그먼트의 값이다. 여기서 채움을 쓰면 켜진
-   낱개가 실행 버튼과 같은 무게가 되고(§3), 스물일곱이 늘어선 줄에서 그 하나가 버튼처럼 튄다.
-   하나만 켜진다는 뜻은 색이 아니라 **바깥의 원**이 말한다 */
-.klid-radio-chip[aria-pressed='true'] > .cap {
-  border-color: var(--krds-color-light-primary-50);
-  background-color: var(--krds-color-light-primary-5);
-  color: var(--krds-color-light-primary-60);
-}
-/* 원이 차오른다 — 바깥 테 primary, 안쪽 흰 띠 3, 가운데 primary. 라디오의 기본 모양 그대로다 */
-.klid-radio-chip[aria-pressed='true'] > .dot {
-  border-color: var(--krds-color-light-primary-50);
-  background-color: var(--krds-color-light-primary-50);
-  box-shadow: inset 0 0 0 0.3rem var(--krds-color-light-gray-0);
-}
-.klid-radio-chip[aria-pressed='true'] > .cap > svg {
-  color: currentColor;
-}
-.klid-radio-chip[aria-pressed='true']:hover > .cap {
-  border-color: var(--krds-color-light-primary-60);
-}
-
-.klid-radio-chip:disabled > .cap {
-  border-color: var(--krds-color-light-gray-20);
-  background-color: var(--krds-color-light-gray-5);
-  color: var(--krds-color-light-gray-50);
-}
-.klid-radio-chip:disabled {
-  cursor: not-allowed;
-}
-.klid-radio-chip:disabled > .dot {
-  border-color: var(--krds-color-light-gray-30);
-}
-.klid-radio-chip:disabled > .cap > svg {
-  color: var(--krds-color-light-gray-40);
-}
-
-/* 맨 요소라 킷 포커스 링이 안 따라온다 — 포털 공통 링을 직접 건다 (타일과 같은 처리).
-   링은 **캡슐이 받는다**: 바깥 요소는 면도 테두리도 없어 링만 허공에 떠 보인다 */
-.klid-radio-chip:focus-visible > .cap {
-  box-shadow: var(--krds-box-shadow-outline);
-}
-
-/* 낱개에 마우스를 얹었을 때 뜨는 한 마디 (`ChipOption.note`).
-   생김새는 LNB 접힘 툴팁(`.klid-lnb-tt`)과 같은 값이다 — 같은 화면 문법이 두 벌이 되지 않게 한다.
-   낱개 **위**에 띄운다: 이 말이 붙는 자리가 폼 첫 줄이라 아래로 띄우면 바로 밑 축을 가린다.
-   `pointer-events: none` 이라 뜬 말이 마우스를 가로채지 않는다 — 가로채면 얹은 순간 hover 가
-   풀려 깜빡인다.
-   ★ `aria-hidden` 을 걸지 않는다. 이 말은 보조기술이 읽는 낱개 이름의 일부다 (ChipGroup.tsx
-     `note` 주석) — 마우스가 없으면 못 보는 자리에 사정을 숨기지 않는다 */
-.klid-chip-tip {
-  pointer-events: none;
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  z-index: 50;
-  transform: translateX(-50%);
-  margin-bottom: 0.6rem;
+  gap: var(--ratis-space-6);
+  height: var(--ratis-control-height-sm);
+  padding-inline: var(--ratis-control-padding-sm);
+  border: 0.1rem solid var(--ratis-border-default);
+  border-radius: var(--ratis-radius-max);
+  background: var(--ratis-surface-card);
+  font-size: var(--ratis-font-md);
+  font-weight: var(--ratis-weight-medium);
+  color: var(--ratis-text-body);
   white-space: nowrap;
-  border-radius: 0.6rem;
-  background-color: var(--krds-color-light-gray-90);
-  padding: var(--krds-padding-2) var(--krds-padding-3);
-  font-size: 1.3rem;
-  font-weight: 500;
-  color: var(--krds-color-light-gray-0);
-  opacity: 0;
-  transition: opacity 0.15s;
-  box-shadow: 0 0.8rem 1.6rem -0.4rem rgb(15 23 42 / 0.25);
+  cursor: pointer;
 }
-.klid-tile:hover > .klid-chip-tip {
-  opacity: 1;
+
+.ratis-chips[data-size='small'] .ratis-chip {
+  height: 3rem;
+  padding-inline: var(--ratis-space-12);
+  font-size: var(--ratis-font-sm);
+}
+
+/* ★ 진짜 input 을 **자리에 둔 채** 눈에서만 감춘다. `display: none` 이면 키보드 초점이
+   사라져 탭으로 못 고른다 */
+.ratis-chip > input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.ratis-chip:hover {
+  border-color: var(--ratis-border-brand);
+  background: var(--ratis-blue-5);
+  color: var(--ratis-text-brand);
+}
+
+/* 켜짐 — 틴트 면 + 브랜드 선 + 브랜드 글자. 채움(진한 면)을 쓰지 않는 이유는 한 줄에
+   여럿이 켜질 수 있어, 진한 면이 여러 개면 줄이 통째로 무거워지기 때문이다 */
+.ratis-chip[data-on] {
+  border-color: var(--ratis-blue-40);
+  background: var(--ratis-blue-10);
+  color: var(--ratis-text-brand);
+  font-weight: var(--ratis-weight-bold);
+}
+
+/* 세그먼트 안의 낱개는 선이 없다 — 묶음이 이미 상자다 */
+.ratis-chips.is-single .ratis-chip {
+  border-color: transparent;
+  background: none;
+}
+
+.ratis-chips.is-single .ratis-chip[data-on] {
+  background: var(--ratis-surface-card);
+  color: var(--ratis-text-strong);
+  box-shadow: var(--ratis-shadow-float);
+}
+
+.ratis-chip:has(> input:focus-visible) {
+  outline: none;
+  box-shadow: var(--ratis-focus-ring);
+}
+
+/* 잠김 — 왜 못 고르는지는 라벨이 적는다. 회색으로만 두면 고장으로 읽힌다 */
+.ratis-chip:has(> input:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

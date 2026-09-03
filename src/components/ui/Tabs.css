@@ -1,0 +1,84 @@
+@charset "utf-8";
+/* 탭 — 같은 자리에 서는 여러 벌을 갈아 끼우는 줄.
+
+   ★ **밑선 한 줄로 말한다.** 캡슐 채움으로 그리면 조건 줄의 캡슐(거르기)과 같은 모양이
+     되어, 화면을 가르는 탭인지 목록을 거르는 조건인지 구분이 사라진다. 탭은 그 아래
+     내용판에 얹힌 물건이라 판과 맞닿은 선이 「여기가 지금 열린 칸」을 말한다. */
+
+.ratis-tabs {
+  display: flex;
+  flex-direction: column;
+}
+
+.ratis-tablist {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--ratis-space-4);
+  /* 줄 전체를 가로지르는 옅은 선. 열린 탭이 이 선 위에 진한 조각으로 얹힌다 */
+  border-bottom: 0.1rem solid var(--ratis-border-subtle);
+  /* 갈래가 많으면 옆으로 민다. 접으면 어느 갈래가 있는지가 두 줄로 흩어진다 */
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.ratis-tablist::-webkit-scrollbar {
+  display: none;
+}
+
+.ratis-tab {
+  flex: none;
+  position: relative;
+  /* 컨트롤 사다리 md — 조건 줄의 캡슐과 같은 높이라 나란히 서도 밑선이 맞는다 */
+  height: var(--ratis-control-height-md);
+  padding-inline: var(--ratis-space-16);
+  border: 0;
+  background: none;
+  color: var(--ratis-text-subtle);
+  font-size: var(--ratis-font-md);
+  font-weight: var(--ratis-weight-medium);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+/* 밑선 조각 — 줄의 옅은 선을 덮고 선다. 2 는 선이 아니라 표식이라 한 급 굵다 */
+.ratis-tab::after {
+  content: '';
+  position: absolute;
+  right: var(--ratis-space-8);
+  bottom: -0.1rem;
+  left: var(--ratis-space-8);
+  height: 0.2rem;
+  border-radius: var(--ratis-radius-max);
+  background: transparent;
+}
+
+.ratis-tab:hover {
+  color: var(--ratis-text-body);
+}
+
+/* 열린 탭 — 색과 굵기와 밑선 셋이 함께 말한다. 색만으로 구분하지 않는다 */
+.ratis-tab[aria-selected='true'] {
+  color: var(--ratis-text-brand);
+  font-weight: var(--ratis-weight-bold);
+}
+.ratis-tab[aria-selected='true']::after {
+  background: var(--ratis-blue-50);
+}
+
+.ratis-tab:focus-visible {
+  outline: none;
+  border-radius: var(--ratis-radius-control);
+  box-shadow: var(--ratis-focus-ring);
+}
+
+/* 줄과 내용 사이 — 구획 경계다 */
+.ratis-tab-content {
+  padding-top: var(--ratis-space-24);
+}
+
+/* 패널이 초점을 받을 때 링이 안쪽으로 들어오지 않게 자리를 준다 */
+.ratis-tab-panel:focus-visible {
+  outline: none;
+  border-radius: var(--ratis-radius-surface);
+  box-shadow: var(--ratis-focus-ring);
+}

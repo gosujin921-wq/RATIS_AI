@@ -6,8 +6,8 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
-  background: var(--krds-color-light-gray-0);
-  border-left: 1px solid var(--krds-color-light-gray-20);
+  background: var(--ratis-gray-0);
+  border-left: 1px solid var(--ratis-gray-20);
 }
 
 /* ── 머리 ─────────────────────────────────────────────────────────────── */
@@ -17,7 +17,7 @@
   align-items: flex-start;
   gap: 1.2rem;
   padding: 1.6rem 1.6rem 1.2rem 2rem;
-  border-bottom: 1px solid var(--krds-color-light-gray-10);
+  border-bottom: 1px solid var(--ratis-gray-10);
 }
 
 .src-head-text {
@@ -31,7 +31,7 @@
   gap: 0.6rem;
   margin: 0 0 0.4rem;
   font-size: 1.2rem;
-  color: var(--krds-color-light-gray-50);
+  color: var(--ratis-gray-50);
 }
 
 .src-path > span + span::before {
@@ -45,7 +45,7 @@
   font-size: 1.6rem;
   font-weight: 700;
   line-height: 1.4;
-  color: var(--krds-color-light-gray-90);
+  color: var(--ratis-gray-90);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -62,12 +62,12 @@
   border: 0;
   border-radius: 0.8rem;
   background: none;
-  color: var(--krds-color-light-gray-60);
+  color: var(--ratis-gray-60);
   cursor: pointer;
 }
 
 .src-close:hover {
-  background: var(--krds-color-light-gray-10);
+  background: var(--ratis-gray-10);
 }
 
 /* ── 도구 줄 ──────────────────────────────────────────────────────────── */
@@ -78,12 +78,11 @@
   justify-content: space-between;
   gap: 1.2rem;
   padding: 0.8rem 1.6rem;
-  border-bottom: 1px solid var(--krds-color-light-gray-10);
-  background: var(--krds-color-light-gray-5);
+  border-bottom: 1px solid var(--ratis-gray-10);
+  background: var(--ratis-gray-5);
 }
 
-.src-pager,
-.src-zoom {
+.src-pager {
   display: flex;
   align-items: center;
   gap: 0.4rem;
@@ -95,20 +94,20 @@
   justify-content: center;
   width: 3.2rem;
   height: 3.2rem;
-  border: 1px solid var(--krds-color-light-gray-20);
+  border: 1px solid var(--ratis-gray-20);
   border-radius: 0.8rem;
-  background: var(--krds-color-light-gray-0);
-  color: var(--krds-color-light-gray-70);
+  background: var(--ratis-gray-0);
+  color: var(--ratis-gray-70);
   cursor: pointer;
 }
 
 .src-tool:hover:not(:disabled) {
-  border-color: var(--krds-color-light-primary-30);
-  background: var(--krds-color-light-primary-5);
+  border-color: var(--ratis-blue-30);
+  background: var(--ratis-blue-5);
 }
 
 .src-tool:disabled {
-  color: var(--krds-color-light-gray-30);
+  color: var(--ratis-gray-30);
   cursor: not-allowed;
 }
 
@@ -116,23 +115,30 @@
   min-width: 8rem;
   text-align: center;
   font-size: 1.3rem;
-  color: var(--krds-color-light-gray-70);
+  color: var(--ratis-gray-70);
 }
 
-/* 배율은 눌러서 100% 로 되돌린다 — 되돌리는 자리를 따로 만들지 않는다 */
-.src-zoom-value {
-  min-width: 5.6rem;
+/* 원문 다운로드 — 도구 줄 오른쪽. 글리프만으로는 「무엇을 받는지」가 안 읽혀
+   이름을 함께 세운다. 쪽 이동 단추(정사각)와 갈래가 다르므로 알약으로 둔다 */
+.src-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
   height: 3.2rem;
-  border: 0;
-  border-radius: 0.8rem;
-  background: none;
+  padding: 0 1.2rem;
+  border: 1px solid var(--ratis-gray-20);
+  border-radius: var(--ratis-radius-max);
+  background: var(--ratis-gray-0);
   font-size: 1.3rem;
-  color: var(--krds-color-light-gray-70);
+  color: var(--ratis-gray-70);
+  white-space: nowrap;
   cursor: pointer;
 }
 
-.src-zoom-value:hover {
-  background: var(--krds-color-light-gray-10);
+.src-download:hover {
+  border-color: var(--ratis-blue-30);
+  background: var(--ratis-blue-5);
+  color: var(--ratis-blue-60);
 }
 
 /* ── 본문 ─────────────────────────────────────────────────────────────── */
@@ -144,32 +150,29 @@
 }
 
 .src-page-view {
-  /* 확대·축소는 지면만 키운다. 도구 줄·머리는 그대로 있어야 조작을 잃지 않는다 */
-  width: calc(100% * var(--src-zoom, 1));
-  min-width: 100%;
-  transition: width 0.15s ease;
+  width: 100%;
 }
 
 .src-sheet {
   padding: 2.4rem;
-  border: 1px solid var(--krds-color-light-gray-20);
+  border: 1px solid var(--ratis-gray-20);
   border-radius: 0.8rem;
-  background: var(--krds-color-light-gray-0);
-  font-size: calc(1.4rem * var(--src-zoom, 1));
+  background: var(--ratis-gray-0);
+  font-size: 1.4rem;
 }
 
 .src-sheet-meta {
   margin: 0 0 1.6rem;
   padding-bottom: 1.2rem;
-  border-bottom: 1px solid var(--krds-color-light-gray-10);
+  border-bottom: 1px solid var(--ratis-gray-10);
   font-size: 1.2rem;
-  color: var(--krds-color-light-gray-50);
+  color: var(--ratis-gray-50);
 }
 
 .src-sheet-text {
   margin: 0;
   line-height: 1.7;
-  color: var(--krds-color-light-gray-80);
+  color: var(--ratis-gray-80);
 }
 
 /* 표가 패널보다 넓으면 가로로 민다 (기획 §11) */
@@ -185,20 +188,20 @@
 
 .src-sheet-table :is(th, td) {
   padding: 1rem 1.2rem;
-  border-bottom: 1px solid var(--krds-color-light-gray-10);
+  border-bottom: 1px solid var(--ratis-gray-10);
   text-align: left;
   white-space: nowrap;
 }
 
 .src-sheet-table th {
-  background: var(--krds-color-light-gray-5);
+  background: var(--ratis-gray-5);
   font-weight: 600;
 }
 
 .src-sheet-caption {
   margin: 1.2rem 0 0;
   font-size: 1.2rem;
-  color: var(--krds-color-light-gray-50);
+  color: var(--ratis-gray-50);
 }
 
 /* ── 상태 (로딩 · 표시 불가 · 삭제됨) ───────────────────────────────── */
@@ -212,21 +215,21 @@
 }
 
 .src-state-icon {
-  color: var(--krds-color-light-gray-40);
+  color: var(--ratis-gray-40);
 }
 
 .src-state-title {
   margin: 0;
   font-size: 1.5rem;
   font-weight: 600;
-  color: var(--krds-color-light-gray-80);
+  color: var(--ratis-gray-80);
 }
 
 .src-state-text {
   margin: 0;
   font-size: 1.3rem;
   line-height: 1.6;
-  color: var(--krds-color-light-gray-50);
+  color: var(--ratis-gray-50);
 }
 
 .src-skeleton {
@@ -241,9 +244,9 @@
   border-radius: 0.4rem;
   background: linear-gradient(
     90deg,
-    var(--krds-color-light-gray-10) 25%,
-    var(--krds-color-light-gray-5) 50%,
-    var(--krds-color-light-gray-10) 75%
+    var(--ratis-gray-10) 25%,
+    var(--ratis-gray-5) 50%,
+    var(--ratis-gray-10) 75%
   );
   background-size: 200% 100%;
   animation: srcShimmer 1.4s linear infinite;
@@ -272,16 +275,16 @@
 .src-fallback {
   margin-top: 0.8rem;
   padding: 1.6rem;
-  border: 1px solid var(--krds-color-light-gray-20);
+  border: 1px solid var(--ratis-gray-20);
   border-radius: 0.8rem;
-  background: var(--krds-color-light-gray-5);
+  background: var(--ratis-gray-5);
 }
 
 .src-fallback-title {
   margin: 0 0 1rem;
   font-size: 1.3rem;
   font-weight: 600;
-  color: var(--krds-color-light-gray-60);
+  color: var(--ratis-gray-60);
 }
 
 /* ── 폭에 따른 세 갈래 (기획 §5.5) ──────────────────────────────────── */
@@ -314,5 +317,98 @@
 
   .src-sheet {
     padding: 1.6rem;
+  }
+}
+
+/* 원문 지면 — PDF 에서 뽑은 글자를 그 줄바꿈 그대로 세운다.
+   본문처럼 다시 흐르게 하면 표·목차가 한 줄로 뭉개져 지면을 못 알아본다.
+   가로로 넘치는 줄은 지면 안에서만 민다 */
+.src-sheet-page {
+  white-space: pre-wrap;
+  overflow-x: auto;
+  font-size: var(--ratis-font-sm);
+  line-height: 1.7;
+  color: var(--ratis-text-body);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── 도구 줄 오른쪽 (전체보기 · 다운로드) ─────────────────────────────── */
+.src-tools-right {
+  display: flex;
+  align-items: center;
+  gap: var(--ratis-space-8);
+}
+
+/* 전체보기 — 다운로드와 같은 알약이되 면이 없다. 보는 방식을 바꾸는 조작이라
+   파일을 가져가는 걸음보다 가볍게 둔다 */
+.src-expand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ratis-space-6);
+  height: 3.2rem;
+  padding: 0 var(--ratis-space-12);
+  border: 0;
+  border-radius: var(--ratis-radius-max);
+  background: none;
+  font-size: var(--ratis-font-sm);
+  color: var(--ratis-text-muted);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.src-expand:hover {
+  background: var(--ratis-surface-hover);
+  color: var(--ratis-text-strong);
+}
+
+.src-expand:focus-visible {
+  outline: none;
+  box-shadow: var(--ratis-focus-ring);
+}
+
+/* ── 창으로 크게 볼 때 ────────────────────────────────────────────────
+   패널이 창 안에 그대로 앉는다. 창은 자리만 빌려주므로 제 여백을 걷고, 패널은
+   옆에 붙어 있을 때 쓰던 왼쪽 선을 놓는다 */
+/* ★ 창 급(lg 72)보다 넓다. 이 창은 「글을 읽는 창」이 아니라 **지면을 펴 보는 자리**라,
+   원문의 한 줄이 접히지 않는 폭이 필요하다. 화면이 넓으면 넓은 대로 쓰되 양옆은 남긴다.
+   급 규칙을 셀렉터로 덮지 않고 창이 내건 변수만 바꾼다 */
+.ratis-modal:has(.src-modal) {
+  --ratis-modal-width: min(132rem, calc(100vw - var(--ratis-space-40)));
+}
+
+.ratis-modal-panel.src-modal {
+  height: calc(100dvh - var(--ratis-space-40));
+  padding: 0;
+  overflow: hidden;
+}
+
+/* 닫기는 제 자리를 직접 잡는다 — 창의 기본 닫기는 판 여백을 보고 서는데(Modal.css)
+   이 창은 그 여백이 0 이라 기댈 격자가 없다. 아래 머리 줄에 맞춰 모서리에 붙인다 */
+.src-modal > .ratis-modal-close {
+  top: var(--ratis-space-12);
+  right: var(--ratis-space-12);
+}
+
+.src-modal .src-panel {
+  flex: 1;
+  min-height: 0;
+  border-left: 0;
+  border-radius: var(--ratis-radius-surface);
+}
+
+/* 닫기가 둘이 되지 않게 — 창의 X 하나만 둔다 */
+.src-modal .src-close {
+  display: none;
+}
+
+/* 창 안에서는 머리 줄이 X 자리를 비워 둔다 */
+.src-modal .src-head {
+  padding-right: 5.6rem;
+}
+
+@media (max-width: 767px) {
+  /* 좁은 화면에서는 패널이 이미 화면을 다 쓴다 — 전체보기가 뜻을 잃는다 */
+  .src-expand {
+    display: none;
   }
 }

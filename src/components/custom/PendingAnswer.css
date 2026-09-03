@@ -1,0 +1,89 @@
+@charset "utf-8";
+/* 답변 생성 중 — 점·스켈레톤·스트리밍 본문. KRDS 1rem = 10px 기준 그대로 (1rem = 10px) */
+/* ── 대기 ─────────────────────────────────────────────────────────────── */
+/* ⚠ KRDS Spinner 는 영역 전체를 덮는 로더라 인라인 표시에 쓰면 안 된다
+   (폭 100% 를 차지해 옆 글자를 밀어낸다). 여기서는 맥동하는 점을 쓴다 */
+.chat-generating {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.9rem;
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--ratis-gray-70);
+}
+
+
+.chat-dot {
+  flex: none;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 50%;
+  background: var(--ratis-blue-50);
+  animation: chat-pulse 1.2s ease-in-out infinite;
+}
+
+
+/* 스트리밍 본문 — 마지막 글자 뒤에 깜빡이는 커서 */
+.chat-caret {
+  display: inline-block;
+  width: 0.2rem;
+  height: 1.5rem;
+  margin-left: 0.3rem;
+  vertical-align: -0.25rem;
+  background: var(--ratis-blue-50);
+  animation: chat-blink 1s steps(2, start) infinite;
+}
+
+
+/* 답변 골격 스켈레톤 — 단순 스피너보다 좌절도가 낮다 (docs/reference/patterns/02) */
+.chat-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding-top: 0.2rem;
+}
+
+
+.chat-skeleton span {
+  height: 1.4rem;
+  border-radius: 0.4rem;
+  background: linear-gradient(
+    90deg,
+    var(--ratis-gray-10) 25%,
+    var(--ratis-gray-20) 37%,
+    var(--ratis-gray-10) 63%
+  );
+  background-size: 400% 100%;
+  animation: chat-shimmer 1.4s ease-in-out infinite;
+}
+
+
+.chat-skeleton span:nth-child(1) {
+  width: 92%;
+}
+
+.chat-skeleton span:nth-child(2) {
+  width: 100%;
+}
+
+.chat-skeleton span:nth-child(3) {
+  width: 64%;
+}
+
+
+/* 움직임을 줄여 달라는 설정이면 애니메이션을 멈춘다 */
+@media (prefers-reduced-motion: reduce) {
+  .chat-dot,
+.chat-caret,
+.chat-skeleton span {
+    animation: none;
+  }
+}
+
+
+.chat-generating-slow {
+  margin: 0;
+  font-size: 1.4rem;
+  color: var(--ratis-gray-50);
+}

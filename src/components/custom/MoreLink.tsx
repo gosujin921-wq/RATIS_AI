@@ -18,7 +18,7 @@ export function MoreLink({
   className?: string
 }) {
   return (
-    <a href={withBase(href)} className={cx('klid-more-link', className)}>
+    <a href={withBase(href)} className={cx('ratis-more-link', className)}>
       {label}
       <ChevronRight aria-hidden />
     </a>

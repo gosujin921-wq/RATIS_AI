@@ -9,15 +9,17 @@
     "type-check": "tsc --noEmit",
     "preview": "vite preview",
     "storybook": "storybook dev -p 5601 --exact-port",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "storybook:pages": "storybook dev -p 5602 --exact-port -c .storybook-pages",
+    "build-storybook:pages": "storybook build -c .storybook-pages -o storybook-pages-static"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.8",
     "@react-three/fiber": "^9.7.0",
-    "krds-react": "^1.1.1",
     "lucide-react": "^1.37.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "recharts": "^3.10.1",
     "three": "^0.185.1"
   },
   "devDependencies": {

@@ -1,7 +1,7 @@
 @charset "utf-8";
 /* 아이콘 전용 정사각 버튼. 28/32/36 별도 스케일 · radius 8 · 아이콘 ≈ 박스 절반 (기준: design.md §3) */
 
-.klid-icon-btn {
+.ratis-icon-btn {
   display: inline-flex;
   flex-shrink: 0;
   align-items: center;
@@ -14,80 +14,80 @@
     background-color 0.15s,
     color 0.15s;
 }
-/* 박스·글리프 모두 § 컨트롤 사다리(krds-theme.css)에서 온다 — 이 파일에 모바일 분기가 없다.
+/* 박스·글리프 모두 § 컨트롤 사다리(ratis-tokens.css)에서 온다 — 이 파일에 모바일 분기가 없다.
    모바일에서는 세 급의 박스가 다 44 로 모이고 글리프만 급을 가른다 */
-.klid-icon-btn[data-size='sm'] {
-  width: var(--klid-iconbtn-box-sm);
-  height: var(--klid-iconbtn-box-sm);
+.ratis-icon-btn[data-size='sm'] {
+  width: var(--ratis-iconbtn-box-sm);
+  height: var(--ratis-iconbtn-box-sm);
 }
-.klid-icon-btn[data-size='sm'] svg {
-  width: var(--klid-iconbtn-glyph-sm);
-  height: var(--klid-iconbtn-glyph-sm);
+.ratis-icon-btn[data-size='sm'] svg {
+  width: var(--ratis-iconbtn-glyph-sm);
+  height: var(--ratis-iconbtn-glyph-sm);
 }
-.klid-icon-btn[data-size='md'] {
-  width: var(--klid-iconbtn-box-md);
-  height: var(--klid-iconbtn-box-md);
+.ratis-icon-btn[data-size='md'] {
+  width: var(--ratis-iconbtn-box-md);
+  height: var(--ratis-iconbtn-box-md);
 }
-.klid-icon-btn[data-size='md'] svg {
-  width: var(--klid-iconbtn-glyph-md);
-  height: var(--klid-iconbtn-glyph-md);
+.ratis-icon-btn[data-size='md'] svg {
+  width: var(--ratis-iconbtn-glyph-md);
+  height: var(--ratis-iconbtn-glyph-md);
 }
-.klid-icon-btn[data-size='lg'] {
-  width: var(--klid-iconbtn-box-lg);
-  height: var(--klid-iconbtn-box-lg);
+.ratis-icon-btn[data-size='lg'] {
+  width: var(--ratis-iconbtn-box-lg);
+  height: var(--ratis-iconbtn-box-lg);
 }
-.klid-icon-btn[data-size='lg'] svg {
-  width: var(--klid-iconbtn-glyph-lg);
-  height: var(--klid-iconbtn-glyph-lg);
+.ratis-icon-btn[data-size='lg'] svg {
+  width: var(--ratis-iconbtn-glyph-lg);
+  height: var(--ratis-iconbtn-glyph-lg);
 }
 
 /* 모서리 — 원은 보내기·확인처럼 홀로 서는 한 동작에 쓴다 */
-.klid-icon-btn[data-shape='circle'] {
-  border-radius: var(--krds-radius-max);
+.ratis-icon-btn[data-shape='circle'] {
+  border-radius: var(--ratis-radius-max);
 }
 
 /* 톤: 기본 / 주요(코발트) / 낮춤 / 삭제류 */
-.klid-icon-btn[data-tone='default'] {
-  color: var(--krds-color-light-gray-60);
+.ratis-icon-btn[data-tone='default'] {
+  color: var(--ratis-gray-60);
 }
-.klid-icon-btn[data-tone='default']:hover {
-  background-color: var(--krds-color-light-gray-10);
-  color: var(--krds-color-light-gray-90);
+.ratis-icon-btn[data-tone='default']:hover {
+  background-color: var(--ratis-gray-10);
+  color: var(--ratis-gray-90);
 }
 /* 주요 동작 — 표 안 다운로드처럼 **그 줄에서 하라는 일이 하나뿐인** 자리.
    회색으로 두면 아이콘이 배경에 묻혀 "누를 수 있는 것"으로 안 읽힌다.
    화면의 다른 조작(링크·칩)과 같은 코발트라 색만으로도 같은 무리로 묶인다 */
-.klid-icon-btn[data-tone='primary'] {
-  color: var(--krds-color-light-primary-50);
+.ratis-icon-btn[data-tone='primary'] {
+  color: var(--ratis-blue-50);
 }
-.klid-icon-btn[data-tone='primary']:hover {
-  background-color: var(--krds-color-light-primary-5);
-  color: var(--krds-color-light-primary-60);
+.ratis-icon-btn[data-tone='primary']:hover {
+  background-color: var(--ratis-blue-5);
+  color: var(--ratis-blue-60);
 }
-.klid-icon-btn[data-tone='muted'] {
-  color: var(--krds-color-light-gray-40);
+.ratis-icon-btn[data-tone='muted'] {
+  color: var(--ratis-gray-40);
 }
-.klid-icon-btn[data-tone='muted']:hover {
-  background-color: var(--krds-color-light-gray-10);
-  color: var(--krds-color-light-gray-60);
+.ratis-icon-btn[data-tone='muted']:hover {
+  background-color: var(--ratis-gray-10);
+  color: var(--ratis-gray-60);
 }
-.klid-icon-btn[data-tone='danger'] {
-  color: var(--krds-color-light-gray-40);
+.ratis-icon-btn[data-tone='danger'] {
+  color: var(--ratis-gray-40);
 }
-.klid-icon-btn[data-tone='danger']:hover {
-  background-color: var(--krds-color-light-danger-5);
-  color: var(--krds-color-light-danger-50);
+.ratis-icon-btn[data-tone='danger']:hover {
+  background-color: var(--ratis-red-5);
+  color: var(--ratis-red-50);
 }
 
 /* 토글 눌림 = 코발트 채움 (tone 보다 우선).
    favorite 만 빼 둔다 — 표면을 안 칠하는 톤이라 여기서 코발트를 받으면, 그 자리가 스스로
    정한 표면색(카드 위 흰 알약 등)까지 덮어 버린다 */
-.klid-icon-btn[aria-pressed='true']:not([data-tone='favorite']) {
-  background-color: var(--krds-color-light-primary-50);
-  color: var(--krds-color-light-gray-0);
+.ratis-icon-btn[aria-pressed='true']:not([data-tone='favorite']) {
+  background-color: var(--ratis-blue-50);
+  color: var(--ratis-gray-0);
 }
-.klid-icon-btn[aria-pressed='true']:not([data-tone='favorite']):hover {
-  background-color: var(--krds-color-light-primary-60);
+.ratis-icon-btn[aria-pressed='true']:not([data-tone='favorite']):hover {
+  background-color: var(--ratis-blue-60);
 }
 
 /* 즐겨찾기 별 — 표면을 칠하지 않고 **아이콘만** 채운다.
@@ -95,40 +95,40 @@
    이미 다 코발트라 "내가 켠 것"이 주변에 묻힌다. 별은 관습적으로 금색이고, 그 색이
    이 화면에서 유일하게 코발트가 아닌 조작이라 눈에 먼저 든다.
    켜짐/꺼짐은 색이 아니라 **채움 여부**로도 갈린다 — 색만으로 구분하지 않는다 (WCAG 1.4.1) */
-.klid-icon-btn[data-tone='favorite'] {
-  color: var(--krds-color-light-gray-50);
+.ratis-icon-btn[data-tone='favorite'] {
+  color: var(--ratis-gray-50);
 }
 /* hover 도 표면을 안 칠한다 — 사진 위 흰 알약에 회색을 얹으면 얼룩으로 보인다.
    선 색만 금색으로 미리 물들여 "누르면 켜진다"를 알린다 */
-.klid-icon-btn[data-tone='favorite']:hover {
-  color: var(--klid-color-favorite);
+.ratis-icon-btn[data-tone='favorite']:hover {
+  color: var(--ratis-color-favorite);
 }
 /* 켜짐 = 한 색으로 꽉 찬 별. 표면은 건드리지 않는다 — 그 자리가 정한 색(카드 위 흰 알약)이
    켜짐/꺼짐에 안 바뀐다.
    채움과 선을 **같은 색**으로 준다. 다르면 lucide 의 선 두께(2)가 안쪽 테두리처럼 보여
    납작한 도형이 입체로 읽힌다 — 이 자리는 켜짐/꺼짐만 말하면 되는 자리다 */
-.klid-icon-btn[data-tone='favorite'][aria-pressed='true'] {
-  color: var(--klid-color-favorite);
+.ratis-icon-btn[data-tone='favorite'][aria-pressed='true'] {
+  color: var(--ratis-color-favorite);
 }
-.klid-icon-btn[data-tone='favorite'][aria-pressed='true'] svg {
-  fill: var(--klid-color-favorite);
+.ratis-icon-btn[data-tone='favorite'][aria-pressed='true'] svg {
+  fill: var(--ratis-color-favorite);
 }
 
 /* 채움 — 가장 높은 급의 실행. 면·글자색은 primary 버튼과 **같은 토큰**에서 온다
    (ratis-theme-ci.css 의 --ratis-action-*). 여기에 색을 새로 적으면 글자 버튼과
    아이콘 버튼의 주 동작 색이 따로 논다.
    ★ 톤 규칙들보다 **뒤에** 둔다 — 같은 특정도라 순서가 곧 우선순위다 */
-.klid-icon-btn[data-filled] {
+.ratis-icon-btn[data-filled] {
   background-color: var(--ratis-action-fill);
   color: var(--ratis-action-text);
 }
 
-.klid-icon-btn[data-filled]:hover:not(:disabled):not([aria-disabled='true']) {
+.ratis-icon-btn[data-filled]:hover:not(:disabled):not([aria-disabled='true']) {
   background-color: var(--ratis-action-fill-hover);
   color: var(--ratis-action-text);
 }
 
-.klid-icon-btn:disabled {
+.ratis-icon-btn:disabled {
   opacity: 0.4;
   pointer-events: none;
 }
@@ -137,23 +137,23 @@
    `disabled` 는 pointer-events 를 끊어 hover 도 focus 도 오지 않는다. 그래서 "왜 못 누르는지"를
    말해 줘야 하는 자리(툴팁·안내)에서는 이쪽을 쓴다 — 잠근 채로 물어볼 수 있어야 하기 때문이다.
    모양은 disabled 와 같고, 부르는 쪽이 onClick 을 걸지 않아 눌러도 아무 일이 없다 */
-.klid-icon-btn[aria-disabled='true'] {
+.ratis-icon-btn[aria-disabled='true'] {
   opacity: 0.4;
   cursor: not-allowed;
 }
 /* 잠긴 것에는 hover 반응을 주지 않는다 — 면이 밝아지면 눌릴 것처럼 보인다.
    톤별 hover 색을 되돌려야 해서 톤까지 함께 조준한다 */
-.klid-icon-btn[data-tone='default'][aria-disabled='true']:hover {
+.ratis-icon-btn[data-tone='default'][aria-disabled='true']:hover {
   background-color: transparent;
-  color: var(--krds-color-light-gray-60);
+  color: var(--ratis-gray-60);
 }
-.klid-icon-btn[data-tone='primary'][aria-disabled='true']:hover {
+.ratis-icon-btn[data-tone='primary'][aria-disabled='true']:hover {
   background-color: transparent;
-  color: var(--krds-color-light-primary-50);
+  color: var(--ratis-blue-50);
 }
-.klid-icon-btn[data-tone='muted'][aria-disabled='true']:hover,
-.klid-icon-btn[data-tone='danger'][aria-disabled='true']:hover {
+.ratis-icon-btn[data-tone='muted'][aria-disabled='true']:hover,
+.ratis-icon-btn[data-tone='danger'][aria-disabled='true']:hover {
   background-color: transparent;
-  color: var(--krds-color-light-gray-40);
+  color: var(--ratis-gray-40);
 }
 

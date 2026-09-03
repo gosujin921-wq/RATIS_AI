@@ -1,4 +1,5 @@
-import { Button, Modal } from 'krds-react'
+import { Modal } from '../ui/Modal'
+import { Button } from '../ui/Button'
 import { ChevronLeft, ChevronRight, Play } from 'lucide-react'
 import './MediaViewer.css'
 
@@ -47,7 +48,7 @@ export function MediaViewer({
   return (
     <Modal.Root size="lg" open={item != null} onOpenChange={(o) => !o && onIndexChange(null)}>
       <Modal.Content
-        className="klid-viewer"
+        className="ratis-viewer"
         /* 좌우 화살표 키로도 넘긴다 — 그림을 훑는 자리에서 매번 버튼을 겨냥하게 하지 않는다 */
         onKeyDown={(e) => {
           if (e.key === 'ArrowRight') step(1)
@@ -78,7 +79,7 @@ export function MediaViewer({
         </Modal.Body>
         <Modal.Footer>
           {/* 몇 장 중 몇 번째인지 — 넘기다 보면 끝이 어디인지 알 수 없다 */}
-          <span className="klid-viewer-count" aria-live="polite">
+          <span className="ratis-viewer-count" aria-live="polite">
             {(index ?? 0) + 1} / {items.length}
           </span>
           <Button variant="secondary" disabled={index === 0} onClick={() => step(-1)}>

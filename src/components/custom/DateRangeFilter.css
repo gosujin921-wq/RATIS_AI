@@ -1,0 +1,116 @@
+@charset "utf-8";
+/* 기간 필터 — 조건 줄에 서는 칩 하나와 그 아래 열리는 카드.
+
+   ★ 칩은 **알약**이다. 같은 줄의 조건 캡슐(드롭다운 capsule · 칩 묶음)과 한 모양이라야
+     한 줄이 두 갈래로 갈리지 않는다 (design.md §3 조건 줄 규칙). */
+
+.ratis-date-range {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ratis-space-4);
+}
+
+.ratis-date-range-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ratis-space-6);
+  height: var(--ratis-control-height-md);
+  padding-inline: var(--ratis-space-16);
+  border: 0.1rem solid var(--ratis-border-default);
+  border-radius: var(--ratis-radius-max);
+  background: var(--ratis-surface-card);
+  color: var(--ratis-text-muted);
+  font-size: var(--ratis-control-font-md);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+.ratis-date-range[data-size='sm'] .ratis-date-range-chip {
+  height: var(--ratis-control-height-sm);
+  padding-inline: var(--ratis-space-12);
+  font-size: var(--ratis-control-font-sm);
+}
+.ratis-date-range-chip > svg {
+  flex: none;
+  width: 1.6rem;
+  height: 1.6rem;
+}
+.ratis-date-range-chip:hover {
+  background: var(--ratis-surface-hover);
+  color: var(--ratis-text-strong);
+}
+.ratis-date-range-chip:focus-visible {
+  outline: none;
+  box-shadow: var(--ratis-focus-ring);
+}
+
+/* 기간이 걸려 있으면 칩이 **켜진 조건**임을 면과 선과 글자 셋으로 말한다 —
+   조건 줄에서 무엇이 걸려 있는지는 색 하나로만 말하면 놓치기 쉽다 */
+.ratis-date-range[data-set] .ratis-date-range-chip {
+  border-color: var(--ratis-border-brand);
+  background: var(--ratis-surface-tint);
+  color: var(--ratis-text-brand);
+  font-weight: var(--ratis-weight-medium);
+}
+
+/* 카드 — 칩에 매달려 뜬다 */
+.ratis-date-range-pop {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + var(--ratis-space-8));
+  padding: var(--ratis-space-16);
+  border: 0.1rem solid var(--ratis-border-subtle);
+  border-radius: var(--ratis-radius-pop);
+  background: var(--ratis-surface-raised);
+  box-shadow: var(--ratis-shadow-popover);
+}
+.ratis-date-range[data-align='start'] .ratis-date-range-pop {
+  left: 0;
+}
+/* 줄 오른쪽 끝에 선 칩은 오른쪽에 맞춘다 — 왼쪽 맞춤이면 카드가 화면 밖으로 나간다 */
+.ratis-date-range[data-align='end'] .ratis-date-range-pop {
+  right: 0;
+}
+
+/* 두 칸 — 달력 위에 선다. 값이 먼저고 고르는 자리가 그 아래다 */
+.ratis-date-range-inputs {
+  display: flex;
+  align-items: center;
+  gap: var(--ratis-space-8);
+  margin-bottom: var(--ratis-space-16);
+}
+.ratis-date-range-tilde {
+  flex: none;
+  color: var(--ratis-text-subtle);
+}
+.ratis-date-range-field {
+  flex: 1;
+}
+.ratis-date-range-field input {
+  width: 100%;
+  height: var(--ratis-control-height-sm);
+  /* 입력 좌우 여백은 급이 바뀌어도 14 고정이다 (design.md §3) */
+  padding-inline: 1.4rem;
+  border: 0.1rem solid var(--ratis-border-default);
+  border-radius: var(--ratis-radius-control);
+  background: var(--ratis-surface-card);
+  color: var(--ratis-text-strong);
+  font: inherit;
+  font-size: var(--ratis-control-font-sm);
+  font-variant-numeric: tabular-nums;
+}
+.ratis-date-range-field input:focus-visible {
+  outline: none;
+  border-color: var(--ratis-blue-50);
+  box-shadow: var(--ratis-focus-ring);
+}
+
+/* 지우기 — 칩 옆에 붙는다 */
+.ratis-date-range-clear {
+  flex: none;
+}

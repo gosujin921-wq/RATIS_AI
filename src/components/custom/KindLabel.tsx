@@ -49,13 +49,13 @@ export function KindLabel({ kind, iconOnly = false }: { kind: DataKind; iconOnly
   const { label, Icon } = KIND[kind]
   if (iconOnly) {
     return (
-      <span className="klid-kind-label" data-icon-only role="img" aria-label={label}>
+      <span className="ratis-kind-label" data-icon-only role="img" aria-label={label}>
         <Icon aria-hidden />
       </span>
     )
   }
   return (
-    <span className="klid-kind-label">
+    <span className="ratis-kind-label">
       <Icon aria-hidden />
       {label}
     </span>
@@ -74,7 +74,7 @@ export function KindLabel({ kind, iconOnly = false }: { kind: DataKind; iconOnly
  */
 export function KindLegend() {
   return (
-    <p className="klid-kind-legend">
+    <p className="ratis-kind-legend">
       {KIND_ORDER.map((kind) => (
         <KindLabel key={kind} kind={kind} />
       ))}

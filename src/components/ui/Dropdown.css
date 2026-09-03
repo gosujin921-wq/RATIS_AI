@@ -1,0 +1,351 @@
+@charset "utf-8";
+/* 드롭다운 — 킷 Select 를 대신하는 선택 전용 콤보박스.
+   닫힌 모양(트리거)은 킷 셀렉트 실측값을 그대로 잇는다: 높이 36/44/52 · 보더 1 gray-30 ·
+   라운드 8 (§3 "입력·셀렉트는 8") · 좌 12 · 우 36(화살표 16 을 오른쪽 12 에 두고 4 를 띄운다) ·
+   글자 14/400. 킷 셀렉트가 같은 화면에 남아 있어도 두 모양이 갈리지 않게 하기 위함이다. */
+
+.ratis-dropdown {
+  position: relative;
+  min-width: 0;
+  /* 캡슐 트리거가 늘어날 수 있는 한계. 값이 길어도 여기서 멈추고 이름을 끊는다.
+     자리마다 다르면 폭을 바꾸는 쪽에서 이 변수만 덮는다 */
+  --ratis-dropdown-trigger-max: 18rem;
+}
+
+/* ── 트리거 ─────────────────────────────────────────────────────────── */
+
+/* 트리거는 이름표(`Tooltip`) 안에 든다 — 마우스를 얹으면 고른 것을 다 보여 주는 자리다.
+   껍데기가 제 폭을 갖지 않으면 안의 트리거가 오그라들므로 폭을 그대로 물려준다 */
+.ratis-dropdown > .ratis-tooltip,
+.ratis-dropdown .ratis-tooltip-anchor {
+  display: flex;
+  width: 100%;
+}
+.ratis-dropdown[data-variant='capsule'] > .ratis-tooltip,
+.ratis-dropdown[data-variant='capsule'] .ratis-tooltip-anchor,
+.ratis-dropdown[data-variant='sorting'] > .ratis-tooltip,
+.ratis-dropdown[data-variant='sorting'] .ratis-tooltip-anchor {
+  width: auto;
+}
+/* 목록을 펼치면 이름표는 재운다 — 초점이 트리거에 머무는 패턴이라 그냥 두면 이름표가
+   내내 떠서 판을 가린다. 판이 이미 같은 말(체크)을 더 자세히 하고 있다 */
+.ratis-dropdown[data-open] .ratis-tooltip-bubble {
+  opacity: 0;
+}
+
+.ratis-dropdown .trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--ratis-space-4);
+  width: 100%;
+  padding: 0 var(--ratis-space-12);
+  border: 0.1rem solid var(--ratis-gray-30);
+  border-radius: var(--ratis-radius-control);
+  background-color: var(--ratis-gray-0);
+  font-size: var(--ratis-control-font-sm);
+  font-weight: 400;
+  color: var(--ratis-gray-90);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+/* 높이는 § 컨트롤 사다리(ratis-tokens.css)에서 온다 — 입력·버튼과 같은 값을 읽으므로
+   한 줄에 섞여 서도 갈리지 않고, 모바일에서도 함께 커진다.
+   ★ lg(52)는 두지 않는다 (2026-09-03). 버튼과 같은 사다리인데 버튼이 sm·md 둘만 쓰므로
+     셀렉트만 한 급 더 갖고 있으면 같은 줄에 세울 짝이 없다 */
+.ratis-dropdown[data-size='small'] .trigger {
+  height: var(--ratis-control-height-sm);
+}
+.ratis-dropdown[data-size='medium'] .trigger {
+  height: var(--ratis-control-height-md);
+}
+
+/* 조건 이름 — 값보다 한 톤 옅게 앞에 선다. 이름과 값 사이는 킷 gap(6)이 이미 벌려 준다.
+   이름은 안 줄어든다(`flex: none`) — 폭이 모자랄 때 줄어야 하는 쪽은 값이다 */
+.ratis-dropdown .trigger > .label {
+  flex: none;
+  color: var(--ratis-gray-60);
+}
+
+/* 이름과 값 사이의 가는 세로선. 글자 높이만큼만 서고 색은 한 톤 낮춘다 */
+.ratis-dropdown .trigger > .bar {
+  flex: none;
+  width: 0.1rem;
+  height: 1.4rem;
+  background-color: var(--ratis-gray-20);
+}
+
+/* 고른 값 — 이름과 건수 두 조각이다. 폭이 모자라면 **이름만** 끊는다.
+   건수(「외 4건」)는 안 줄고 안 끊긴다: 몇 갈래가 걸려 있는지가 이름 뒷글자보다 중요하다 */
+.ratis-dropdown .trigger > .value {
+  display: flex;
+  align-items: baseline;
+  gap: var(--ratis-space-4);
+  flex: 1;
+  min-width: 0;
+}
+.ratis-dropdown .trigger > .value > .text {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.ratis-dropdown .trigger > .value > .count {
+  flex: none;
+  color: var(--ratis-gray-60);
+}
+.ratis-dropdown .trigger > .value[data-placeholder] {
+  color: var(--ratis-gray-40);
+}
+
+.ratis-dropdown .trigger > svg {
+  flex: none;
+  width: 1.6rem;
+  height: 1.6rem;
+  color: var(--ratis-gray-50);
+  transition: transform 0.15s ease;
+}
+.ratis-dropdown[data-open] .trigger > svg {
+  transform: rotate(180deg);
+}
+
+/* hover 는 칩과 같은 값이다 (design.md §3 호버 갈래 — 칩·드롭다운 트리거).
+   둘 다 흰 면을 두고 **고르는** 조작이라, 같은 줄에 섞여 서는 필터 패널에서 반응이 갈리면
+   무엇이 같은 종류인지 손끝으로 안 읽힌다 */
+.ratis-dropdown .trigger:hover:not(:disabled) {
+  border-color: var(--ratis-blue-30);
+  background-color: var(--ratis-blue-5);
+}
+/* 펼친 동안은 보더만 코발트로 세운다 — 면까지 깔면 아래 목록과 한 덩어리로 뭉쳐
+   어디까지가 트리거인지 흐려진다. hover 보다 뒤에 오고 `:hover` 를 함께 조준해야
+   "펼친 채 마우스가 얹혀 있는" 흔한 상태에서 틴트가 되살아나지 않는다 */
+.ratis-dropdown[data-open] .trigger,
+.ratis-dropdown[data-open] .trigger:hover {
+  border-color: var(--ratis-blue-50);
+  background-color: var(--ratis-gray-0);
+}
+
+.ratis-dropdown .trigger:disabled {
+  background-color: var(--ratis-gray-5);
+  color: var(--ratis-gray-40);
+  cursor: not-allowed;
+}
+.ratis-dropdown .trigger:disabled > svg {
+  color: var(--ratis-gray-30);
+}
+
+/* ── 목록 ───────────────────────────────────────────────────────────── */
+
+/* 트리거 바로 아래 4 를 띄우고 트리거 폭을 최소로 삼되, 항목이 길면 더 벌어질 수 있게 둔다
+   (`min-width` 이지 `width` 가 아니다) — 폭 96 짜리 연도 드롭다운도 항목은 안 잘린다.
+   z-index 는 같은 패널의 다음 줄 컨트롤 위로 올리기 위한 최소치다.
+
+   ★ 판은 **떠 있는 얇은 면**이다 (2026-09-03). 종전에는 보더 gray-20 + 판 그림자로
+     「상자」를 그렸는데, 항목 네댓 줄짜리 목록에 그 무게를 씌우면 목록이 카드처럼 읽혀
+     고르는 조작이 아니라 읽을 내용으로 보인다. 선은 머리카락처럼 얇게(gray-10) 두고
+     높이는 넓게 번지는 그림자가 진다.
+   ★ 라운드는 `--ratis-radius-pop` — 토큰 사전이 「팝오버 · 셀렉트 목록」에 붙여 둔 값이다 */
+.ratis-dropdown > .list {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.4rem);
+  left: 0;
+  /* 판은 **내용만큼** 벌어진다. 자리 잡는 상자(트리거)가 좁아도 따라 좁아지지 않는다 —
+     그냥 두면 절대 위치 상자는 남는 자리(=트리거 폭)에 맞춰져 항목 이름이 잘린다.
+     넓게 서는 쪽은 트리거가 아니라 판이다 */
+  width: max-content;
+  min-width: 100%;
+  max-width: 32rem;
+  /* 8줄까지 보이고 그 뒤로는 굴린다 — 시/군/구는 스물이 넘는 곳이 있다 */
+  max-height: 32.4rem;
+  padding: var(--ratis-space-4);
+  overflow-y: auto;
+  /* 목록이 길어 굴릴 때 굵은 막대가 서면 얇은 판이 다시 무거워진다 */
+  scrollbar-width: thin;
+  list-style: none;
+  border: 0.1rem solid var(--ratis-gray-10);
+  border-radius: var(--ratis-radius-pop);
+  background-color: var(--ratis-gray-0);
+  box-shadow: var(--ratis-shadow-popover);
+  /* 트리거 쪽에서 **자라 나온다.** 그냥 나타나면 어디서 온 판인지 모르고, 미끄러져
+     들어오면 목록이 자리를 옮긴 것처럼 읽힌다. 0.98 에서 1 로 아주 조금만 커진다 */
+  transform-origin: top left;
+  animation: ratisDropdownIn 0.13s cubic-bezier(0.2, 0, 0, 1);
+}
+
+@keyframes ratisDropdownIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+
+/* 움직임을 줄이면 판은 그냥 선다 — 자리와 모양은 그대로고 과정만 사라진다 */
+@media (prefers-reduced-motion: reduce) {
+  .ratis-dropdown > .list {
+    animation: none;
+  }
+}
+.ratis-dropdown > .list[hidden] {
+  display: none;
+}
+
+/* 화면 아래쪽에 선 트리거(입력창 안 등)는 **위로** 펼친다 — 아래로 열면 목록이 창 밖으로
+   나가 절반만 보인다. 띄우는 간격은 아래로 열 때와 같은 4 */
+.ratis-dropdown[data-placement='up'] > .list {
+  top: auto;
+  bottom: calc(100% + 0.4rem);
+  transform-origin: bottom left;
+}
+
+.ratis-dropdown .option {
+  display: flex;
+  align-items: center;
+  gap: var(--ratis-space-8);
+  /* 목록 한 줄도 누르는 자리다 — 트리거와 같은 sm 급으로 사다리를 탄다 */
+  height: var(--ratis-control-height-sm);
+  padding: 0 var(--ratis-space-10);
+  /* `--ratis-radius-tag` — 토큰 사전이 「사각 태그 · 목록 항목」에 붙여 둔 값이다.
+     판(pop)보다 작아 안쪽으로 갈수록 작아지는 위계도 지켜진다 */
+  border-radius: var(--ratis-radius-tag);
+  font-size: 1.4rem;
+  color: var(--ratis-gray-90);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.ratis-dropdown .option > .label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* 체크 자리 — 늘 서 있고 켜질 때만 보인다 (자리를 지우면 줄 폭이, 따라서 판 폭이 흔들린다) */
+.ratis-dropdown .option > .mark {
+  flex: none;
+  display: flex;
+}
+.ratis-dropdown .option > .mark > svg {
+  width: 1.6rem;
+  height: 1.6rem;
+  color: var(--ratis-blue-60);
+}
+.ratis-dropdown .option > .mark:not([data-on]) > svg {
+  visibility: hidden;
+}
+
+/* 마우스가 얹힌 자리와 키보드가 가리키는 자리를 **한 상태로 합친다** — 포인터가 움직이면
+   active 가 따라오므로 `:hover` 를 따로 그릴 필요가 없고, 둘이 동시에 다른 줄을 밝히는 일도 없다.
+   목록 항목의 hover 는 LNB·GNB 패널과 같은 회색 필이다 (§11) */
+.ratis-dropdown .option[data-active] {
+  background-color: var(--ratis-gray-5);
+}
+
+/* 고른 항목은 **체크 하나로** 말한다 (2026-09-03). 종전에는 틴트 면 + 코발트 글자 + 굵기
+   600 을 한꺼번에 얹었는데, 그러면 마우스가 얹힌 줄(회색 필)과 고른 줄(파란 필)이 같은
+   문법(면 색)으로 겨뤄 목록 안에 색 덩어리가 둘이 된다. 면은 **지금 가리키는 자리**만
+   쓰고, 골랐다는 사실은 오른쪽 체크가 진다 (다중도 같은 체크다) — 색이 아니라 형태라
+   §8 색각 조건은 그대로 지킨다 */
+.ratis-dropdown .option[aria-selected='true'] {
+  color: var(--ratis-gray-90);
+}
+
+/* 「전체」와 낱개 사이의 가는 선. 목록 좌우 여백만큼 물려 항목 글자와 끝을 맞춘다.
+   ★ `display: block` 이라야 한다 — `li` 기본값(`list-item`)으로 두면 왼쪽에 목록 점이 찍힌다
+     (항목 줄은 flex 라 애초에 점이 안 생겨 이 자리만 튄다) */
+.ratis-dropdown .divider {
+  display: block;
+  height: 0.1rem;
+  margin: var(--ratis-space-4) var(--ratis-space-10);
+  background-color: var(--ratis-gray-10);
+}
+
+.ratis-dropdown .option[aria-disabled='true'] {
+  color: var(--ratis-gray-40);
+  cursor: not-allowed;
+}
+
+/* ── capsule — 캡슐로 서는 조건 줄 ──────────────────────────────────── */
+
+/* `default` 에서 **모서리와 폭 잡는 법만** 다르다. 면·보더·높이·글자·hover·펼침은 위 기본
+   규칙을 그대로 쓴다 — 같은 물건의 다른 모양이지 다른 물건이 아니다.
+   ★ 줄을 채우지 않는다 — 캡슐 줄에서는 고른 값 길이만큼만 서야 옆의 칩과 한 줄로 읽힌다.
+     각진 폼 컨트롤은 칸이 맞아야 줄이 정돈돼 보이지만, 알약은 길이가 저마다 달라도 어긋나
+     보이지 않는다 (필터 칩 줄이 그렇다).
+   ★ 좌우 여백 14 — 알약 끝이 둥글어 각진 상자의 12 를 그대로 쓰면 글자가 벽에 붙어 보인다.
+     § 컨트롤 사다리의 sm 여백과 같은 값이고, 오른쪽에 화살표가 서서 여백을 되돌려 준다 */
+.ratis-dropdown[data-variant='capsule'] .trigger {
+  width: auto;
+  /* ★ 좌우가 다르다 (2026-09-03). 오른쪽 끝에 서는 것은 화살표인데, 글리프가 16 상자 안에서
+     10 남짓이라 상자만큼의 여백을 또 주면 오른쪽에 빈 자리가 도드라진다. 눈에 보이는 획을
+     기준으로 맞추려면 오른쪽은 한 단 줄이고, 대신 글자와 화살표 **사이**를 벌려야 한다 —
+     4 로는 화살표가 글자에 붙어 버려 한 덩어리로 읽힌다 */
+  padding-left: var(--ratis-control-padding-sm);
+  padding-right: var(--ratis-space-10);
+  gap: var(--ratis-space-8);
+  border-radius: var(--ratis-radius-max);
+  /* 글자는 칩과 같은 값이다 (gray-90 · 600). 캡슐 줄에서는 조건 하나하나가 「지금 걸려
+     있는 조건」을 말하는 자리라 폼 입력값(400)보다 한 단 무겁게 선다 — 굵기가 갈리면
+     같은 줄의 칩과 셀렉트가 다른 종류로 읽힌다 */
+  font-weight: 600;
+}
+/* 이름도 값과 같은 색으로 둔다 — 옅게 깔면 이름 한 조각만 무게가 갈린다.
+   이름과 값을 가르는 일은 색이 아니라 사이 여백(6)이 맡는다 */
+.ratis-dropdown[data-variant='capsule'] .trigger > .label {
+  color: inherit;
+}
+/* 캡슐은 고른 값 길이만큼 서되 **정해진 폭에서 멈춘다.** 여기서 안 멈추면 이름이 긴 항목을
+   고르는 순간 트리거가 옆에 선 것(입력칸)을 밀어낸다. 넘치는 이름은 말줄임으로 끊고,
+   무엇이 걸려 있는지 낱낱은 판을 열면 체크가 말한다 — 넓게 서는 쪽은 트리거가 아니라 판이다 */
+.ratis-dropdown[data-variant='capsule'] .trigger {
+  max-width: var(--ratis-dropdown-trigger-max);
+}
+/* 캡슐에서는 판의 최소 폭을 **트리거의 한계 폭**으로 잡는다. 기본값(`min-width: 100%`)은
+   트리거를 따라가는데, 캡슐 트리거는 고른 값에 따라 늘었다 줄었다 하므로 판까지 같이
+   흔들린다. 한계 폭에 걸어 두면 트리거가 얼마로 서 있든 판은 늘 같은 폭이고,
+   트리거보다 좁아지는 일도 없다 (트리거가 그 폭을 못 넘는다) */
+.ratis-dropdown[data-variant='capsule'] > .list {
+  min-width: var(--ratis-dropdown-trigger-max);
+}
+
+/* 옛 규칙 메모. 종전에는 여기에 최소 폭을
+   따로 박아 뒀는데, 캡슐이 고른 값 길이만큼만 서던 시절 「전체」 하나만 고르면 판이 손톱만
+   해졌기 때문이다. 이제 트리거가 **가장 긴 항목만큼** 벌어져 있어 그 사정이 없다 —
+   최소 폭을 남겨 두면 판만 트리거보다 좁게 서서 둘이 어긋나 보인다 */
+
+/* ── sorting — 목록 위에 얹히는 정렬 기준 ───────────────────────────── */
+
+/* 폼 컨트롤이 아니라 목록에 딸린 조작이라 면과 보더가 없다 (15/600 · 좌 4 · 우 22).
+   hover 는 §3 "면이 없는 글자 조작" 갈래 */
+.ratis-dropdown[data-variant='sorting'] .trigger {
+  width: auto;
+  height: auto;
+  /* 면이 없는 글자 조작이라 높이는 글자가 정한다. 손가락에는 그 높이가 모자라므로
+     누르는 자리만 사다리의 최소치까지 넓힌다 — PC(최소치 0)에서는 아무 일도 없다 */
+  min-height: var(--ratis-tap-min);
+  padding: var(--ratis-space-2) var(--ratis-space-4);
+  border: 0;
+  border-radius: var(--ratis-radius-tag);
+  background: none;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+.ratis-dropdown[data-variant='sorting'] .trigger:hover:not(:disabled),
+.ratis-dropdown[data-variant='sorting'] .trigger:hover:not(:disabled) > svg {
+  background: none;
+  color: var(--ratis-blue-50);
+}
+.ratis-dropdown[data-variant='sorting'][data-open] .trigger {
+  color: var(--ratis-blue-50);
+}
+.ratis-dropdown[data-variant='sorting'] .trigger > .value[data-placeholder] {
+  color: inherit;
+}
+/* 오른쪽 끝에 서는 조작이라 목록도 오른쪽 모서리를 맞춘다 — 왼쪽 정렬이면 목록이 화면 밖으로 샌다 */
+.ratis-dropdown[data-variant='sorting'] > .list {
+  left: auto;
+  right: 0;
+  min-width: 16rem;
+  transform-origin: top right;
+}
+

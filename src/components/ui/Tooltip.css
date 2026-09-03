@@ -1,0 +1,70 @@
+@charset "utf-8";
+/* 이름표 — 아이콘 조작 위에 뜨는 짧은 말.
+
+   ★ **자기 층을 연다** (isolation). 표 안 여러 줄에서 뜨는 물건이라, 층을 열지 않으면
+     아래 줄의 이름표가 위 줄에 덮인다. 층 안에서만 앞뒤를 따지게 가둔다. */
+
+.ratis-tooltip {
+  position: relative;
+  display: inline-flex;
+  isolation: isolate;
+}
+
+.ratis-tooltip-anchor {
+  display: inline-flex;
+}
+
+.ratis-tooltip-bubble {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  width: max-content;
+  max-width: 24rem;
+  padding: 0.6rem 1rem;
+  border-radius: var(--ratis-radius-control);
+  /* 밝은 면이다 (2026-09-03). 검은 상자는 화면에서 저 혼자 다른 세계라, 흰 판 위에 떠서
+     같은 말을 거드는 물건과 안 맞는다. 드롭다운 판과 **같은 문법**으로 세운다 —
+     흰 면 · 머리카락 보더 · 넓게 번지는 그림자 */
+  border: 0.1rem solid var(--ratis-gray-10);
+  background: var(--ratis-surface-raised);
+  color: var(--ratis-gray-90);
+  font-size: var(--ratis-font-sm);
+  font-weight: var(--ratis-weight-normal);
+  line-height: 1.5;
+  text-align: center;
+  white-space: normal;
+  /* 어절 단위로 접는다 — 한국어는 낱말 가운데가 끊기면 읽는 속도가 떨어진다 */
+  word-break: keep-all;
+  box-shadow: var(--ratis-shadow-popover);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+/* 위·아래 — 붙는 쪽만 다르고 나머지는 같다. 8 은 「가리키는 것과 그 이름」 사이의 밀착 거리다 */
+.ratis-tooltip[data-placement='top'] .ratis-tooltip-bubble {
+  bottom: calc(100% + var(--ratis-space-8));
+  transform: translateX(-50%);
+}
+.ratis-tooltip[data-placement='bottom'] .ratis-tooltip-bubble {
+  top: calc(100% + var(--ratis-space-8));
+  transform: translateX(-50%);
+}
+
+/* 글자가 비면 아예 없는 셈으로 둔다 — 쓰는 쪽에서 「띄울 말이 있을 때만」 넘기면
+   감싸는 구조를 조건부로 갈아 끼우지 않아도 된다 (초점이 안 튄다) */
+.ratis-tooltip-bubble:empty {
+  display: none;
+}
+
+.ratis-tooltip:hover .ratis-tooltip-bubble,
+.ratis-tooltip:focus-within .ratis-tooltip-bubble {
+  opacity: 1;
+}
+
+/* 움직임을 줄여 달라고 한 사람에게는 뜨고 지는 시간을 없앤다 (내용은 그대로 뜬다) */
+@media (prefers-reduced-motion: reduce) {
+  .ratis-tooltip-bubble {
+    transition: none;
+  }
+}

@@ -72,7 +72,7 @@ export function ResultCard({
   className?: string
 }) {
   return (
-    <div className={cx('klid-result-card', className)} data-no-image={noImage || undefined}>
+    <div className={cx('ratis-result-card', className)} data-no-image={noImage || undefined}>
       <a className="card" href={withBase(href)}>
         {!noImage && (
           <img

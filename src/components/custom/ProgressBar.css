@@ -1,21 +1,21 @@
 @charset "utf-8";
 /* 진행률 막대. 트랙 gray-10 + 바 primary-45 (밝은 포인트 톤) */
 
-.klid-progress {
+.ratis-progress {
   overflow: hidden;
-  border-radius: var(--krds-radius-max);
-  background-color: var(--krds-color-light-gray-10);
+  border-radius: var(--ratis-radius-max);
+  background-color: var(--ratis-gray-10);
 }
-.klid-progress[data-size='md'] {
+.ratis-progress[data-size='md'] {
   height: 0.8rem;
 }
-.klid-progress[data-size='sm'] {
+.ratis-progress[data-size='sm'] {
   height: 0.6rem;
 }
 
-.klid-progress .bar {
+.ratis-progress .bar {
   height: 100%;
-  border-radius: var(--krds-radius-max);
-  background-color: var(--krds-color-light-primary-45);
+  border-radius: var(--ratis-radius-max);
+  background-color: var(--ratis-blue-45);
   transition: width 0.3s;
 }

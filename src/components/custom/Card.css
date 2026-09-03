@@ -2,27 +2,27 @@
 /* 목록 카드 + 카드 그리드 (design.md §5 표면 · §6 그리드 간격) */
 
 /* 3열 그리드. 카드 사이 16 (§6 "그리드 간격: 카드 16") */
-.klid-card-grid {
+.ratis-card-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--krds-gap-5);
+  gap: var(--ratis-space-16);
 }
 /* 4열 — 카드 내용이 제목·수치 정도로 얕을 때만 (추천 데이터셋·미리보기).
    요약문이 들어가는 카드는 3열이 기본이다. 4열이면 한 줄에 두세 단어만 들어가 줄이 늘어난다 */
-.klid-card-grid[data-cols='4'] {
+.ratis-card-grid[data-cols='4'] {
   grid-template-columns: repeat(4, 1fr);
 }
 
 /* 태블릿 2열 · 모바일 1열. 기준점은 §9 의 두 지점(1023 / 767)만 쓴다 */
 @media (max-width: 1023px) {
-  .klid-card-grid,
-  .klid-card-grid[data-cols='4'] {
+  .ratis-card-grid,
+  .ratis-card-grid[data-cols='4'] {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 @media (max-width: 767px) {
-  .klid-card-grid,
-  .klid-card-grid[data-cols='4'] {
+  .ratis-card-grid,
+  .ratis-card-grid[data-cols='4'] {
     grid-template-columns: 1fr;
   }
 }
@@ -31,78 +31,78 @@
    이미지는 카드 가장자리까지 꽉 채운다(full-bleed) — 패딩 안에 가두면 답답하고,
    목록에서 그림이 먼저 읽혀야 하는 카드다. 그래서 패딩은 카드가 아니라 아래 본문 영역이 갖는다.
    overflow:hidden 은 이미지 모서리를 카드 라운드에 맞춰 잘라내기 위함 */
-.klid-card {
+.ratis-card {
   display: flex;
   flex-direction: column;
   height: 100%;
   overflow: hidden;
-  border: 0.1rem solid var(--krds-color-light-gray-20);
+  border: 0.1rem solid var(--ratis-gray-20);
   border-radius: 1.6rem;
-  background-color: var(--krds-color-light-gray-0);
+  background-color: var(--ratis-gray-0);
   text-decoration: none;
 }
-.klid-card:hover {
-  border-color: var(--krds-color-light-primary-50);
+.ratis-card:hover {
+  border-color: var(--ratis-blue-50);
 }
 
 /* 썸네일. 이미지가 없으면 자리만 그린다. 라운드는 카드가 잘라주므로 따로 주지 않는다 */
-.klid-card .thumb {
+.ratis-card .thumb {
   display: block;
   width: 100%;
   height: 16rem; /* 목록 카드 썸네일 160 (design.md §5) */
-  background-color: var(--krds-color-light-gray-10);
+  background-color: var(--ratis-gray-10);
   object-fit: cover;
 }
 /* 컴팩트 — 추천·연관처럼 본 목록이 아닌 자리. 카드 한 판이 화면을 다 먹지 않게 그림만 낮춘다.
    글자 크기·패딩은 그대로 둔다 (같은 카드로 읽혀야 한다) */
-.klid-card[data-compact] .thumb {
+.ratis-card[data-compact] .thumb {
   height: 12rem;
 }
 
 /* 본문 영역 — 카드 패딩은 여기가 갖는다 (design.md §5 카드 패딩 20/24 중 밀집 목록 20) */
-.klid-card .body {
+.ratis-card .body {
   display: flex;
   flex-direction: column;
   flex: 1;
-  padding: var(--krds-padding-7);
+  padding: var(--ratis-space-20);
 }
 
-.klid-card .badge-row {
+.ratis-card .badge-row {
   display: flex;
   flex-wrap: wrap;
   /* 밀착 6 — 간격 척도는 4 다음이 8 이라 6 칸이 없다 (design.md §6) */
-  gap: var(--krds-gap-2);
+  gap: var(--ratis-space-4);
 }
 
-.klid-card .title {
-  font-size: var(--krds-pc-font-size-heading-xsmall); /* 카드 제목 17 (design.md §2) */
+.ratis-card .title {
+  font-size: var(--ratis-font-xl); /* 카드 제목 17 (design.md §2) */
   font-weight: 600;
   line-height: 1.4; /* 제목권 행간 (design.md §2) */
-  color: var(--krds-color-light-gray-90);
+  color: var(--ratis-gray-90);
 }
 /* 배지가 있으면 제목은 배지에 붙는다 */
-.klid-card .badge-row + .title {
-  margin-top: var(--krds-gap-2);
+.ratis-card .badge-row + .title {
+  margin-top: var(--ratis-space-4);
 }
 
 /* 요약은 2줄 미리보기 */
-.klid-card .summary {
+.ratis-card .summary {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   line-clamp: 2;
   overflow: hidden;
-  margin-top: var(--krds-gap-2); /* 제목→설명 밀착 4 (design.md §6) */
-  font-size: var(--krds-pc-font-size-body-medium);
+  margin-top: var(--ratis-space-4); /* 제목→설명 밀착 4 (design.md §6) */
+  font-size: var(--ratis-font-lg);
   line-height: 1.6;
-  color: var(--krds-color-light-gray-70);
+  color: var(--ratis-gray-70);
 }
 
 /* 메타는 카드 바닥에 붙인다 (요약 길이가 달라도 아래 선이 맞는다) */
-.klid-card .meta {
+.ratis-card .meta {
   margin-top: auto;
-  padding-top: var(--krds-padding-5);
-  font-size: var(--krds-pc-font-size-body-xsmall);
+  padding-top: var(--ratis-space-12);
+  font-size: var(--ratis-font-sm);
   font-variant-numeric: tabular-nums; /* 날짜·숫자 자리폭 고정 (design.md §2) */
-  color: var(--krds-color-light-gray-50);
+  color: var(--ratis-gray-50);
 }

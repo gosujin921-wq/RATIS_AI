@@ -1,0 +1,48 @@
+@charset "utf-8";
+/* 접이식 — 토글 줄 + 패널.
+
+   ★ 패널에 **회색 트레이를 깔지 않는다.** 킷은 면 + 패딩 + 라운드를 깔았는데, 이 서비스에서
+     접이식이 서는 자리는 이미 카드나 판 **안**이라 면 위에 면이 또 깔려 상자가 두 겹으로
+     읽혔다 (design.md §5 — 표면은 겹치지 않는다). 패널의 모양은 그 안에 든 것이 정한다. */
+
+.ratis-disclosure {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ratis-space-10);
+}
+
+/* 토글 — 면이 없는 글자 조작이라 캡슐이 아니고, 반응도 글자에서 끝난다 (design.md §3) */
+.ratis-disclosure-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ratis-space-6);
+  align-self: flex-start;
+  min-height: var(--ratis-tap-min);
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: var(--ratis-font-md);
+  font-weight: var(--ratis-weight-bold);
+  color: var(--ratis-text-body);
+  cursor: pointer;
+}
+
+.ratis-disclosure-toggle:hover {
+  color: var(--ratis-text-brand);
+}
+
+.ratis-disclosure-toggle:focus-visible {
+  outline: none;
+  box-shadow: var(--ratis-focus-ring);
+  border-radius: var(--ratis-radius-tag);
+}
+
+/* 화살표가 상태를 말한다 — 펼치면 위를 본다 */
+.ratis-disclosure-caret {
+  flex: none;
+  transition: transform 0.15s ease;
+}
+
+.ratis-disclosure-toggle[aria-expanded='true'] .ratis-disclosure-caret {
+  transform: rotate(180deg);
+}

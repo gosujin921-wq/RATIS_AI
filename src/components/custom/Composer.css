@@ -1,0 +1,348 @@
+@charset "utf-8";
+/* 입력 영역 — 캡슐 하나가 채팅창이다. KRDS 1rem = 10px 기준 그대로 (1rem = 10px) */
+/* ★ 안쪽 여백은 **이 컴포저 하나가** 진다. 상·좌·우·하가 같은 값에서 나오게 하려면
+   안에 든 입력칸이 자기 여백을 또 가지면 안 된다 (아래 두 규칙이 그걸 걷는다).
+
+   ★ design.md §5 의 「패딩 ≥ 라운드 × 1.25」는 여기 적용하지 않는다. 그건 **카드·표·모달**
+     같은 내용 표면의 비례 규칙이고, 컴포저는 글을 받는 **컨트롤**이다 (입력칸·드롭다운과 같은
+     갈래). 컨트롤에 카드 패딩을 주면 알맹이는 한 줄인데 상자만 커진다. */
+/* ★ 캡슐 **전체가** 입력 영역이다. 여백을 눌러도 커서가 들어온다 (아래 onMouseDown).
+   글자를 받는 자리라는 걸 커서 모양으로도 말한다 */
+.chat-composer {
+  position: relative; /* 빛(형제) 위에 선다 */
+  cursor: text;
+  /* ★ 안쪽 면은 **순백 단색**이다. 색도 그라데이션도 얹지 않는다 — 글을 받는 자리라
+     뒤가 조용해야 친 글자가 먼저 읽힌다. 색은 테두리와 바깥 빛이 진다.
+     ★ 이 면과 선은 **초기 화면과 답변 화면이 같다.** 같은 일을 하는 컨트롤이 화면마다
+       다른 옷을 입으면 대화를 시작한 순간 입력창이 바뀐 걸로 보인다.
+
+     ★ 테두리가 **그라데이션**이다. border-color 로는 한 색밖에 못 준다 — 흰 면은
+       padding-box 에, 색띠는 border-box 에 깔고 테두리를 투명으로 비워 그 띠가
+       1px 만큼 드러나게 한다. 두 layer 의 순서가 뒤집히면 색띠가 면을 덮는다.
+       흰 면도 단색이지만 layer 로 깔아야 해서 linear-gradient 형태를 쓴다 —
+       background-color 로 주면 border-box 색띠를 통째로 가린다 */
+  background:
+    linear-gradient(var(--ratis-gray-0), var(--ratis-gray-0)) padding-box,
+    var(--chat-accent-sweep) border-box;
+  border: 1px solid transparent;
+  padding: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  /* 한 줄이면 캡슐, 늘어나면 라운드 스퀘어. 모양이 곧 상태다 —
+     한 줄일 때는 「한 마디 묻는 자리」로, 길어지면 「글을 쓰는 자리」로 읽힌다 */
+  border-radius: var(--ratis-radius-max);
+  /* ★ 캡슐을 카드 면에서 한 겹 띄운다. 두 겹으로 나눠 까는 이유는 ratis-effects 의
+     `.card-soft` 와 같다 — 붙어 있는 얇은 그림자가 접지면을 만들고, 퍼지는 쪽이
+     높이를 만든다. 한 겹만 쓰면 캡슐이 뜬 게 아니라 흐려 보인다.
+     ★ 두 번째 겹은 짧게 둔다. 입력창은 판 위에 살짝 얹힌 컨트롤이지 떠 있는 카드가 아니다 */
+  box-shadow:
+    0 0.1rem 0.2rem color-mix(in srgb, var(--ratis-gray-90) 6%, transparent),
+    0 0.4rem 1.2rem -0.4rem color-mix(in srgb, var(--ratis-gray-90) 16%, transparent);
+  /* ★ 캡슐 ↔ 라운드 스퀘어 전환. 0.18s ease 로는 글이 두 줄로 넘어가는 순간 모서리가
+     「딸깍」 바뀌는 걸로 읽힌다. 시간을 늘리고 **처음 빠르고 끝이 느린** 곡선을 쓴다 —
+     모양이 자리를 잡아 가는 것처럼 보인다.
+     높이는 여기서 못 태운다 — 상자 높이는 auto 이고, 실제로 자라는 건 안의 입력칸이다
+     (JS 가 줄 수를 재서 textarea 의 height 를 직접 박는다). 전환은 그쪽에 건다 */
+  transition:
+    border-radius 0.32s cubic-bezier(0.2, 0, 0, 1),
+    box-shadow 0.24s ease,
+    border-color 0.24s ease,
+    background 0.24s ease;
+}
+
+
+/* 커서가 들어오면 **선이 진다.** 색띠를 단색 CI 블루로 갈아 끼운다 — 여러 색이 흐르는
+   선은 「장식」이고, 한 색으로 굳은 선은 「지금 여기」다. border-color 로는 못 바꾼다
+   (테두리가 투명이고 색은 배경 layer 가 지고 있다).
+   그림자를 같이 키우지 않는다. 상자가 커진 것처럼 보여 글자 자리가 흔들린 걸로 읽힌다 */
+.chat-composer-shell:focus-within .chat-composer {
+  background:
+    linear-gradient(var(--ratis-gray-0), var(--ratis-gray-0)) padding-box,
+    linear-gradient(var(--ratis-blue-50), var(--ratis-blue-50))
+      border-box;
+  box-shadow:
+    0 0.1rem 0.2rem color-mix(in srgb, var(--ratis-gray-90) 8%, transparent),
+    0 0.4rem 1.2rem -0.4rem color-mix(in srgb, var(--ratis-blue-80) 14%, transparent);
+}
+
+
+.chat-composer:not([data-lines='1']) {
+  border-radius: 1.4rem;
+}
+
+
+/* 컴포저를 감싸는 자리. 포커스가 안쪽 어디에 들어가든 :focus-within 으로 한 번에 잡는다 */
+.chat-composer-shell {
+  position: relative;
+}
+
+
+/* ── 빛무리 — 초기 화면 전용, 정지 ──────────────────────────────────────
+   ★ 상자 둘레로 번지는 빛. 테두리에 색을 칠하는 게 아니다. 테두리는 중립선이고 형태는
+     그 선이 잡는다. 색은 상자 **바깥**에만 깔린다.
+
+   ★ 빛을 컴포저의 자식(::before + z-index:-1)으로 두면 안 된다. 쌓임 맥락 안에서
+     음수 z-index 자식은 **부모 배경 위**에 칠해져 캡슐 안쪽까지 물든다
+     (2026-09-02 실측 — 캡슐 전체가 초록빛으로 떴다).
+     형제로 빼고 컴포저를 그 위에 올려야 흰 면이 빛을 덮는다.
+
+   ★ **움직이지 않는다.** 도는 동안에는 conic 의 각도 배치가 필요했지만, 정지 상태에서
+     각도로 색을 나누면 왼쪽 위와 오른쪽 아래가 같은 색이 되어 배치가 안 읽힌다.
+     가로로 한 번 흐르는 linear 로 바꾼다 — 왼쪽 초록(CI)에서 오른쪽 파랑까지. */
+.chat-composer-glow {
+  position: absolute;
+  /* ★ 사방을 똑같이 넓히지 않는다. 위 0.6 · 좌우 1.2 · 아래 3 —
+     빛은 **아래로 흘러내린다**. 고르게 두르면 「빛나는 테두리」라는 장식이 되고,
+     아래로 몰면 캡슐이 면 위에 떠서 빛을 흘리는 것처럼 읽힌다.
+     아래 3rem 은 추천 질문 첫 줄까지 닿는 길이다 — 카드가 유리면이라 그 빛을 받는다 */
+  inset: -0.6rem -1.2rem -3rem;
+  border-radius: var(--ratis-radius-max);
+  /* ★ 색이 상자 둘레를 **돈다**. 각도로 색을 나누는 conic 이라, 시작각을 계속 돌리면
+     색띠가 캡슐을 한 바퀴 흐른다 (가로로만 흐르는 linear 로는 좌우로 미끄러질 뿐이다).
+
+     ★ 이웃한 색끼리만 붙인다 — 초록 → 청록 → 파랑, 되돌아오는 길도 파랑 → 청록 → 초록.
+       어느 경계를 봐도 색상환에서 옆자리라 blur 가 두 색을 섞어도 중간색이 그대로 나온다.
+       옐로그린과 인디고처럼 먼 색을 맞붙이면 섞인 자리가 회색으로 죽는다.
+     ★ 첫 색과 끝 색이 같아야 한 바퀴 도는 자리(360deg)에서 이음매가 안 보인다 */
+  background: conic-gradient(
+    from var(--chat-glow-angle),
+    var(--chat-glow-green) 0deg,
+    var(--chat-glow-teal) 90deg,
+    var(--chat-glow-blue) 180deg,
+    var(--chat-glow-teal) 270deg,
+    var(--chat-glow-green) 360deg
+  );
+  /* 색 덩어리가 안 보일 만큼 뭉갠다. 색이 아니라 **빛이 번진 자국**으로 읽혀야 한다.
+     자리를 넓힌 만큼 흐림도 같이 키운다 — 넓은 면에 좁은 흐림을 쓰면 색이 덩어리로 뭉친다 */
+  filter: blur(26px);
+  opacity: 0.85;
+  pointer-events: none;
+  /* 등속이어야 한 바퀴 넘어가는 자리에서 안 걸린다. 색이 아주 옅으니 빠르면 안 보이고
+     너무 느리면 멈춘 걸로 읽힌다 — 12초가 「가만히 보면 도는」 속도다 */
+  animation: chatGlowSpin 12s linear infinite;
+  /* 모양은 캡슐을 따라간다 */
+  transition: border-radius 0.32s cubic-bezier(0.2, 0, 0, 1);
+}
+
+
+.chat-composer-shell:has(.chat-composer:not([data-lines='1'])) .chat-composer-glow {
+  border-radius: 1.4rem;
+}
+
+
+/* ★ 빛무리는 **초기 화면 전용**이다. 초기 화면에서 입력창은 그 화면의 주인공이라
+   시선을 끌어야 한다. 답변 화면에서는 읽는 글이 주인공이고 입력창은 도구다.
+   캡슐 자체(면·선·그림자·포커스)는 두 화면이 같다 — 달라지는 건 이 빛 하나뿐이다 */
+.chat-page:not([data-empty='true']) .chat-composer-glow {
+  display: none;
+}
+
+
+/* 움직임을 줄이면 회전도 모양 전환도 멈춘다 — 색 배치는 남고 과정만 사라진다 */
+@media (prefers-reduced-motion: reduce) {
+  .chat-composer,
+.chat-composer textarea,
+.chat-composer-glow {
+    transition: none;
+  }
+
+
+  .chat-composer-glow {
+    animation: none;
+  }
+}
+
+
+/* 입력칸 + 전송을 한 줄로. 한 줄일 땐 가운데를 맞추고(캡슐 안에서 글자가 버튼과 나란히),
+   여러 줄이면 버튼을 바닥에 붙인다(글이 위로 자라도 버튼 자리는 그대로).
+
+   ★ 왼쪽 들여쓰기는 **맨 글자일 때만** 준다. 캡슐 곡선 안쪽이라 0 이면 모서리에 닿아
+     보이기 때문이다 (design.md §7 「둥근 면 위 맨 글자는 좌우 4 를 더 먹인다」).
+     상자를 가진 조작(범위 셀렉트)이 먼저 서면 그 규칙이 필요 없다 — 아래에서 걷는다 */
+.chat-composer-main {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding-left: 0.8rem;
+}
+
+/* ★ 셀렉트가 서면 들여쓰기를 걷는다 (2026-09-03 실측: 좌 17 · 우 9 로 어긋나 있었다).
+   맨 글자의 시각 보정이 상자에 그대로 얹혀 왼쪽만 8 더 밀렸다. 상자끼리는 보정이 아니라
+   **같은 안쪽 여백**으로 서야 한다 — 왼쪽 셀렉트와 오른쪽 보내기가 캡슐 가장자리에서
+   같은 거리(9)에 선다 */
+.chat-composer-main:has(> .chat-scope) {
+  padding-left: 0;
+}
+
+
+.chat-composer:not([data-lines='1']) .chat-composer-main {
+  align-items: flex-end;
+}
+
+
+.chat-composer-main .chat-composer-input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ★ 입력칸을 **블록으로** 세운다. 킷 textarea 는 `inline-block` 이라 감싼 필드 안에서 글줄
+   위에 얹히고, 그 줄의 바닥 여백(6.5)이 아래에 남는다. 그러면 필드가 입력칸보다 그만큼
+   높아져 가운데가 3 남짓 위로 밀린다 — 옆에 선 범위 캡슐·보내기와 높이가 안 맞는 까닭이다.
+   필드도 같이 flex 로 세워 남는 줄바닥을 없앤다 */
+.chat-composer-input .ratis-field {
+  display: flex;
+}
+.chat-composer-input textarea {
+  display: block;
+}
+
+
+.chat-composer-send {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+
+/* ── 검색 범위 (입력줄 안 왼쪽) ─────────────────────────────────────── */
+
+/* 캡슐 안에 캡슐이 선다. 크기·모양·글자는 `Dropdown variant="capsule"` 이 이미 지므로
+   여기서는 **줄에서 어떻게 서는지만** 정한다.
+   ★ 안 줄어든다 (`flex: none`). 캡슐은 고른 값 길이만큼만 서고 남는 폭은 입력칸이 다 먹는다 —
+     여기가 줄면 「전체 자」 처럼 잘려 무엇이 걸려 있는지 못 읽는다
+   ★ 여러 줄로 자란 컴포저에서도 **첫 줄에 붙는다** — 컴포저가 아래를 기준으로 정렬되지만
+     (`align-items: flex-end`) 이 캡슐은 글 옆이 아니라 줄머리에 서는 조작이다 */
+.chat-composer .chat-scope {
+  flex: none;
+}
+
+
+.chat-composer:not([data-lines='1']) .chat-scope {
+  align-self: flex-start;
+}
+
+
+/* 흰 면 위에 흰 면이라 보더 하나로만 갈린다 — 컴포저 안쪽은 순백이고 캡슐도 순백이다.
+   회색 면을 깔아 갈라 놓지 않는다: 입력창 안에서 색 덩어리가 하나 더 생기면
+   글을 받는 자리가 두 칸으로 쪼개진 걸로 읽힌다 */
+.chat-composer .chat-scope > .trigger {
+  border-color: var(--ratis-gray-30);
+}
+
+
+/* 라벨은 화면에서 감춘다 — 보조기술에는 남는다 */
+.chat-composer-input :where(label) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+
+/* KRDS 는 showCount 를 꺼도 카운트 자리를 남긴다 — 걷어내고 간격도 없앤다.
+   글자 수는 도구 줄에서 한계 근처일 때만 보여준다 */
+.chat-composer-input .textarea-count {
+  display: none;
+}
+
+
+/* 킷은 form-group 을 세로 flex 로 세우고 라벨과 입력칸 사이에 gap(8)을 둔다.
+   라벨을 감춰도 그 칸은 남아 글자가 좌·우보다 8 만큼 아래에서 시작한다 — 그래서 gap 을 걷는다.
+   ★ form-conts 가 아니라 **form-group** 이 그 간격을 갖는다 (실측 2026-09-01) */
+.chat-composer-input .form-group,
+.chat-composer-input .form-conts {
+  gap: 0;
+  margin-top: 0;
+}
+
+
+/* 입력창은 낮게 시작해 필요한 만큼만 자란다 (ChatGPT·Claude 는 1행에서 시작).
+   KRDS 컴포넌트 기본 높이를 덮어야 해서 우선순위를 올린다 */
+/* 높이는 화면이 줄 수를 재서 직접 넣는다 (ChatPage 의 auto-grow).
+   킷 기본 rows 높이를 이겨야 해서 우선순위를 올리고, 최소 높이는 한 줄로 내린다 */
+/* ★ 입력칸은 **면을 갖지 않는다.** 캡슐 하나가 채팅창이다.
+   킷 textarea 는 제 흰 배경과 라운드 8 을 갖고 있어, 그대로 두면 캡슐 안에 흰 상자가
+   하나 더 그려져 **상자가 두 겹**으로 보인다 (입력칸이 제 흰 면과 라운드를 갖는다).
+   면·라운드·테두리를 전부 캡슐에 넘긴다 */
+.chat-composer .chat-composer-input textarea,
+.chat-composer textarea {
+  min-height: 0 !important;
+  resize: none;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow-y: hidden;
+  /* 상자 모서리가 펴지는 것과 **같은 곡선·같은 시간**. 글자 자리가 먼저 툭 내려가고
+     상자가 뒤따라 펴지면 두 개가 따로 노는 걸로 보인다 */
+  transition: height 0.32s cubic-bezier(0.2, 0, 0, 1);
+  /* 들여쓰기는 캡슐이 진다 — 여기서 또 주면 상단 여백과 어긋난다 */
+  padding: 0 !important;
+}
+
+
+/* 글자 수 — 한계 근처에서만 나타난다 */
+.chat-count {
+  font-size: 1.2rem;
+  color: var(--ratis-gray-50);
+  white-space: nowrap;
+}
+
+
+.chat-count[data-over='true'] {
+  color: var(--ratis-red-60, #bc2c1a);
+  font-weight: 600;
+}
+
+
+/* ── 좁은 화면 — 한 줄에 셋이 못 선다 (2026-09-03 실측) ──────────────────
+   390 폭에서 범위 캡슐 155 · 보내기 44 · 여백을 빼면 글 자리가 100 밖에 안 남아
+   자리표시 문구부터 두 줄로 접힌다. 「입력창」이라고 부르는 자리에서 가장 좁은 칸이
+   글 칸이 되는 셈이라, 폭을 나눠 갖는 방식 자체가 이 화면에서는 성립하지 않는다.
+
+   ★ 줄을 나눈다 — **글이 첫 줄을 통째로 쓰고, 조작은 그 아래 줄에 선다.**
+   ★ 범위를 아이콘 하나로 줄이지 않는다. 무엇에 걸어 묻는 중인지는 매 질문마다 읽혀야
+     하는 값이고, 글리프만 남으면 눌러 봐야 안다 — 줄을 하나 내주는 편이 싸다.
+   ★ 모양도 같이 바뀐다. 두 줄이 된 상자에 알약 곡선을 두르면 위아래가 부푼 것으로
+     보인다 — 「한 줄이면 알약」(data-lines)이라는 규칙이 여기서는 성립하지 않는다 */
+@media (max-width: 767px) {
+  .chat-composer:has(.chat-scope),
+  .chat-composer-shell:has(.chat-scope) .chat-composer-glow {
+    border-radius: 1.4rem;
+  }
+
+  .chat-composer-main:has(> .chat-scope) {
+    flex-wrap: wrap;
+    align-items: center;
+    row-gap: var(--ratis-space-8);
+  }
+
+  /* 글이 첫 줄을 통째로 쓴다 */
+  .chat-composer-main:has(> .chat-scope) .chat-composer-input {
+    order: -1;
+    flex: 1 0 100%;
+    /* 둥근 면 위 맨 글자라 좌우를 조금 먹인다 (design.md §7). 아래 줄에 서는 상자
+       (범위·보내기)보다 4 만큼 안쪽에서 시작해야 글머리와 상자머리가 나란히 보인다 */
+    padding: var(--ratis-space-4) var(--ratis-space-4) 0;
+  }
+
+  /* 보내기는 조작 줄의 오른쪽 끝에 */
+  .chat-composer-main:has(> .chat-scope) .chat-composer-send {
+    margin-left: auto;
+  }
+
+  /* 글이 여러 줄로 자라도 조작 줄은 제 줄에 그대로 선다 — 줄이 나뉜 뒤로는
+     「줄머리에 붙인다」는 보정이 오히려 캡슐을 제 줄 위로 띄운다 */
+  .chat-composer:not([data-lines='1']) .chat-scope {
+    align-self: auto;
+  }
+
+  .chat-composer:not([data-lines='1']) .chat-composer-main:has(> .chat-scope) {
+    align-items: center;
+  }
+}

@@ -1,0 +1,24 @@
+@charset "utf-8";
+/* 사이드바 폴딩 토글 — 36 정사각 · 라운드 8 · 면 없음.
+   면이 없는 보조 조작이라 캡슐이 아니다 (design.md §3 — 아이콘 버튼은 8).
+   머리 줄 안에서의 세로 보정은 셸이 진다 (로고 기하에 맞춘 값이라 이 부품의 몫이 아니다). */
+.ratis-collapse {
+  /* ★ 줄어들지 않는다. 펼치는 순간 로고가 제 폭(89)으로 먼저 돌아오는데 머리 줄은 아직
+     좁아서, 기본값(flex-shrink:1)이면 토글이 한 프레임 눌려 중심이 30→21 로 튄다 */
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.6rem;
+  height: 3.6rem;
+  border: 0;
+  border-radius: 0.8rem;
+  background: none;
+  color: var(--ratis-gray-50);
+  cursor: pointer;
+}
+
+.ratis-collapse:hover {
+  background: var(--ratis-gray-10);
+  color: var(--ratis-gray-80);
+}

@@ -1,0 +1,33 @@
+@charset "utf-8";
+/* 검색창 — 입력칸 위에 돋보기를 얹는 상자.
+   치수는 design.md §3 (아이콘 18 · 왼쪽 16 · 글자는 아이콘 뒤 10 → 왼쪽 여백 합계 44) */
+
+.ratis-search-field {
+  position: relative;
+  display: inline-block;
+}
+
+/* 아이콘은 세로 가운데. 이름표를 단 입력에서는 칸이 아래로 밀리므로 이 부품은
+   이름표 없는 조건 줄 전용이다 */
+.ratis-search-field > svg {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 1.6rem;
+  width: 1.8rem;
+  height: 1.8rem;
+  transform: translateY(-50%);
+  color: var(--ratis-text-subtle);
+  /* 아이콘을 눌러도 입력으로 들어간다 */
+  pointer-events: none;
+}
+
+/* 왼쪽만 넓힌다 — 오른쪽은 브라우저가 그리는 지우기 표식이 서는 자리다 */
+.ratis-search-field > .ratis-field-input {
+  padding-left: 4.4rem;
+}
+
+/* 알약 — 조건 줄이 알약으로 서는 경우. 모서리만 바뀐다 (컴포넌트 주석) */
+.ratis-search-field[data-variant='capsule'] > .ratis-field-input {
+  border-radius: var(--ratis-radius-max);
+}

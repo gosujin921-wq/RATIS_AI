@@ -1,0 +1,194 @@
+@charset "utf-8";
+/* 회원 블록과 그 메뉴 — 사이드바 맨 아래. KRDS 1rem = 10px
+   레일(접힘)에서의 모양은 사이드바가 진다 (판의 상태라서). */
+/* 모양은 SidebarToggle.css 가 진다. 여기 남은 것은 머리 줄 안에서의 세로 보정뿐이다 */
+
+/* ── 접힌 상태 = **아이콘 레일** ─────────────────────────────────────
+   통째로 숨기지 않는다. 숨기면 새 대화로 가는 길까지 사라져 매번 펼쳤다 접어야 한다.
+   레일에 남기는 것은 **글자 없이도 뜻이 서는 것**뿐이다 — 토글 · 새 대화 · 사용자.
+   대화 제목은 글자가 곧 내용이라 아이콘으로 줄일 수 없으므로 레일에서는 감춘다.
+
+   ★ 좁은 화면(서랍)에는 적용하지 않는다. 거기서는 이미 사이드바가 숨어 있어
+     「접기」가 뜻을 잃는다 */
+@media (min-width: 1024px) {
+.ratis-user-text {
+    transition:
+      opacity 0.12s ease,
+      height 0s linear 0s,
+      visibility 0s linear 0s;
+  }
+
+.ratis-user-name,
+.ratis-user-role {
+    white-space: nowrap;
+  }
+}
+
+
+
+/* 글리프가 앞에 서는 줄 — 사용자 블록.
+   [글리프 칸][글자] 두 칸 격자라 글리프가 커지든 작아지든 글자 자리는 그대로다.
+   같은 문법의 조작 줄(새 대화·대화 검색)은 SideRow 부품이 제 안에서 진다 */
+.ratis-user {
+  display: grid;
+  grid-template-columns: var(--side-glyph) 1fr;
+  /* ★ 격자에서 `justify-content: center` 는 **칸 묶음 전체**를 가운데로 미는 뜻이라,
+     접힘 애니메이션 중 칸이 폭을 따라 미끄러진다
+     (실측: 새 대화 글리프가 54 → 97 → 122 로 흘렀다). 왼쪽에 못박는다 */
+  justify-content: start;
+  align-items: center;
+  /* 글리프 칸(24)이 18 짜리 아이콘보다 넓어 이미 좌우 3 씩 여백이 있다.
+     여기에 1rem 을 더 주면 아이콘과 글자가 멀어져 한 줄로 안 읽힌다 */
+  gap: 0.6rem;
+}
+
+
+/* 글리프는 제 칸 가운데 — 24 짜리 아바타의 **중심**이 옆 줄들과 한 줄에 선다 */
+.ratis-user > :first-child {
+  justify-self: center;
+}
+
+
+/* 사용자 블록 — 아바타 + 이름 + 소속. 사이드바 맨 아래 한 줄 */
+/* 사용자 줄 — 누르면 메뉴가 열린다 */
+.ratis-user-wrap {
+  position: relative;
+}
+
+
+.ratis-user {
+  width: 100%;
+  border: 0;
+  border-radius: 0.8rem;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  min-width: 0;
+  /* 위 줄들과 같은 들여쓰기·같은 높이 리듬 */
+  min-height: 4.4rem;
+  padding: 0 var(--side-pad);
+}
+
+
+/* 사용자 표식 원. 옆에 이름이 그대로 있으므로 보조기술엔 숨긴다 */
+.ratis-avatar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 글리프 칸과 같은 크기 — 더 크면 이름이 다른 줄보다 오른쪽에서 시작한다 */
+  width: var(--side-glyph);
+  height: var(--side-glyph);
+  border-radius: var(--ratis-radius-max);
+  background: var(--ratis-blue-50);
+  color: var(--ratis-gray-0);
+}
+
+
+.ratis-user-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+
+/* 긴 이름 처리 (기획 §11) */
+.ratis-user-name {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--ratis-gray-90);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.ratis-user-role {
+  font-size: 1.2rem;
+  color: var(--ratis-gray-50);
+}
+
+
+.ratis-user:hover {
+  background: var(--ratis-gray-10);
+}
+
+
+/* 펼침 표식 — 제 칸을 갖는다. 이름 칸에 겹쳐 넣었더니 이름 폭이 줄어
+   「김…」으로 잘리고 두 줄로 내려앉았다 (2026-09-02) */
+.ratis-user {
+  grid-template-columns: var(--side-glyph) 1fr auto;
+}
+
+
+.ratis-user-caret {
+  flex: none;
+  color: var(--ratis-gray-40);
+}
+
+
+.ratis-user[aria-expanded='true'] .ratis-user-caret {
+  transform: rotate(180deg);
+}
+
+
+/* 메뉴 — 사이드바 맨 아래라 **위로** 편다 */
+.ratis-user-menu {
+  position: absolute;
+  bottom: calc(100% + 0.6rem);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  padding: 0.6rem;
+  border: 1px solid var(--ratis-gray-20);
+  border-radius: 1.2rem;
+  background: var(--ratis-gray-0);
+  box-shadow: 0 6px 20px rgb(15 23 42 / 12%);
+}
+
+
+.ratis-user-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  min-height: 3.6rem;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: 0.8rem;
+  background: none;
+  font-size: 1.4rem;
+  color: var(--ratis-gray-80);
+  text-align: left;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+
+.ratis-user-item:hover {
+  background: var(--ratis-gray-10);
+}
+
+
+/* 로그아웃 — 되돌릴 수 없는 걸음이라 색으로도 갈린다. 글자로도 「로그아웃」이라 적혀 있어
+   색만으로 구분하지 않는다 (기획 §11) */
+.ratis-user-item[data-tone='danger'] {
+  margin-top: 0.4rem;
+  border-top: 1px solid var(--ratis-gray-10);
+  padding-top: 0.4rem;
+  border-radius: 0 0 0.8rem 0.8rem;
+  color: var(--ratis-red-60);
+}
+
+
+.ratis-user-item[data-tone='danger']:hover {
+  background: var(--ratis-red-5);
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+.ratis-user-text {
+    transition: none;
+  }
+}

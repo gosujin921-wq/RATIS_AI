@@ -1,0 +1,65 @@
+@charset "utf-8";
+/* 날짜 한 칸 — 입력칸 오른쪽 안에 달력 버튼이 앉는다.
+
+   ★ 버튼은 칸 **안**이다. 밖에 세우면 폼에서 칸 폭이 버튼만큼 짧아져, 옆에 선 다른
+     입력칸과 오른쪽 끝이 어긋난다. */
+
+.ratis-dateinput-box {
+  position: relative;
+}
+
+/* 글자가 버튼 밑으로 흘러들지 않게 오른쪽을 비운다 (버튼 32 + 양옆 숨) */
+.ratis-dateinput .ratis-field-input {
+  padding-right: 4.4rem;
+}
+
+.ratis-dateinput-open {
+  position: absolute;
+  top: 50%;
+  right: 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--ratis-iconbtn-box-md);
+  height: var(--ratis-iconbtn-box-md);
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: var(--ratis-radius-control);
+  background: none;
+  color: var(--ratis-text-muted);
+  cursor: pointer;
+}
+.ratis-dateinput-open:hover:not(:disabled) {
+  background: var(--ratis-surface-hover);
+  color: var(--ratis-text-strong);
+}
+.ratis-dateinput-open:focus-visible {
+  outline: none;
+  box-shadow: var(--ratis-focus-ring);
+}
+.ratis-dateinput-open:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.ratis-dateinput-open > svg {
+  width: var(--ratis-iconbtn-glyph-md);
+  height: var(--ratis-iconbtn-glyph-md);
+}
+
+/* 달력 카드 — 칸에 매달려 뜬다. 팝오버 그림자는 판보다 연하고 넓다 (토큰 주석 참조) */
+.ratis-dateinput-pop {
+  position: absolute;
+  z-index: 20;
+  left: 0;
+  padding: var(--ratis-space-16);
+  border: 0.1rem solid var(--ratis-border-subtle);
+  border-radius: var(--ratis-radius-pop);
+  background: var(--ratis-surface-raised);
+  box-shadow: var(--ratis-shadow-popover);
+}
+.ratis-dateinput-pop[data-placement='down'] {
+  top: calc(100% + var(--ratis-space-8));
+}
+.ratis-dateinput-pop[data-placement='up'] {
+  bottom: calc(100% + var(--ratis-space-8));
+}

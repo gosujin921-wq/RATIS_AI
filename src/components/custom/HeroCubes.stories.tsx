@@ -7,7 +7,7 @@ import { HeroCubes } from './HeroCubes'
  * 여기서는 히어로 섹션과 비슷한 높이·배경을 준 상태로 확인한다.
  */
 const meta = {
-  title: 'Custom/HeroCubes',
+  title: 'AI chat/대화/HeroCubes',
   component: HeroCubes,
   parameters: { layout: 'fullscreen' },
   decorators: [

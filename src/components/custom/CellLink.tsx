@@ -22,7 +22,7 @@ export function CellLink({
   children: ReactNode
   className?: string
 }) {
-  const cls = cx('klid-cell-link', className)
+  const cls = cx('ratis-cell-link', className)
   if (href) {
     return (
       <a className={cls} href={withBase(href)}>

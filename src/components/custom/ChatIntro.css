@@ -1,0 +1,69 @@
+@charset "utf-8";
+/* 시작 화면 — 오브와 안내 문구. KRDS 1rem = 10px 기준 그대로 (1rem = 10px) */
+/* ── 시작 안내 ────────────────────────────────────────────────────────── */
+.chat-intro {
+  text-align: center;
+  padding: 2rem 0 2.4rem;
+}
+
+
+/* 큐브 오브 — HeroCubes 는 absolute 캔버스라 여기서 높이를 잡아 준다.
+   포인터는 통과시킨다(장식이고, 뒤를 가리면 안 된다) */
+.chat-orb {
+  position: relative;
+  height: 20rem;
+  margin: 0 auto 0.4rem;
+  pointer-events: none;
+}
+
+
+/* ★ 캔버스를 오브 박스 **밖으로** 넓힌다. 큐브는 떠다니는 중에 박스 위쪽을 넘어서는데,
+   캔버스 가장자리가 곧 그리는 한계라 거기서 잘린다.
+
+   ★ 박스 높이를 키우는 걸로는 안 고쳐진다. 시야각이 세로 기준이라 보이는 세계 크기는
+     카메라 거리로만 정해진다 — 캔버스가 커지면 같은 장면이 더 큰 픽셀로 그려질 뿐이고
+     잘리는 **비율**은 그대로다. 그래서 캔버스를 넓힌 배율(1.6배)만큼 카메라도 뒤로
+     물린다 (ChatPage.tsx 의 cameraZ). 그래야 여유만 늘고 큐브 크기는 그대로다.
+
+   ★ 위아래는 %로 준다. 움직임을 줄인 화면에서 오브가 16rem 으로 줄어도 배율이 같아야
+     카메라 값과 어긋나지 않는다. 좌우는 잘릴 일이 없어 고정값으로 넉넉히 둔다 */
+.chat-orb .hero-cubes {
+  inset: -30% -8rem;
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  /* HeroCubes 자체가 정지 클러스터로 떨어지므로 자리만 조금 줄인다 */
+  .chat-orb {
+    height: 16rem;
+  }
+}
+
+
+.chat-intro-title {
+  margin: 0 0 1.2rem;
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ratis-gray-90);
+}
+
+
+.chat-intro-desc {
+  /* 아래 간격은 .chat-intro 의 padding 이 진다 — 여기서 또 주면 입력창이 멀어진다 */
+  margin: 0;
+  font-size: 1.6rem;
+  /* ★ 줄높이를 **정수 픽셀**로 박는다. 배수(1.6)로 주면 16 × 1.6 = 25.6 이라 두 줄이 51.2 가
+     되고, 이 블록을 세로 가운데로 세우는 시작 화면에서 그 조각이 아래 컴포저 위치까지
+     내려간다 (실측 544.09). 반픽셀에 걸린 글자는 흐리게 앉는다 */
+  line-height: 2.6rem;
+  color: var(--ratis-gray-60);
+}
+
+
+/* ── 좁은 화면 ───────────────────────────────────────────────────────── */
+@media (max-width: 1023px) {
+  .chat-intro-title {
+    font-size: 2.4rem;
+  }
+}

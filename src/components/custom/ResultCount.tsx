@@ -8,7 +8,7 @@ import './ResultCount.css'
  */
 export function ResultCount({ total, className }: { total: number; className?: string }) {
   return (
-    <p className={cx('klid-result-count', className)}>
+    <p className={cx('ratis-result-count', className)}>
       총 <strong>{total.toLocaleString()}</strong>건
     </p>
   )

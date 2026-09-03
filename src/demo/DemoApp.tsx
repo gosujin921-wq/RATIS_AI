@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ChatMessage, ChatProblem, ChatProblemKind, ConversationSummary } from '../api/types'
 import { AppShell } from '../app/AppShell'
 import { ChatPage } from '../pages/chat/ChatPage'
-import { DEMO_CONVERSATIONS, DEMO_ME, DEMO_THREADS, makeDemoReply } from './data/chat'
+import { DEMO_CATEGORIES, DEMO_CONVERSATIONS, DEMO_ME, DEMO_THREADS, makeDemoReply } from './data/chat'
+import { SOURCE_PAGES } from './data/source-pages'
 
 /**
  * 데모 응답 흉내 — 스트리밍 버전.
@@ -61,6 +62,25 @@ export function DemoApp() {
   const [pendingAnswer, setPendingAnswer] = useState<string | null>(null)
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null)
   const [conversations, setConversations] = useState<ConversationSummary[]>(DEMO_CONVERSATIONS)
+  /** 대화 검색어 (기획 §5.2 후속). 실연동에서는 검색 API 가 이 자리를 진다 */
+  const [search, setSearch] = useState('')
+
+  /**
+   * 검색 — **제목과 주고받은 본문을 함께** 건다.
+   * 제목만 걸면 「제목 없는 대화」와 자동으로 붙은 제목이 검색에서 통째로 빠진다.
+   * 본문은 셸도 목록도 갖고 있지 않으므로 데이터를 쥔 이 자리가 거른다.
+   */
+  const shownConversations = useMemo(() => {
+    const q = search.trim().toLowerCase()
+    if (q.length === 0) return conversations
+    return conversations.filter((c) => {
+      if ((c.title ?? '').toLowerCase().includes(q)) return true
+      return (DEMO_THREADS[c.conversationId] ?? []).some(
+        (m) =>
+          m.question.toLowerCase().includes(q) || (m.answer ?? '').toLowerCase().includes(q),
+      )
+    })
+  }, [conversations, search])
 
   /** 진행 중인 흉내를 멈추는 함수. 새 대화·대화 전환·언마운트에서 부른다 */
   const cancelRef = useRef<(() => void) | null>(null)
@@ -74,8 +94,9 @@ export function DemoApp() {
 
   useEffect(() => () => cancelRef.current?.(), [])
 
-  const ask = (query: string) => {
+  const ask = (query: string, categoryIds?: string[]) => {
     cancelRef.current?.()
+    if (categoryIds?.length) console.info('[데모] 검색 범위', categoryIds)
 
     /* ★ 데모 전용 — 오류·제한 상태(기획 §10.3)를 화면에서 눌러 볼 수 있게 하는 뒷문이다.
        질문에 아래 낱말이 들어가면 그 상태를 띄운다. 실연동에서는 이 블록을 지우고
@@ -142,21 +163,6 @@ export function DemoApp() {
     ask(next)
   }
 
-  /**
-   * 다시 생성 (기획 §5.4) — 누른 턴부터 **뒤를 걷고** 같은 질문을 다시 보낸다.
-   *
-   * 마지막 턴만 집지 않는다: 아이콘이 모든 답변에 서 있어서 위쪽 답변에서 눌릴 수 있고,
-   * 그때 마지막 턴을 다시 만들면 누른 자리와 바뀌는 자리가 어긋난다.
-   * 뒤를 걷는 것은 editResend 와 같은 까닭이다 — 남겨 두면 뒤 대화가 옛 답변을 전제로 이어진다.
-   */
-  const regenerate = (messageId: string) => {
-    const at = messages.findIndex((m) => m.id === messageId)
-    if (at < 0) return
-    cancel()
-    setMessages((prev) => prev.slice(0, at))
-    ask(messages[at].question)
-  }
-
   /** 대화 삭제 — 실연동 시 삭제 API 를 부른다. 열려 있던 대화면 시작 화면으로 되돌린다 */
   const deleteConversation = (id: string) => {
     setConversations((prev) => prev.filter((c) => c.conversationId !== id))
@@ -186,6 +192,7 @@ export function DemoApp() {
   return (
     <AppShell
       me={DEMO_ME}
+      /* 사이드바 목록은 **거르지 않는다.** 검색은 창이 지고, 걸러진 결과는 그 창에만 선다 */
       conversations={conversations}
       activeConversationId={activeConversationId}
       onSelectConversation={selectConversation}
@@ -193,19 +200,24 @@ export function DemoApp() {
       onTogglePinConversation={togglePin}
       onNewConversation={newConversation}
       onHome={newConversation}
-      onHelp={() => console.info('[데모] 도움말')}
-      /* 실연동 시 SSO 로그아웃으로 간다 (기획 §14 미확정) */
-      onLogout={() => console.info('[데모] 로그아웃')}
+      onSearch={setSearch}
+      searchResults={shownConversations}
+      /* 관리자 페이지 — DEMO_ME.role 이 'ADMIN' 일 때만 메뉴에 선다 */
     >
       <ChatPage
         messages={messages}
+        categories={DEMO_CATEGORIES}
         pendingQuestion={pendingQuestion}
         pendingAnswer={pendingAnswer}
         onAsk={ask}
         onFeedback={(f) => console.info('[데모] 피드백', f)}
-        onRegenerate={messages.length > 0 ? regenerate : undefined}
         onStop={pendingQuestion ? cancel : undefined}
         onEditResend={editResend}
+        /* 실연동 시 파일 응답을 받아 저장한다 (제공 방식은 개발 협의 항목) */
+        onDownloadSource={(e) => console.info('[데모] 원문 다운로드', e.fileName)}
+        /* 원문 지면 — scripts/extract-source-pages.py 가 실제 PDF 에서 뽑아 둔 글자다.
+           실연동에서는 문서 뷰어가 이 자리를 진다 */
+        getPageText={(e, page) => (e.fileName ? SOURCE_PAGES[e.fileName]?.[page] : undefined)}
         problem={problem}
       />
     </AppShell>

@@ -1,0 +1,26 @@
+@charset "utf-8";
+/* 본문 바로가기 — 초점이 닿을 때만 화면 안으로 들어온다 */
+.ratis-skip {
+  position: absolute;
+  top: var(--ratis-space-8);
+  left: var(--ratis-space-8);
+  z-index: 200;
+  /* 화면 밖으로 밀어 둔다. display:none 이면 초점이 아예 안 간다 */
+  transform: translateY(-200%);
+  display: inline-flex;
+  align-items: center;
+  height: var(--ratis-control-height-sm);
+  padding-inline: var(--ratis-control-padding-sm);
+  border-radius: var(--ratis-radius-max);
+  background: var(--ratis-blue-50);
+  color: var(--ratis-text-inverse);
+  font-size: var(--ratis-font-md);
+  font-weight: var(--ratis-weight-bold);
+  text-decoration: none;
+}
+
+.ratis-skip:focus-visible {
+  transform: translateY(0);
+  outline: none;
+  box-shadow: var(--ratis-focus-ring);
+}

@@ -1,0 +1,233 @@
+@charset "utf-8";
+/* 관리자 콘솔 화면 공용 조각. 셸(머리 줄·메뉴·본문 판)은 app/layouts/AdminLayout.css 소관이고
+   여기는 관리 화면들이 함께 쓰는 **본문 조각**만 둔다.
+   ★ 두 번째 화면이 같은 것을 쓰기 시작하면 컴포넌트로 올린다 — 지금은 CSS 층까지만 공용이다 */
+
+/* 비율 줄 — 막대가 크기를 말하고 이 줄이 「전체 중 얼마」를 말한다.
+   값(%)이 주인공이라 굵기로 앞세우고 건수는 뒤따르는 보조값이다.
+   갈래가 몇 개 안 되는 분포를 막대 아래에 글로 받는 자리다 */
+.ratis-admin-share {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ratis-space-8);
+  margin: 0;
+  margin-top: var(--ratis-space-16);
+  padding: 0;
+  padding-top: var(--ratis-space-16);
+  border-top: 0.1rem solid var(--ratis-gray-10);
+  list-style: none;
+}
+.ratis-admin-share > li {
+  display: flex;
+  align-items: baseline;
+  gap: var(--ratis-space-8);
+  font-size: var(--ratis-font-lg);
+  color: var(--ratis-gray-70);
+}
+.ratis-admin-share > li > span {
+  flex: 1;
+}
+.ratis-admin-share > li > strong {
+  font-size: var(--ratis-font-xl);
+  font-weight: var(--ratis-weight-bold);
+  color: var(--ratis-text-strong);
+  font-variant-numeric: tabular-nums;
+}
+.ratis-admin-share > li > small {
+  font-size: var(--ratis-font-md);
+  color: var(--ratis-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 표의 회원 칸 — 이름 아래 아이디가 한 급 작게 선다. 이름은 겹칠 수 있어 회원을
+   특정하는 값(아이디)을 늘 함께 적는다 */
+.ratis-admin-person {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ratis-space-2);
+}
+.ratis-admin-person small {
+  font-size: var(--ratis-font-sm);
+  color: var(--ratis-text-muted);
+}
+
+/* 한 화면에 구획이 여럿 서면 그 사이는 페이지 리듬대로 벌린다 (통계 + 목록).
+   KPI 줄 다음에 오는 첫 구획도 같은 간격을 받는다 — KPI 는 구획 제목이 없을 뿐
+   그 자체가 한 구획이다 */
+.ratis-admin-section + .ratis-admin-section,
+.ratis-admin-kpis + .ratis-admin-section {
+  margin-top: var(--ratis-space-40);
+}
+
+/* 구획 머리 — 제목(왼쪽)과 그 구획이 데리고 다니는 조작(오른쪽)이 한 줄에 선다 */
+.ratis-admin-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ratis-space-20);
+  margin-bottom: var(--ratis-space-24);
+}
+.ratis-admin-section-head h2 {
+  margin: 0;
+  font-size: var(--ratis-font-2xl);
+  font-weight: var(--ratis-weight-bold);
+  color: var(--ratis-text-strong);
+}
+/* 구획 머리 오른쪽 묶음 — 조회 기간 칩과 내려받기가 한 줄에 선다 */
+.ratis-admin-period {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--ratis-space-8);
+  flex-wrap: wrap;
+}
+
+/* KPI 넉 장 — 화면이 좁아지면 두 줄로 접힌다.
+   가로는 컬럼 사이 24, 세로는 32 다 (design.md §5 그리드 간격) — 가로까지 32 로 두면
+   메뉴와 본문 사이(구획 경계)보다 카드 사이가 더 벌어진다 */
+.ratis-admin-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--ratis-space-32) var(--ratis-space-24);
+}
+@media (max-width: 1279px) {
+  .ratis-admin-kpis {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 차트 카드 — 표 셸과 같은 면 위에 선다 */
+.ratis-admin-chart {
+  margin-top: var(--ratis-space-32);
+  padding: var(--ratis-space-24);
+  border: 0.1rem solid var(--ratis-border-subtle);
+  border-radius: var(--ratis-radius-surface);
+  background: var(--ratis-surface-card);
+}
+.ratis-admin-chart-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ratis-space-16);
+  flex-wrap: wrap;
+  margin-bottom: var(--ratis-space-16);
+}
+.ratis-admin-chart h3 {
+  margin: 0;
+  font-size: var(--ratis-font-xl);
+  font-weight: var(--ratis-weight-bold);
+  color: var(--ratis-text-strong);
+}
+
+/* 조건 줄의 검색칸 — 줄 높이를 키우지 않게 이름표는 화면에서 빼고 읽어주는 이름으로만
+   남긴다. 폭은 내용에 맞춰 값으로 잡는다 */
+.ratis-admin-search {
+  width: 26rem;
+}
+
+/* 조건 줄 — 왼쪽은 고르는 캡슐, 오른쪽 끝은 검색.
+   표와는 12 (조건은 그 목록을 설명하는 줄이라 붙여 둔다) */
+.ratis-admin-filterline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ratis-space-16);
+  flex-wrap: wrap;
+  margin-bottom: var(--ratis-space-12);
+}
+/* 조건 줄 왼쪽 묶음 — 조건 캡슐 · 선 · 건수 */
+.ratis-admin-filterline-lead {
+  display: flex;
+  align-items: center;
+  gap: var(--ratis-space-12);
+  flex-wrap: wrap;
+}
+.ratis-admin-filterline-lead > .ratis-result-count {
+  margin-block: 0;
+  padding-inline: 0;
+}
+/* 캡슐끼리는 8 — 한 사다리 아래다. 조건들은 한 덩어리로 읽혀야 하고, 묶음과 선·건수
+   사이의 12 보다 좁아야 그 덩어리 경계가 보인다 */
+.ratis-admin-conditions {
+  display: flex;
+  align-items: center;
+  gap: var(--ratis-space-8);
+  flex-wrap: wrap;
+}
+/* 조건 줄에 서는 체크박스 — 줄 가운데에 세우고 키를 컨트롤 사다리 sm 에 맞춘다.
+   그냥 두면 캡슐(36)과 한 줄에 섰을 때 네모가 위로 떠 보인다 */
+.ratis-admin-conditions > .ratis-choice {
+  display: flex;
+  align-items: center;
+  min-height: var(--ratis-control-height-sm);
+}
+
+/* 세로 선 — 1 × 20 · gray-20. 양옆 여백은 묶음 gap 12 가 맡으므로 선 자체는 폭만 갖는다 */
+.ratis-admin-divider {
+  width: 0.1rem;
+  height: 2rem;
+  flex: none;
+  background: var(--ratis-gray-20);
+}
+
+/* 표 안 행 조작 — 마지막 열. 정사각 아이콘 버튼이 붙어 서고 줄을 바꾸지 않는다.
+   ★ 칸의 **오른쪽 끝**에 붙는다 — 표의 좌우 여백선을 제목(글 시작)과 아이콘(글 끝)이
+     함께 쓴다. 왼쪽에 두면 칸 폭이 아이콘보다 넓어 표 오른쪽에 빈 자리가 한 뼘 남는다.
+   마지막 버튼을 0.6 당기는 것은 상자(32)가 글리프(18)보다 커서다 — 그냥 두면 아이콘이
+   여백선보다 안쪽에서 끝나 왼쪽 글보다 더 들어가 보인다 */
+.ratis-admin-rowactions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--ratis-space-4);
+  white-space: nowrap;
+  margin-right: -0.6rem;
+}
+/* 이름표를 거는 감싼 요소. 인라인 기본값이면 버튼 아래 글줄 여백이 생겨 셀이 높아진다 */
+.ratis-admin-rowaction {
+  display: inline-flex;
+}
+
+/* 폼 창 — 한 줄에 하나씩 쌓되 짝을 이루는 것(공개 시작~종료)만 두 칸으로 나눈다 */
+.ratis-admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ratis-space-20);
+}
+.ratis-admin-form-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--ratis-space-16);
+}
+/* 켜고 끄는 줄은 이름표가 왼쪽, 스위치가 오른쪽. 벌어져야 무엇을 켜는지 읽힌다
+   (벌리는 일은 ToggleSwitch 가 한다 — 여기서는 줄들을 묶어 면에 얹기만 한다) */
+.ratis-admin-form-switches {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ratis-space-16);
+  padding: var(--ratis-space-16);
+  border-radius: var(--ratis-radius-pop);
+  background: var(--ratis-surface-sunken);
+}
+/* 켜야 나타나는 칸들. 켜기 전에는 자리를 잡아 두지 않는다 */
+.ratis-admin-form-popup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ratis-space-16);
+}
+/* 칸 아래 보조 문구 — 상한·형식처럼 채우기 전에 알아야 하는 것 */
+.ratis-admin-form-hint {
+  margin: 0;
+  font-size: var(--ratis-font-sm);
+  color: var(--ratis-text-muted);
+  word-break: keep-all;
+}
+
+/* 관리 폼 창 — 채울 것이 많아 본문이 창을 넘는다. 굴리는 것과 창 높이 상한은 Modal 이 한다.
+   ★ **여기서 스크롤바 자리를 따로 잡지 않는다** (2026-09-03 실측: 입력칸 오른쪽 끝이 판
+     가장자리에서 55, 푸터 버튼은 24 — 31 어긋나 있었다).
+     종전 주석은 「여백에서 덜어 버튼과 같은 선에 세운다」였지만, 실제로는 판 여백 24 위에
+     16 을 **더하고** 거기에 gutter 15 가 또 붙어 셋이 겹쳤다.
+     ★ 여백을 걷으면 스크롤바를 안 그리는 환경(맥 오버레이)에서는 입력칸이 푸터와 같은
+       24 선에 정확히 선다. 막대를 그리는 환경에서는 그 폭만큼 안쪽으로 들어오는데, 이건
+       스크롤 상자를 쓰는 이상 CSS 로 되돌릴 수 없는 몫이다 (폭을 모른다) */

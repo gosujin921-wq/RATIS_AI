@@ -28,7 +28,7 @@ export function EmptyState({
 }) {
   if (size === 'xs') {
     return (
-      <div className={cx('klid-empty-state', className)} data-size="xs">
+      <div className={cx('ratis-empty-state', className)} data-size="xs">
         {title}
         {desc && <span className="desc">{desc}</span>}
         {action && <div className="action">{action}</div>}
@@ -36,7 +36,7 @@ export function EmptyState({
     )
   }
   return (
-    <div className={cx('klid-empty-state', className)} data-size={size}>
+    <div className={cx('ratis-empty-state', className)} data-size={size}>
       {Icon && <Icon className="icon" aria-hidden />}
       <p className="title">{title}</p>
       {desc && <p className="desc">{desc}</p>}

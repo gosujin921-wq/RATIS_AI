@@ -29,7 +29,7 @@ export type KeyValueLayout = 'rows' | 'cards'
  * KRDS 에 대응 컴포넌트가 없다. 값끼리 크기를 견주되 **아이콘 칩과 캡션까지 거느리는** 자리는
  * StatCard 를 쓴다 — 그쪽은 대시보드 KPI 라 강조 카드(card-soft)다.
  *
- * 면은 두 꼴 모두 공통 구획 카드(.klid-section-card)를 쓴다 (design.md §5 — 흰 면 · gray-20
+ * 면은 두 꼴 모두 공통 구획 카드(.ratis-section-card)를 쓴다 (design.md §5 — 흰 면 · gray-20
  * 보더 · 라운드 16). 면을 갖는 것이 rows 는 판, cards 는 카드 한 장 한 장이다.
  * 판 안에 이미 다른 면이 있어 두 겹이 되는 자리에서는 `surface={false}` 로 면을 끈다.
  */
@@ -53,15 +53,15 @@ export function KeyValueList({
   return (
     <dl
       className={cx(
-        'klid-kv-list',
-        cards ? 'klid-kv-cards' : 'klid-kv-rows',
-        !cards && surface && 'klid-section-card',
+        'ratis-kv-list',
+        cards ? 'ratis-kv-cards' : 'ratis-kv-rows',
+        !cards && surface && 'ratis-section-card',
         className,
       )}
       aria-label={ariaLabel}
     >
       {items.map((item) => (
-        <div key={item.label} className={cx('row', cards && surface && 'klid-section-card')}>
+        <div key={item.label} className={cx('row', cards && surface && 'ratis-section-card')}>
           <dt>{item.label}</dt>
           <dd>{item.value}</dd>
         </div>

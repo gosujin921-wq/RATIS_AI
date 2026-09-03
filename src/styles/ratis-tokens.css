@@ -1,0 +1,340 @@
+@charset "utf-8";
+/* =============================================================================
+   RATIS AI 디자인 토큰 — **이 파일이 정본이다.**
+
+   종전에는 값이 정부 디자인시스템(KRDS) 킷의 이름 안에 부어져 있었고 우리 부품 608곳이
+   그 이름을 읽었다. 킷을 떼는 순간 화면이 통째로 끊기는 구조였다.
+   2026-09-03 에 방향을 뒤집고, 킷과 그 이름을 모두 걷어냈다. 이제 값은 여기서만 나온다.
+
+   ★ KRDS 를 버리는 것이지 **접근성 기준을 버리는 것이 아니다.** 대비 4.5:1(본문)·3:1(큰 글자),
+     포커스 표시, 터치 타깃 44, 색만으로 구분하지 않기는 그대로 지킨다 (요구사항 §11).
+     아래 램프의 대비 주석이 그 근거다.
+
+   KRDS 관례를 이어받는 것: 1rem = 10px (html font-size 62.5%). px 값은 /10 해서 적는다.
+   ============================================================================= */
+
+:root {
+  /* ═══ 1. 색 — 램프 ═════════════════════════════════════════════════════════
+     번호는 밝기다. 낮을수록 밝고 높을수록 어둡다. 흰 배경에서 글자로 쓸 수 있는
+     하한은 램프마다 다르므로 그 자리에 주석으로 적어 둔다. */
+
+  /* 회색 — 면·선·글자의 뼈대 */
+  --ratis-gray-0: #ffffff;
+  --ratis-gray-5: #f9fafb;
+  --ratis-gray-10: #f4f5f6;
+  --ratis-gray-20: #e7e9eb;
+  --ratis-gray-30: #d3d6d9;
+  --ratis-gray-40: #a1a5ab;
+  --ratis-gray-50: #72777d; /* 흰 배경 4.75:1 — 본문 하한 */
+  --ratis-gray-60: #54575c;
+  --ratis-gray-70: #404348;
+  --ratis-gray-80: #292c30;
+  --ratis-gray-90: #191b20;
+  --ratis-gray-95: #0a0b0f;
+  --ratis-gray-100: #000000;
+
+  /* CI 블루 — 브랜드·선택 상태 */
+  --ratis-blue-5: #f2f4fd;
+  --ratis-blue-10: #e7eafa;
+  --ratis-blue-20: #cdd4f6;
+  --ratis-blue-30: #a8b4ef;
+  --ratis-blue-40: #7183e4;
+  --ratis-blue-45: #425bdb;
+  --ratis-blue-50: #273996; /* CI Blue — 흰 글자 9.94:1 */
+  --ratis-blue-60: #223181;
+  --ratis-blue-70: #1c296c;
+  --ratis-blue-80: #17225a;
+  --ratis-blue-90: #111942;
+  --ratis-blue-95: #0b102a;
+
+  /* 네이비 — 다크 밴드·보조 표면 */
+  --ratis-navy-5: #f6f6f9;
+  --ratis-navy-10: #edeef3;
+  --ratis-navy-20: #d6d8e5;
+  --ratis-navy-30: #b5bad0;
+  --ratis-navy-40: #848bb0;
+  --ratis-navy-50: #535d90;
+  --ratis-navy-60: #36427e;
+  --ratis-navy-70: #2a3568;
+  --ratis-navy-80: #212a53;
+  --ratis-navy-90: #171e3d;
+  --ratis-navy-95: #0e1328;
+
+  /* CI 그린 — 주 실행과 브랜드 액센트.
+     ⚠ 50 이하는 흰 배경에서 글자·테두리로 못 쓴다 (흰 글자 2.01:1). 면으로만 쓴다 */
+  --ratis-green-5: #f8fdf1;
+  --ratis-green-10: #f2fbe3;
+  --ratis-green-20: #e2f6c3;
+  --ratis-green-30: #cff19b;
+  --ratis-green-40: #b6e966;
+  --ratis-green-50: #91c73d; /* CI Green — 검은 글자 10.44:1 */
+  --ratis-green-60: #7dab34;
+  /* 65 — ★커스텀 슬롯. 그린 버튼 pressed 전용. 70 은 남색 글자와 4.47:1 로 본문 기준에
+     아슬하게 못 미치고, 한 칸 밝은 이 값이 5.49:1 로 통과한다 */
+  --ratis-green-65: #74a02f;
+  --ratis-green-70: #688f2c; /* 흰 글자 3.78:1 — 큰 글자(18.66px+ bold)까지만 */
+  --ratis-green-80: #547323; /* 흰 글자 5.45:1 — 본문 가능 */
+  --ratis-green-90: #3a5018;
+
+  /* 민트 — CI 그린과 CI 블루 사이를 잇는 다리. **장식 전용** (입력창 스윕·바탕 워시) */
+  --ratis-teal-50: #2fd4b6;
+
+  /* 빨강 — 위험·삭제 */
+  --ratis-red-5: #fef2f2;
+  --ratis-red-10: #fee2e2;
+  --ratis-red-20: #fecaca;
+  --ratis-red-30: #fca5a5;
+  --ratis-red-40: #f87171;
+  --ratis-red-50: #dc2626;
+  --ratis-red-60: #b91c1c;
+  --ratis-red-70: #991b1b;
+  --ratis-red-80: #7f1d1d;
+  --ratis-red-90: #450a0a;
+  --ratis-red-95: #2c0606;
+
+  /* 호박 — 주의 */
+  --ratis-amber-5: #fffbeb;
+  --ratis-amber-10: #fef3c7;
+  --ratis-amber-20: #fde68a;
+  --ratis-amber-30: #fcd34d;
+  --ratis-amber-40: #fbbf24;
+  --ratis-amber-50: #d97706; /* 흰 배경 3.02:1 — 큰 글자·아이콘까지만 */
+  --ratis-amber-60: #b45309; /* 흰 배경 5.02:1 — 본문 가능 */
+  --ratis-amber-70: #92400e;
+  --ratis-amber-80: #78350f;
+  --ratis-amber-90: #451a03;
+  --ratis-amber-95: #2e1102;
+
+  /* 에메랄드 — 완료·성공. ★ CI 그린과 **다른 램프**다. 브랜드색이 「성공」 뜻을 갖지
+     않게 갈라 둔다 */
+  --ratis-emerald-5: #ecfdf5;
+  --ratis-emerald-10: #d1fae5;
+  --ratis-emerald-20: #a7f3d0;
+  --ratis-emerald-30: #6ee7b7;
+  --ratis-emerald-40: #34d399;
+  --ratis-emerald-50: #047857; /* 흰 글자 5.6:1 */
+  --ratis-emerald-60: #065f46;
+  --ratis-emerald-70: #065f46;
+  --ratis-emerald-80: #064e3b;
+  --ratis-emerald-90: #022c22;
+  --ratis-emerald-95: #011a14;
+
+  /* 그래픽 — 일러스트·차트. CI 블루 계열 틴트 */
+  --ratis-graphic-10: #e5e8f6;
+  --ratis-graphic-30: #a3abd6;
+  --ratis-graphic-50: #6672ac;
+  --ratis-graphic-70: #37438f;
+  --ratis-graphic-90: #1f2a63;
+
+  /* ═══ 2. 치수 ══════════════════════════════════════════════════════════════ */
+
+  /* 간격 — 4 배수. 자리마다 숫자를 적지 않는다 */
+  --ratis-space-2: 0.2rem;
+  --ratis-space-4: 0.4rem;
+  --ratis-space-6: 0.6rem;
+  --ratis-space-8: 0.8rem;
+  --ratis-space-10: 1rem;
+  --ratis-space-12: 1.2rem;
+  --ratis-space-16: 1.6rem;
+  --ratis-space-20: 2rem;
+  --ratis-space-24: 2.4rem;
+  --ratis-space-32: 3.2rem;
+  --ratis-space-40: 4rem;
+
+  /* 라운드 — design.md §7 위계를 그대로 토큰으로.
+     명령(누르는 것)은 캡슐, 내용 상자는 control, 표면은 surface.
+     한 요소에서 바깥보다 안쪽 라운드가 크면 안 된다 */
+  --ratis-radius-tag: 0.6rem;     /* 사각 태그 · 목록 항목 */
+  --ratis-radius-control: 0.8rem; /* 입력 · 셀렉트 · 아이콘 버튼 · 사이드바 줄 */
+  --ratis-radius-pop: 1.2rem;     /* 팝오버 · 셀렉트 목록 · 피드백 상자 */
+  --ratis-radius-surface: 1.6rem; /* 카드 · 표 셸 · 모달 · 본문 판 */
+  --ratis-radius-panel: 2.4rem;   /* 큰 패널 · 미디어 */
+  --ratis-radius-max: 999rem;     /* 캡슐 — 버튼 · 칩 · 배지 · 검색창 */
+
+  /* 본문 타이포 — 컨트롤 사다리(아래 --ratis-control-font-*)와 **다른 축**이다.
+     컨트롤은 자기 높이에 매인 글자고, 이건 읽는 글의 크기다 */
+  --ratis-font-xs: 1.2rem;  /* 캡션 · 출처 경로 · 단위 */
+  --ratis-font-sm: 1.3rem;  /* 보조 문구 · 칩 · 안내 한 줄 */
+  --ratis-font-md: 1.4rem;  /* 본문 기본 · 목록 줄 */
+  --ratis-font-lg: 1.5rem;  /* 답변 본문 */
+  --ratis-font-xl: 1.7rem;  /* 소제목 */
+  --ratis-font-2xl: 2rem;   /* 제목 */
+  --ratis-font-3xl: 2.4rem; /* 페이지 제목 */
+  --ratis-font-4xl: 3rem;   /* 시작 화면 큰 제목 */
+
+  /* 굵기 — 상한 600. 위계는 굵기가 아니라 크기·색으로 만든다 */
+  --ratis-weight-normal: 400;
+  --ratis-weight-medium: 500;
+  --ratis-weight-bold: 600;
+
+  /* 가림막 — 창·서랍이 뜰 때 뒤를 덮는 검정 반투명 */
+  --ratis-scrim: #00000080;
+
+  /* 포커스 링 — 2px 링을 2px 띄워 그린다. box-shadow 에는 offset 이 없으므로
+     안쪽 흰 링으로 갭을 만들고 그 밖에 색 링을 얹는다 (ring-offset 기법).
+     클릭이 아니라 **키보드 이동에만** 보인다 (:focus-visible) */
+  --ratis-focus-ring:
+    0 0 0 0.2rem var(--ratis-gray-0),
+    0 0 0 0.4rem var(--ratis-blue-50);
+
+  /* 그림자 — 종전에는 자리마다 손으로 적어 `0 4px 16px` 와 `0 6px 20px` 로 갈렸다 */
+  --ratis-shadow-pop: 0 0.4rem 1.6rem rgb(15 23 42 / 12%);
+  --ratis-shadow-float: 0 0.4rem 1.2rem rgb(0 0 0 / 10%);
+  --ratis-shadow-panel:
+    0 1rem 1.5rem -0.3rem rgb(15 23 42 / 10%),
+    0 0.4rem 0.6rem -0.4rem rgb(15 23 42 / 10%);
+  /* 팝오버(드롭다운 목록) — 판보다 **연하고 넓게** 번진다. 판 그림자는 선이 굵어
+     작은 목록에 얹으면 목록이 무거워 보인다. 접지면(2/4%)은 아주 얇게, 높이를 만드는
+     쪽(10/24%)은 넓게 퍼뜨려 보더 없이도 면이 떠 보이게 한다 */
+  --ratis-shadow-popover:
+    0 0.2rem 0.4rem rgb(15 23 42 / 4%),
+    0 1rem 2.4rem -0.4rem rgb(15 23 42 / 12%);
+
+  /* ── 컨트롤 사다리 ──────────────────────────────────────────────────────
+     버튼·입력·셀렉트·검색창·드롭다운·아이콘 버튼이 전부 이 값을 가리키고 **급만 고른다.**
+     종전에는 높이를 서른 군데에 직접 적어 뒀고, 모바일 대응이 필요해지자 파일 다섯 곳에
+     767 블록이 따로 생겼다.
+     ★ 값은 **한 벌뿐이다.** 모바일용 값을 따로 만들지 않고 아래 767 블록에서 sm 이 md 를
+       가리키게 한다 — 손가락 최소(44)를 밑도는 건 sm(36) 하나뿐이다. */
+  --ratis-control-height-sm: 3.6rem;
+  --ratis-control-height-md: 4.4rem;
+  --ratis-control-height-lg: 5.2rem;
+
+  /* 글자 ≈ 높이 ÷ 3 (design.md §1-2) */
+  --ratis-control-font-sm: 1.4rem;
+  --ratis-control-font-md: 1.5rem;
+  --ratis-control-font-lg: 1.7rem;
+
+  /* 버튼 좌우 여백은 높이 비례가 아니라 누진이다 (design.md §3) */
+  --ratis-control-padding-sm: 1.4rem;
+  --ratis-control-padding-md: var(--ratis-space-20);
+  --ratis-control-padding-lg: 2.8rem;
+
+  /* 정사각 아이콘 버튼 — 박스와 글리프가 따로 움직인다 (별도 스케일) */
+  --ratis-iconbtn-box-sm: 2.8rem;
+  --ratis-iconbtn-box-md: 3.2rem;
+  --ratis-iconbtn-box-lg: 3.6rem;
+  --ratis-iconbtn-glyph-sm: 1.4rem;
+  --ratis-iconbtn-glyph-md: 1.6rem;
+  --ratis-iconbtn-glyph-lg: 1.8rem;
+
+  /* 라디오·체크 — 동그라미/네모(box)와 그 안 표식(점·체크).
+     킷은 medium·large 둘뿐이라, 밀집 UI 용 sm 을 우리가 한 급 더 얹는다.
+     ★ 표식은 box 와 **짝수 차이**여야 한다 — 킷이 위치를 `(box − 표식) ÷ 2` 로 잡아
+       홀수 차이면 반픽셀 밀린다 (design.md §3). 18/8 · 20/10 · 24/12 전부 짝수 차이다 */
+  --ratis-check-box-sm: 1.8rem;
+  --ratis-check-box-md: 2rem;
+  --ratis-check-box-lg: 2.4rem;
+  --ratis-check-dot-sm: 0.8rem;
+  --ratis-check-dot-md: 1rem;
+  --ratis-check-dot-lg: 1.2rem;
+  --ratis-check-mark-md: 1.2rem;
+  --ratis-check-mark-lg: 1.6rem;
+  --ratis-check-mark-sm: var(--ratis-check-mark-md);
+  /* 동그라미를 글줄 가운데에 맞추는 윗여백 — 글자가 커지면 함께 커진다 */
+  --ratis-check-margin-sm: 0.2rem;
+  --ratis-check-margin-md: 0.3rem;
+  --ratis-check-margin-lg: 0.3rem;
+
+  /* 킷이 직접 그리는 아이콘 버튼(모달 닫기 ✕ · 비밀번호 보기 눈 · 검색어 지우기).
+     킷은 박스와 글리프를 한 값으로 묶어 24 로 그린다 — 우리 사다리 밖이라 따로 잡는다 */
+  --ratis-kiticon-glyph: 2.4rem;
+
+  /* 누르는 자리 최소치. 마우스에는 하한이 없고 손가락에는 md(44) 다.
+     ★ 쓰임이 둘이라 토큰도 둘이다 —
+       `--ratis-tap-min` 은 `min-height`/`min-width` 에 그대로 꽂는다. PC 값이 `auto` 인 것은
+         `0` 으로 두면 세로로 쌓인 자리에서 상자가 제 내용보다 작아질 수 있기 때문이다.
+       `--ratis-tap-floor` 는 `max()` 안에서 계산된다. `auto` 는 계산식에 못 들어가므로 0 이다. */
+  --ratis-tap-min: auto;
+  --ratis-tap-floor: 0rem;
+
+  /* lg 는 「화면을 끝내는 제출 버튼」자리다 (design.md §3 급 규칙).
+     좁은 폭에서는 가로를 채워 "여기서 끝난다"를 한눈에 만든다 */
+  --ratis-btn-lg-width: auto;
+
+  /* ═══ 3. 시맨틱 — 값이 아니라 **뜻**을 가리킨다 ════════════════════════════
+     부품은 되도록 이쪽을 읽는다. 램프 번호를 직접 읽으면 「왜 이 색인가」가 사라진다 */
+
+  /* 면 */
+  --ratis-surface-page: var(--ratis-gray-5);
+  --ratis-surface-card: var(--ratis-gray-0);
+  --ratis-surface-raised: var(--ratis-gray-0);   /* 팝오버 · 모달 — 카드보다 위에 뜬 면 */
+  --ratis-surface-sunken: var(--ratis-gray-10);  /* 도구 줄 · 눌린 자리 */
+  --ratis-surface-hover: var(--ratis-gray-10);
+  --ratis-surface-tint: var(--ratis-blue-5);     /* 선택된 줄 · 옅은 강조 */
+
+  /* 선 */
+  --ratis-border-subtle: var(--ratis-gray-20);   /* 카드·구분선 */
+  --ratis-border-default: var(--ratis-gray-30);  /* 입력·셀렉트 */
+  --ratis-border-strong: var(--ratis-gray-40);
+  --ratis-border-brand: var(--ratis-blue-30);
+
+  /* 글자 */
+  --ratis-text-strong: var(--ratis-gray-90);   /* 제목 · 값 */
+  --ratis-text-body: var(--ratis-gray-80);     /* 본문 */
+  --ratis-text-muted: var(--ratis-gray-60);    /* 보조 설명 */
+  --ratis-text-subtle: var(--ratis-gray-50);   /* 캡션 · 묶음 이름 (본문 하한) */
+  --ratis-text-disabled: var(--ratis-gray-40);
+  --ratis-text-inverse: var(--ratis-gray-0);
+  --ratis-text-brand: var(--ratis-blue-60);
+
+  /* 주 실행 — **한 곳에서만 정한다.** 글자 버튼과 원형 아이콘 버튼이 같은 급인데
+     색을 각자 적으면 한쪽만 고쳤을 때 주 동작이 두 색으로 갈린다 */
+  --ratis-action-fill: var(--ratis-green-50);
+  --ratis-action-fill-hover: var(--ratis-green-60);
+  --ratis-action-fill-pressed: var(--ratis-green-65);
+  --ratis-action-text: var(--ratis-gray-0);
+
+  /* 고르는 낱개(체크박스 · 라디오 · 목록의 네모 칸) — **한 곳에서만 정한다.**
+     같은 네모가 폼과 드롭다운 목록 두 곳에 서는데 값을 각자 적으면 갈린다
+     (2026-09-03 실측: 보더 gray-60 vs gray-40, 켜짐 blue-50 vs blue-60 으로 어긋나 있었다) */
+  --ratis-choice-border: var(--ratis-gray-60);
+  --ratis-choice-surface: var(--ratis-gray-0);
+  --ratis-choice-checked: var(--ratis-blue-50);
+  --ratis-choice-mark-ink: var(--ratis-gray-0);
+  --ratis-choice-disabled-surface: var(--ratis-gray-20);
+  --ratis-choice-disabled-border: var(--ratis-gray-40);
+  --ratis-choice-disabled-text: var(--ratis-gray-40);
+
+  /* 상태 — 면 · 선 · 글자 세 벌씩. 색만으로 구분하지 않으므로 글자도 함께 바뀐다 */
+  --ratis-danger-surface: var(--ratis-red-5);
+  --ratis-danger-border: var(--ratis-red-20);
+  --ratis-danger-text: var(--ratis-red-60);
+  --ratis-warning-surface: var(--ratis-amber-5);
+  --ratis-warning-border: var(--ratis-amber-20);
+  --ratis-warning-text: var(--ratis-amber-60);
+  --ratis-success-surface: var(--ratis-emerald-5);
+  --ratis-success-border: var(--ratis-emerald-20);
+  --ratis-success-text: var(--ratis-emerald-50);
+  --ratis-info-surface: var(--ratis-blue-5);
+  --ratis-info-border: var(--ratis-blue-20);
+  --ratis-info-text: var(--ratis-blue-60);
+}
+
+/* 모바일 — 새 값을 적지 않는다. **sm 이 md 를 가리킨다**. md·lg 는 그대로 둔다 */
+@media (max-width: 767px) {
+  :root {
+    --ratis-control-height-sm: var(--ratis-control-height-md);
+    --ratis-control-font-sm: var(--ratis-control-font-md);
+    --ratis-control-padding-sm: var(--ratis-control-padding-md);
+
+    /* 라디오·체크도 같은 규칙 — sm 자리에 md 를 쓴다 */
+    --ratis-check-box-sm: var(--ratis-check-box-md);
+    --ratis-check-dot-sm: var(--ratis-check-dot-md);
+    --ratis-check-margin-sm: var(--ratis-check-margin-md);
+
+    /* 아이콘 버튼 박스는 배경이 없어 눈에 안 보이는 자리다 — 세 급을 다 컨트롤 md(44)로
+       두고 **글리프 크기로만 급을 가른다.** 글리프는 §8 아이콘 사다리(14·16·18·20)를
+       한 칸씩 올린 값이라 여기서도 새 숫자가 없다 */
+    --ratis-iconbtn-box-sm: var(--ratis-control-height-md);
+    --ratis-iconbtn-box-md: var(--ratis-control-height-md);
+    --ratis-iconbtn-box-lg: var(--ratis-control-height-md);
+    --ratis-iconbtn-glyph-sm: 1.6rem;
+    --ratis-iconbtn-glyph-md: 1.8rem;
+    --ratis-iconbtn-glyph-lg: 2rem;
+
+    --ratis-tap-min: var(--ratis-control-height-md);
+    --ratis-tap-floor: 4.4rem;
+    --ratis-btn-lg-width: 100%;
+  }
+}

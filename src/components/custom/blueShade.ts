@@ -14,10 +14,10 @@
  *   여기에 옮겨 적어 두면 한쪽 톤만 바뀌어 같은 뜻이 여러 색으로 갈린다.
  */
 export const BLUE_SHADES = [
-  'var(--krds-color-light-primary-30)',
-  'var(--krds-color-light-primary-40)',
-  'var(--krds-color-light-primary-50)',
-  'var(--krds-color-light-primary-80)',
+  'var(--ratis-blue-30)',
+  'var(--ratis-blue-40)',
+  'var(--ratis-blue-50)',
+  'var(--ratis-blue-80)',
 ]
 
 /**

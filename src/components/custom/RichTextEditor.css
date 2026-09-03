@@ -1,0 +1,95 @@
+@charset "utf-8";
+/* 서식 있는 본문 편집기 — 입력칸의 문법을 따른다 (보더 · 라운드 · 초점 링) */
+
+.ratis-editor {
+  border: 0.1rem solid var(--ratis-gray-20);
+  border-radius: 1.2rem;
+  background-color: var(--ratis-gray-0);
+  overflow: hidden;
+}
+/* 안에서 초점을 받으면 입력칸처럼 테두리가 선다 — 지금 여기에 쓰고 있다는 표시다 */
+.ratis-editor:focus-within {
+  border-color: var(--ratis-blue-50);
+}
+
+/* 도구 줄 — 본문 위에 붙어 한 상자로 읽힌다. 아래 선 하나로만 갈라 상자를 둘로 나누지 않는다 */
+.ratis-editor-tools {
+  display: flex;
+  align-items: center;
+  gap: var(--ratis-space-4);
+  flex-wrap: wrap;
+  padding: 0.6rem 0.8rem;
+  border-bottom: 0.1rem solid var(--ratis-gray-10);
+  background-color: var(--ratis-gray-5);
+}
+.ratis-editor-tool {
+  display: inline-flex;
+}
+/* 갈래 사이의 선 — 표 조건 줄의 세로선과 같은 값이다 (1 × 20 · gray-20) */
+.ratis-editor-divider {
+  width: 0.1rem;
+  height: 2rem;
+  flex: none;
+  margin-inline: 0.4rem;
+  background-color: var(--ratis-gray-20);
+}
+
+/* 본문 — 안내 글자를 겹쳐 그리려고 자리를 잡는다 */
+.ratis-editor-body-wrap {
+  position: relative;
+}
+.ratis-editor-placeholder {
+  position: absolute;
+  top: 1.6rem;
+  left: 1.6rem;
+  margin: 0;
+  color: var(--ratis-gray-50);
+  pointer-events: none;
+}
+.ratis-editor-body {
+  padding: 1.6rem;
+  outline: none;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+/* 초점 링은 상자(.ratis-editor)가 테두리로 말한다 — 본문에 또 링을 그리면 상자 안에 상자가 된다 */
+
+/* 편집기 안 글의 생김새 — 저장된 글이 공개 화면에서 어떻게 설지를 여기서 미리 본다.
+   급은 본문 사다리를 그대로 쓴다 (design.md §2) */
+.ratis-editor-body h3 {
+  margin: 2rem 0 0.8rem;
+  font-size: 1.7rem;
+  font-weight: 600;
+}
+.ratis-editor-body h3:first-child {
+  margin-top: 0;
+}
+.ratis-editor-body p {
+  margin: 0 0 1.2rem;
+}
+.ratis-editor-body p:last-child {
+  margin-bottom: 0;
+}
+.ratis-editor-body ul,
+.ratis-editor-body ol {
+  margin: 0 0 1.2rem;
+  padding-left: 2rem;
+}
+.ratis-editor-body ul {
+  list-style: disc;
+}
+.ratis-editor-body ol {
+  list-style: decimal;
+}
+.ratis-editor-body li {
+  margin-bottom: 0.4rem;
+}
+.ratis-editor-body a {
+  color: var(--ratis-blue-50);
+  text-decoration: underline;
+}
+
+/* 읽기 전용 — 도구 줄이 없고 면도 눌러 「지금은 고칠 수 없는 글」임을 말한다 */
+.ratis-editor.is-readonly {
+  background-color: var(--ratis-gray-5);
+}

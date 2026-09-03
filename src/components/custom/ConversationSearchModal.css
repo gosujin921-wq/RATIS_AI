@@ -1,0 +1,151 @@
+/* 대화 검색 창. KRDS 1rem = 10px */
+
+/* ★ 창의 안쪽 여백을 걷는다. 이 창은 머리 줄(검색칸)과 결과 목록 둘뿐이고,
+   둘이 **가로선 하나로 맞붙어야** 「친 낱말 / 걸린 결과」로 읽힌다. 기본 여백을 두면
+   검색칸과 목록이 각자 떠 있는 두 덩어리가 된다 */
+.ratis-modal-panel.conv-search {
+  padding: 0;
+  overflow: hidden; /* 라운드 모서리 안쪽으로 목록이 잘리게 */
+}
+
+/* 닫기는 제 자리를 직접 잡는다. 창의 기본 닫기는 **판 여백을 보고** 서는데(Modal.css)
+   이 창은 그 여백이 0 이라 기댈 격자가 없다. 아래 검색칸(56) 한가운데에 세운다 */
+.conv-search > .ratis-modal-close {
+  top: var(--ratis-space-12);
+  right: var(--ratis-space-12);
+}
+
+/* ── 머리 줄 = 검색칸 ─────────────────────────────────────────────────
+   테두리도 면도 없다. 창 자체가 이미 흰 면이라 그 위에 또 상자를 그리면
+   창 안에 창이 하나 더 있는 것처럼 보인다. 아래 가로선이 경계를 진다.
+   오른쪽은 킷이 놓는 닫기 X 자리를 비워 둔다 */
+.conv-search-field {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  height: 5.6rem;
+  padding: 0 5.6rem 0 2rem;
+  border-bottom: 1px solid var(--ratis-gray-20);
+}
+
+.conv-search-icon {
+  flex: none;
+  color: var(--ratis-gray-50);
+}
+
+.conv-search-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: none;
+  font-size: 1.6rem;
+  color: var(--ratis-gray-90);
+}
+
+.conv-search-input:focus {
+  /* 초점 테두리를 칸에 두르지 않는다 — 칸이 창 폭을 다 쓰는 자리라 테두리가 창 테두리와
+     겹쳐 두 겹으로 보인다. 창이 뜨는 순간 이 칸이 이미 초점을 갖고 커서가 서 있다 */
+  outline: none;
+}
+
+.conv-search-input::placeholder {
+  color: var(--ratis-gray-50);
+}
+
+/* ── 결과 ─────────────────────────────────────────────────────────────
+   ★ 높이를 못박지 않고 **상한만** 준다. 결과가 두 줄일 때도 창이 화면 절반을 차지하면
+     빈 공간이 결과보다 커진다. 넘칠 때만 이 안에서 스크롤한다 */
+.conv-search-results {
+  max-height: min(52rem, 60vh);
+  overflow-y: auto;
+  padding: 0.8rem;
+}
+
+.conv-search-empty {
+  margin: 0;
+  padding: 4rem 1.2rem;
+  text-align: center;
+  font-size: 1.4rem;
+  color: var(--ratis-gray-50);
+}
+
+.conv-search-group + .conv-search-group {
+  margin-top: 0.4rem;
+}
+
+/* 묶음 제목 — 줄들보다 작고 옅게. 이름표가 제목보다 눈에 띄면 안 된다 */
+.conv-search-group-title {
+  margin: 0;
+  padding: 1rem 1.2rem 0.4rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--ratis-gray-50);
+}
+
+.conv-search-items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* 결과 한 줄 — 사이드바 대화 줄과 같은 리듬(글리프 + 제목 · 라운드 호버 면).
+   폭이 넓어진 만큼 높이만 한 단 키운다 */
+.conv-search-item {
+  display: grid;
+  grid-template-columns: 2.4rem 1fr;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  min-height: 4rem;
+  padding: 0 1.2rem;
+  border: 0;
+  border-radius: 0.8rem;
+  background: none;
+  font-size: 1.4rem;
+  color: var(--ratis-gray-80);
+  text-align: left;
+  cursor: pointer;
+}
+
+.conv-search-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ratis-gray-40);
+}
+
+/* 제목은 한 줄이다. 두 줄로 흘리면 줄 높이가 제각각이 되어 목록이 울퉁불퉁해진다 */
+.conv-search-item-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.conv-search-item:hover {
+  background: var(--ratis-gray-10);
+  color: var(--ratis-gray-90);
+}
+
+/* 지금 열려 있는 대화 — 색과 함께 aria-current 로도 알린다 (컴포넌트 쪽) */
+.conv-search-item[aria-current] {
+  background: var(--ratis-gray-10);
+  color: var(--ratis-blue-50);
+  font-weight: 600;
+}
+
+.conv-search-item[aria-current] .conv-search-item-icon {
+  color: var(--ratis-blue-50);
+}
+
+/* 좁은 화면 — 창이 폭을 거의 다 쓰므로 여백만 줄인다 */
+@media (max-width: 1023px) {
+  .conv-search-field {
+    height: 5.2rem;
+    padding: 0 5.2rem 0 1.6rem;
+  }
+
+  .conv-search-results {
+    max-height: 56vh;
+  }
+}

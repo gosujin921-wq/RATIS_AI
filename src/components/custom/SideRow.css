@@ -1,0 +1,49 @@
+@charset "utf-8";
+/* 사이드바 줄 — 글리프 + 이름. 「새 대화」와 「대화 검색」이 같은 문법으로 선다.
+   자리(폭·바깥 여백)는 셸이 정한다 (AppShell.css) — 여기서는 **줄 자체의 모양**만 진다.
+
+   줄 기준값은 셸이 내리는 변수를 읽되 **폴백을 둔다.** 셸 밖(스토리북 낱개)에서도
+   제 모양이 서야 한다 — 폴백이 없으면 여백이 0 으로 주저앉아 다른 물건이 된다. */
+
+/* [글리프 칸][이름] 두 칸 격자. 글리프가 커지든 작아지든 이름 자리는 그대로다.
+
+   ★ 특정도 곡예가 없다 (2026-09-03). 버튼이 우리 것이 되면서 클래스를 두 번 적어 이기던 것도,
+     높이를 `!important` 로 되받던 것도 함께 사라졌다. */
+.ratis-btn.ratis-row {
+  display: grid;
+  grid-template-columns: var(--side-glyph, 2.4rem) 1fr;
+  /* ★ 킷 버튼이 `justify-content: center` 를 갖고 있다. 격자에서는 **칸 묶음 전체**를
+     가운데로 미는 뜻이라, 접힘 애니메이션 중 칸이 폭을 따라 미끄러진다
+     (실측: 글리프가 54 → 97 → 122 로 흘렀다). 왼쪽에 못박는다 */
+  justify-content: start;
+  align-items: center;
+  /* ★ `button` 기본이 `text-align: center` 다. 격자로 바꾸면 이름이 제 칸 안에서 가운데로
+     밀린다 — 킷 버튼은 이 값을 갖고 있어 드러나지 않던 자리다 (2026-09-03 교체 후 실측) */
+  text-align: left;
+  /* 글리프 칸(24)이 18 짜리 아이콘보다 넓어 이미 좌우 3 씩 여백이 있다.
+     여기에 1rem 을 더 주면 아이콘과 이름이 멀어져 한 줄로 안 읽힌다 */
+  gap: 0.6rem;
+  /* 옆 대화 줄들과 같은 리듬 — 컨트롤 사다리의 sm 이다.
+     text 갈래는 높이를 글자에 맡기므로(면이 없으니 상자가 없다) 이 자리에서 되돌린다 */
+  height: var(--ratis-control-height-sm);
+  padding-left: var(--side-pad, 1.2rem);
+  padding-right: var(--side-pad, 1.2rem);
+  border-radius: var(--ratis-radius-control);
+  color: var(--ratis-gray-80);
+  font-weight: 600;
+}
+
+/* 글리프는 제 칸 가운데 — 18 짜리 아이콘과 24 짜리 아바타의 **중심**이 한 줄에 선다 */
+.ratis-btn.ratis-row > :first-child {
+  justify-self: center;
+}
+
+.ratis-btn.ratis-row:hover {
+  background: var(--ratis-gray-10);
+  color: var(--ratis-gray-90);
+}
+
+/* 이름 — 레일로 접힐 때 이 조각이 옅어진다 (걷는 규칙은 셸이 갖는다) */
+.ratis-row-label {
+  white-space: nowrap;
+}

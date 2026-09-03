@@ -1,0 +1,133 @@
+@charset "utf-8";
+/* 달력 표 — 날을 고르는 격자.
+
+   ★ 칸은 **정사각이다.** 달의 길이에 따라 칸이 늘었다 줄면 달을 넘길 때 눈이 다시
+     자리를 잡아야 한다. 일곱 칸을 균등분할하고 높이를 폭에 맞춘다. */
+
+.ratis-calendar {
+  --cal-cell: 3.6rem;
+  width: max-content;
+}
+
+/* 머리 줄 — 달 이름이 가운데, 좌우로 넘김 */
+.ratis-calendar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ratis-space-8);
+  margin-bottom: var(--ratis-space-8);
+}
+.ratis-calendar-month {
+  font-size: var(--ratis-font-md);
+  font-weight: var(--ratis-weight-bold);
+  color: var(--ratis-text-strong);
+  font-variant-numeric: tabular-nums;
+}
+.ratis-calendar-step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--ratis-iconbtn-box-md);
+  height: var(--ratis-iconbtn-box-md);
+  border: 0;
+  border-radius: var(--ratis-radius-control);
+  background: none;
+  color: var(--ratis-text-muted);
+  cursor: pointer;
+}
+.ratis-calendar-step:hover {
+  background: var(--ratis-surface-hover);
+  color: var(--ratis-text-strong);
+}
+.ratis-calendar-step:focus-visible {
+  outline: none;
+  box-shadow: var(--ratis-focus-ring);
+}
+.ratis-calendar-step > svg {
+  width: var(--ratis-iconbtn-glyph-md);
+  height: var(--ratis-iconbtn-glyph-md);
+}
+
+/* 요일 머리 — 날짜 격자와 같은 일곱 칸이라 세로로 딱 맞는다 */
+.ratis-calendar-week,
+.ratis-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, var(--cal-cell));
+}
+.ratis-calendar-weekday {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.8rem;
+  color: var(--ratis-text-subtle);
+  font-size: var(--ratis-font-sm);
+  font-weight: var(--ratis-weight-medium);
+}
+
+.ratis-calendar-day {
+  position: relative;
+  width: var(--cal-cell);
+  height: var(--cal-cell);
+  border: 0;
+  border-radius: var(--ratis-radius-control);
+  background: none;
+  color: var(--ratis-text-body);
+  font-size: var(--ratis-font-md);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+.ratis-calendar-day:hover:not(:disabled) {
+  background: var(--ratis-surface-hover);
+}
+.ratis-calendar-day:focus-visible {
+  outline: none;
+  box-shadow: var(--ratis-focus-ring);
+  /* 링이 옆 칸에 덮이지 않게 이 칸만 앞으로 세운다 */
+  z-index: 1;
+}
+
+/* 앞뒤 달의 날 — 주가 끊겨 보이지 않게 남기되 누를 수 없다 */
+.ratis-calendar-day[data-outside] {
+  color: var(--ratis-text-disabled);
+  cursor: default;
+}
+
+/* 오늘 — 밑에 점 하나. 면을 칠하면 고른 날과 헷갈린다 */
+.ratis-calendar-day[data-today]::after {
+  content: '';
+  position: absolute;
+  bottom: 0.4rem;
+  left: 50%;
+  width: 0.4rem;
+  height: 0.4rem;
+  transform: translateX(-50%);
+  border-radius: var(--ratis-radius-max);
+  background: var(--ratis-blue-50);
+}
+
+/* 기간 안쪽 — 옅은 띠. 양끝 사이가 이어져 보이게 모서리를 굴리지 않는다 */
+.ratis-calendar-day[data-between] {
+  border-radius: 0;
+  background: var(--ratis-surface-tint);
+}
+
+/* 고른 날 — 면이 차고 글자가 뒤집힌다 */
+.ratis-calendar-day[data-picked] {
+  background: var(--ratis-blue-50);
+  color: var(--ratis-text-inverse);
+  font-weight: var(--ratis-weight-bold);
+}
+.ratis-calendar-day[data-picked]:hover {
+  background: var(--ratis-blue-60);
+}
+.ratis-calendar-day[data-picked][data-today]::after {
+  background: var(--ratis-gray-0);
+}
+
+/* 기간의 양끝 — 바깥쪽만 굴려 가운데 띠와 한 덩어리로 이어진다 */
+.ratis-calendar-day[data-edge='start'] {
+  border-radius: var(--ratis-radius-control) 0 0 var(--ratis-radius-control);
+}
+.ratis-calendar-day[data-edge='end'] {
+  border-radius: 0 var(--ratis-radius-control) var(--ratis-radius-control) 0;
+}

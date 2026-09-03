@@ -1,0 +1,91 @@
+@charset "utf-8";
+/* 관리자 콘솔 셸 — 머리 줄 · 좌 메뉴 · 본문.
+
+   ★ **바탕 위에 낱개 카드가 뜬다.** 본문을 판 하나로 감싸지 않는다 — 감싸면 그 안의
+     카드들이 흰 면 위의 흰 면이 되어 경계가 사라진다. 머리 줄만 예외로 아래 선을 하나
+     긋는데(AdminHeader), 그 줄은 바탕 위에 뜬 카드가 아니라 화면 맨 위에 붙은 면이라
+     톤만으로는 본문과 갈리지 않기 때문이다. */
+
+.ratis-admin {
+  min-height: 100dvh;
+  /* ★ **바탕을 평평하게 덮는다.** 이용자 화면의 바탕은 민트·블루가 번지는 그라데이션인데
+     (index.css), 그 위에 표와 카드가 빽빽이 서는 관리 화면을 얹으면 같은 흰 카드가 자리마다
+     다른 바탕색을 이고 서서 경계가 들쭉날쭉해진다. 대화 화면은 카드가 한둘이라 그 워시가
+     화면의 인상이 되지만, 관리 화면에서는 읽어야 할 것 뒤의 소음이 된다.
+     되돌리려면 이 한 줄을 지운다 — 그러면 이용자 화면과 같은 바탕이 그대로 비친다 */
+  background: var(--ratis-surface-page);
+}
+
+.ratis-admin-main {
+  padding: var(--ratis-space-32) var(--ratis-space-24) var(--ratis-space-40);
+}
+.ratis-admin-main:focus-visible {
+  outline: none;
+}
+
+/* 메뉴와 본문 — 240 + 나머지. 사이는 컬럼 간격(24)이다.
+   정렬선(1600)은 머리 줄 안쪽과 같은 값이라 로고·계정이 메뉴·표 가장자리와 한 선에 선다 */
+.ratis-admin-layout {
+  display: grid;
+  grid-template-columns: 24rem minmax(0, 1fr);
+  gap: var(--ratis-space-24);
+  max-width: 160rem;
+  margin-inline: auto;
+}
+
+/* 본문 — **면이 없다.** 바탕 위에 뜨는 것은 낱개 카드(KPI · 표 셸 · 차트)이고,
+   제목 · 조건 줄 · 페이저는 바탕에 그대로 선다 (AdminLayout 주석) */
+.ratis-admin-body {
+  min-width: 0;
+}
+
+/* 메뉴는 본문을 따라 내려가지 않는다 — 화면을 오가는 자리라 늘 손 닿는 곳에 있어야 한다 */
+.ratis-admin-layout > .ratis-lnb {
+  position: sticky;
+  top: var(--ratis-space-24);
+  align-self: start;
+}
+
+/* 제목 줄 — 제목(왼쪽)과 그 화면 전체를 상대하는 조작(오른쪽) */
+.ratis-admin-page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ratis-space-16);
+  margin-bottom: var(--ratis-space-24);
+  min-height: var(--ratis-control-height-md);
+}
+.ratis-admin-page-title {
+  margin: 0;
+  font-size: var(--ratis-font-3xl);
+  font-weight: var(--ratis-weight-bold);
+  color: var(--ratis-text-strong);
+  line-height: 1.35;
+}
+.ratis-admin-page-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--ratis-space-8);
+}
+
+/* 좁은 화면 — 표가 열 예닐곱을 지고 있어 접어도 읽히지 않는다. 안내만 세운다 */
+.ratis-admin-desktop-notice {
+  display: none;
+}
+@media (max-width: 1023px) {
+  .ratis-admin {
+    display: none;
+  }
+  .ratis-admin-desktop-notice {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100dvh;
+    margin: 0;
+    padding: var(--ratis-space-32);
+    color: var(--ratis-text-muted);
+    font-size: var(--ratis-font-lg);
+    text-align: center;
+    word-break: keep-all;
+  }
+}

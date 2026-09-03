@@ -1,0 +1,120 @@
+@charset "utf-8";
+/* 켜고 끄는 스위치.
+
+   ★ 입력은 **홈 위에 투명하게 겹쳐 둔다.** 감추고(`display:none`) 옆에 가짜를 그리면
+     키보드 초점이 갈 곳이 사라진다. 크기를 홈에 맞춰 얹어 두면 클릭도 초점도 진짜 입력이
+     받고, 보이는 것만 우리가 그린다. */
+
+.ratis-switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ratis-space-16);
+  position: relative;
+}
+/* 라벨이 없으면 벌릴 것이 없다 — 스위치 크기만 차지한다 (표 셀 안) */
+.ratis-switch[data-standalone] {
+  display: inline-flex;
+  justify-content: flex-start;
+}
+
+.ratis-switch-label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ratis-space-2);
+  font-size: var(--ratis-font-md);
+  font-weight: var(--ratis-weight-medium);
+  color: var(--ratis-text-body);
+  cursor: pointer;
+}
+.ratis-switch-desc {
+  font-size: var(--ratis-font-sm);
+  font-weight: var(--ratis-weight-normal);
+  color: var(--ratis-text-subtle);
+}
+
+/* 홈 — 캡슐. 손잡이는 ::after 로 그려 안에서 미끄러진다 */
+.ratis-switch-track {
+  position: relative;
+  flex: none;
+  display: block;
+  border-radius: var(--ratis-radius-max);
+  background: var(--ratis-gray-30);
+  transition: background-color 0.15s ease;
+}
+.ratis-switch-track::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: var(--switch-gap);
+  width: var(--switch-knob);
+  height: var(--switch-knob);
+  transform: translateY(-50%);
+  border-radius: var(--ratis-radius-max);
+  background: var(--ratis-gray-0);
+  box-shadow: var(--ratis-shadow-float);
+  transition: left 0.15s ease;
+}
+
+/* 급 — 홈 크기와 손잡이가 함께 움직인다. 손잡이는 홈 높이에서 양쪽 여백(gap) 두 몫을 뺀다 */
+.ratis-switch[data-size='md'] {
+  --switch-w: 4.4rem;
+  --switch-h: 2.4rem;
+  --switch-gap: 0.3rem;
+}
+.ratis-switch[data-size='sm'] {
+  --switch-w: 3.6rem;
+  --switch-h: 2rem;
+  --switch-gap: 0.2rem;
+}
+.ratis-switch {
+  --switch-knob: calc(var(--switch-h) - var(--switch-gap) * 2);
+}
+.ratis-switch-track {
+  width: var(--switch-w);
+  height: var(--switch-h);
+}
+
+/* 진짜 입력 — 홈 위에 투명하게 얹는다 */
+.ratis-switch-input {
+  position: absolute;
+  right: 0;
+  z-index: 1;
+  width: var(--switch-w);
+  height: var(--switch-h);
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.ratis-switch[data-standalone] .ratis-switch-input {
+  left: 0;
+  right: auto;
+}
+
+/* 켜짐 — 면이 차고 손잡이가 오른쪽 끝으로 간다 */
+.ratis-switch-input:checked ~ .ratis-switch-track {
+  background: var(--ratis-choice-checked);
+}
+.ratis-switch-input:checked ~ .ratis-switch-track::after {
+  left: calc(var(--switch-w) - var(--switch-knob) - var(--switch-gap));
+}
+
+.ratis-switch-input:focus-visible ~ .ratis-switch-track {
+  box-shadow: var(--ratis-focus-ring);
+}
+
+/* 잠김 — 색을 유지한 채 흐려진다 (버튼과 같은 문법) */
+.ratis-switch-input:disabled {
+  cursor: not-allowed;
+}
+.ratis-switch-input:disabled ~ .ratis-switch-track,
+.ratis-switch:has(.ratis-switch-input:disabled) .ratis-switch-label {
+  opacity: 0.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ratis-switch-track,
+  .ratis-switch-track::after {
+    transition: none;
+  }
+}

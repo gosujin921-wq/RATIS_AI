@@ -1,0 +1,150 @@
+@charset "utf-8";
+/* 버튼 — 이 서비스의 버튼은 전부 이 하나로 선다.
+
+   ★ **캡슐이다.** 명령하는 조작은 둥글게, 내용을 담는 상자는 각지게 (design.md §7).
+     자리마다 border-radius 를 다시 쓰지 않는다.
+   ★ **급은 sm(36) · md(44) 둘뿐이다.** lg(52)는 「화면을 끝내는 제출 버튼」을 위한 급인데
+     이 서비스에는 그런 자리가 없다 (2026-09-03 확정).
+   ★ 값은 전부 토큰에서 온다. 이 파일에 숫자를 적지 않는다.
+
+   갈래별 무게: primary 채움 → secondary 선 → tertiary 옅은 선 → text 글자만.
+   호버는 **갈래마다 하나씩만** 정한다 (design.md §3). 면을 가진 것은 면이 진해지고,
+   면이 없는 글자 조작은 글자색만 바뀐다 — 면이 없다는 것이 그 조작의 무게이기 때문이다. */
+
+.ratis-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ratis-space-8);
+  border: 0.1rem solid transparent;
+  border-radius: var(--ratis-radius-max);
+  font-weight: var(--ratis-weight-bold);
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+/* 급 — 높이·글자·좌우 여백이 컨트롤 사다리에서 함께 온다.
+   좌우 여백은 높이 비례가 아니라 누진이다 (14 → 20) */
+.ratis-btn[data-size='small'] {
+  height: var(--ratis-control-height-sm);
+  padding-inline: var(--ratis-control-padding-sm);
+  font-size: var(--ratis-control-font-sm);
+  gap: var(--ratis-space-6);
+}
+
+.ratis-btn[data-size='medium'] {
+  height: var(--ratis-control-height-md);
+  padding-inline: var(--ratis-control-padding-md);
+  font-size: var(--ratis-control-font-md);
+}
+
+/* ── primary — 화면에서 가장 높은 급. 한 구획에 하나뿐이다 ─────────────── */
+.ratis-btn[data-variant='primary'] {
+  background: var(--ratis-action-fill);
+  border-color: var(--ratis-action-fill);
+  color: var(--ratis-action-text);
+}
+.ratis-btn[data-variant='primary']:hover:not(:disabled) {
+  background: var(--ratis-action-fill-hover);
+  border-color: var(--ratis-action-fill-hover);
+}
+.ratis-btn[data-variant='primary']:active:not(:disabled) {
+  background: var(--ratis-action-fill-pressed);
+  border-color: var(--ratis-action-fill-pressed);
+}
+
+/* ── secondary — 흰 면 + 브랜드 선 ────────────────────────────────────── */
+.ratis-btn[data-variant='secondary'] {
+  background: var(--ratis-surface-card);
+  border-color: var(--ratis-blue-20);
+  color: var(--ratis-text-brand);
+}
+.ratis-btn[data-variant='secondary']:hover:not(:disabled) {
+  background: var(--ratis-blue-5);
+}
+.ratis-btn[data-variant='secondary']:active:not(:disabled) {
+  background: var(--ratis-blue-10);
+}
+
+/* ── tertiary — 면 없이 회색 선. 목록 안의 곁 동작 ─────────────────────── */
+.ratis-btn[data-variant='tertiary'] {
+  background: transparent;
+  border-color: var(--ratis-text-muted);
+  color: var(--ratis-text-strong);
+}
+.ratis-btn[data-variant='tertiary']:hover:not(:disabled) {
+  background: var(--ratis-surface-hover);
+}
+.ratis-btn[data-variant='tertiary']:active:not(:disabled) {
+  background: var(--ratis-gray-20);
+}
+
+/* ── text — 면도 선도 없다. 반응은 글자에서 끝난다 ─────────────────────
+   높이를 사다리에 매지 않는다: 면이 없으니 상자가 없고, 글자가 곧 크기다.
+   대신 누르는 자리만 손가락 최소치까지 넓힌다 (모바일) */
+.ratis-btn[data-variant='text'] {
+  height: auto;
+  min-height: var(--ratis-tap-min);
+  padding-inline: var(--ratis-space-2);
+  background: none;
+  border-color: transparent;
+  color: var(--ratis-text-strong);
+}
+.ratis-btn[data-variant='text']:hover:not(:disabled) {
+  color: var(--ratis-text-brand);
+}
+
+/* 잠김 — **색을 유지한 채 흐려진다.** 회색으로 갈아 끼우면 어떤 갈래의 버튼이었는지가
+   사라져, 왜 못 누르는지보다 무엇이었는지를 먼저 되짚게 된다 */
+.ratis-btn:disabled,
+.ratis-btn[aria-disabled='true'] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 포커스 — 클릭이 아니라 키보드 이동에만 보인다 */
+.ratis-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--ratis-focus-ring);
+}
+
+/* 글리프는 줄어들지 않는다 — 이름이 길어지면 글자가 줄고 그림은 그대로여야 한다 */
+.ratis-btn > svg {
+  flex: none;
+}
+
+/* ── 위험 톤 ───────────────────────────────────────────────────────────
+   되돌릴 수 없는 걸음(삭제·영구 제거)에만 쓴다. 갈래별 모양은 그대로 두고 **색만** 바꾼다 —
+   빨강이 흔해지면 정작 위험한 자리에서 눈에 걸리지 않는다.
+   글자로도 무엇을 하는지 적혀 있어야 한다: 색만으로 위험을 말하지 않는다 (기획 §11) */
+
+.ratis-btn[data-tone='danger'][data-variant='primary'] {
+  background: var(--ratis-red-50);
+  border-color: var(--ratis-red-50);
+  color: var(--ratis-text-inverse);
+}
+.ratis-btn[data-tone='danger'][data-variant='primary']:hover:not(:disabled) {
+  background: var(--ratis-red-60);
+  border-color: var(--ratis-red-60);
+}
+.ratis-btn[data-tone='danger'][data-variant='primary']:active:not(:disabled) {
+  background: var(--ratis-red-70);
+  border-color: var(--ratis-red-70);
+}
+
+.ratis-btn[data-tone='danger'][data-variant='secondary'] {
+  border-color: var(--ratis-danger-border);
+  color: var(--ratis-danger-text);
+}
+.ratis-btn[data-tone='danger'][data-variant='secondary']:hover:not(:disabled) {
+  background: var(--ratis-danger-surface);
+}
+
+.ratis-btn[data-tone='danger'][data-variant='text'] {
+  color: var(--ratis-danger-text);
+}

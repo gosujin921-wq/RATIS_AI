@@ -1,9 +1,9 @@
 /* -----------------------------------------------------------------------------
    KeyValueList — 라벨·값 묶음. 꼴이 둘이다 (컴포넌트 주석 참조).
-     .klid-kv-rows   판 한 장 · 줄을 구분선으로 가른다 (design.md §5 「두 칸짜리 정보 표」)
-     .klid-kv-cards  카드 여러 장 · 라벨 위 · 값 아래로 쌓는다
+     .ratis-kv-rows   판 한 장 · 줄을 구분선으로 가른다 (design.md §5 「두 칸짜리 정보 표」)
+     .ratis-kv-cards  카드 여러 장 · 라벨 위 · 값 아래로 쌓는다
 
-   면은 두 꼴 모두 공통 구획 카드(.klid-section-card)가 갖는다. 값이 갈리는 것은 패딩뿐이라
+   면은 두 꼴 모두 공통 구획 카드(.ratis-section-card)가 갖는다. 값이 갈리는 것은 패딩뿐이라
    그것만 여기서 돌린다 — 보더·라운드·배경은 공통층 하나가 계속 owner 다.
    두 클래스로 조준해 로드 순서와 무관하게 이긴다 (같은 특이도면 나중 파일이 이긴다).
    -------------------------------------------------------------------------- */
@@ -12,39 +12,39 @@
 
 /* 세로 패딩만 0 으로 돌린다 — 위아래 여백을 판이 가지면 첫 줄이 24+16 만큼 내려앉아
    줄 리듬이 첫 줄에서만 깨진다. 좌우 24 는 아래 구획 카드와 왼쪽 선을 맞추는 값이라 그대로 */
-.klid-kv-rows.klid-section-card {
+.ratis-kv-rows.ratis-section-card {
   padding-block: 0;
 }
 
 /* 줄 — 라벨은 왼쪽 시작선, 값은 오른쪽 끝선. 끝선이 하나라 자릿수가 달라도 한 줄로 읽힌다.
    **윗선으로 맞춘다** (2026-08-31 사용자 확정) — 값이 라벨보다 커서 가운데·밑선으로 맞추면
    큰 쪽이 줄을 끌고 다녀 줄마다 라벨 높이가 달라 보인다. 윗선이면 라벨이 늘 같은 자리에 선다 */
-.klid-kv-rows .row {
+.ratis-kv-rows .row {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: var(--krds-gap-5); /* 라벨 ↔ 값 최소 사이 16 — 둘이 길어 만나도 붙지 않는다 */
-  padding-block: var(--krds-padding-6); /* 줄 위아래 16 */
+  gap: var(--ratis-space-16); /* 라벨 ↔ 값 최소 사이 16 — 둘이 길어 만나도 붙지 않는다 */
+  padding-block: var(--ratis-space-16); /* 줄 위아래 16 */
 }
 
 /* 줄 사이 구분선 — 판 테두리(gray-20)보다 한 단계 옅다 (§5 구분선 위계).
    첫 줄 위·마지막 줄 아래에는 긋지 않는다: 그 자리는 판 테두리가 이미 맡았다 */
-.klid-kv-rows .row + .row {
-  border-top: 0.1rem solid var(--krds-color-light-gray-10);
+.ratis-kv-rows .row + .row {
+  border-top: 0.1rem solid var(--ratis-gray-10);
 }
 
 /* 라벨 — 본문 기본 15 (§2 표 셀 급). 값보다 뒤로 물러나는 일은 굵기가 아니라 색이 맡는다 */
-.klid-kv-rows dt {
+.ratis-kv-rows dt {
   font-size: 1.5rem;
   line-height: 1.6;
-  color: var(--krds-color-light-gray-60);
+  color: var(--ratis-gray-60);
 }
 
 /* 값 — 20 · 600 (§2 상세 구획 제목 급). 라벨(15)보다 두 단 위라 줄 안에서 값이 먼저 읽힌다.
    빅넘버 급(30·40)까지는 올리지 않는다: 한 줄 안에 라벨과 나란히 서는 값이라 값이 라벨을
    밀어내고 줄 높이가 값 하나 때문에 늘어난다 (2026-08-31 사용자 확정 — 30 → 17 → 20).
    빅넘버는 카드 꼴(아래)의 것이다: 거기서는 값이 줄을 독차지한다 */
-.klid-kv-rows dd {
+.ratis-kv-rows dd {
   margin: 0; /* `dd` 의 브라우저 기본 왼쪽 여백 */
   font-size: 2rem;
   font-weight: 600;
@@ -52,7 +52,7 @@
   font-variant-numeric: tabular-nums; /* 자리폭 고정 — 값끼리 세로로 견주며 읽는다 (§2) */
   letter-spacing: -0.03rem;
   text-align: right;
-  color: var(--krds-color-light-gray-90);
+  color: var(--ratis-gray-90);
 }
 
 /* 좁은 화면에서도 두 칸을 유지한다 — 라벨이 짧고(성능 지표명·항목명) 값도 짧아 한 줄에 든다.
@@ -62,31 +62,31 @@
 
 /* 같은 폭으로 나란히 선다 — 폭이 같아야 값끼리 견줘진다. 칸 최소폭(160)에 못 미치면
    줄을 내려 접는다: 항목 수를 컴포넌트가 모르므로 칸 수를 못 박지 않는다 */
-.klid-kv-cards {
+.ratis-kv-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
-  gap: var(--krds-gap-5); /* 카드 사이 16 (§6) */
+  gap: var(--ratis-space-16); /* 카드 사이 16 (§6) */
 }
 
 /* 카드 한 장 — 밀집 카드라 패딩 20 이다 (§5. 구획 카드의 24 와 갈리는 값은 이것 하나) */
-.klid-kv-cards .row.klid-section-card {
-  padding: var(--krds-padding-7);
+.ratis-kv-cards .row.ratis-section-card {
+  padding: var(--ratis-space-20);
 }
 
 /* 라벨 위 · 값 아래. 라벨은 14 (§2 보조 본문) 로 한 단 낮추고 값에 자리를 내준다 */
-.klid-kv-cards dt {
+.ratis-kv-cards dt {
   font-size: 1.4rem;
   font-weight: 500;
-  color: var(--krds-color-light-gray-50);
+  color: var(--ratis-gray-50);
 }
 
 /* 값 — 빅넘버 30 (§2). 카드마다 값이 줄을 독차지하므로 판 꼴보다 두 단 크다 */
-.klid-kv-cards dd {
+.ratis-kv-cards dd {
   margin: 0.8rem 0 0; /* 라벨 → 값, 한 컴포넌트 안 (§6) */
   font-size: 3rem;
   font-weight: 600;
   line-height: 1.3; /* 디스플레이권 행간 (§2) */
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.05rem;
-  color: var(--krds-color-light-gray-90);
+  color: var(--ratis-gray-90);
 }

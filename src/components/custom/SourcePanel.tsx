@@ -1,5 +1,7 @@
-import { Button } from 'krds-react'
-import { AlertTriangle, ChevronLeft, ChevronRight, FileX, Minus, Plus, X } from 'lucide-react'
+import { Button } from '../ui/Button'
+import { Modal } from '../ui/Modal'
+import { useState } from 'react'
+import { AlertTriangle, ChevronLeft, ChevronRight, Download, FileX, Maximize2, Minimize2, X } from 'lucide-react'
 import type { Evidence } from '../../api/types'
 import './SourcePanel.css'
 
@@ -20,16 +22,14 @@ import './SourcePanel.css'
  */
 export type SourceStatus = 'loading' | 'ready' | 'unavailable' | 'gone'
 
-const ZOOM_STEPS = [50, 75, 100, 125, 150, 200] as const
-
 export function SourcePanel({
   evidence,
   status = 'ready',
   page,
   pageCount,
-  zoom = 100,
+  pageText,
   onPageChange,
-  onZoomChange,
+  onDownload,
   onRetry,
   onClose,
 }: {
@@ -39,23 +39,28 @@ export function SourcePanel({
   /** 지금 보고 있는 쪽. 없으면 근거의 pageNo 를 쓴다 */
   page?: number | null
   pageCount?: number
-  zoom?: number
+  /**
+   * 지금 쪽의 **원문 글자**. 있으면 인용 구절 대신 이것을 지면에 그린다.
+   * 실제 뷰어(PDF)가 붙기 전의 자리다 — 데모에서는 원본 PDF 에서 뽑은 글자가 들어온다.
+   */
+  pageText?: string
   onPageChange?: (next: number) => void
-  onZoomChange?: (next: number) => void
+  /** 원문 파일을 통째로 받는다. 넘기지 않거나 파일 자리가 비면 단추가 서지 않는다 */
+  onDownload?: (evidence: Evidence) => void
   onRetry?: () => void
   onClose?: () => void
 }) {
+  /** 창으로 크게 열었는가. **같은 패널**이 자리만 옮겨 앉는다 — 넓게 볼 때 다른 화면이
+      되어 버리면 쪽 위치도 조작도 다시 익혀야 한다 */
+  const [expanded, setExpanded] = useState(false)
+
   if (!evidence) return null
 
   const current = page ?? evidence.pageNo ?? 1
   const total = pageCount ?? Math.max(current, 1)
-  const zoomIndex = ZOOM_STEPS.findIndex((z) => z >= zoom)
-  const stepZoom = (by: number) => {
-    const i = Math.min(ZOOM_STEPS.length - 1, Math.max(0, (zoomIndex < 0 ? 2 : zoomIndex) + by))
-    onZoomChange?.(ZOOM_STEPS[i])
-  }
+  const canDownload = Boolean(onDownload && evidence.fileUrl)
 
-  return (
+  const panel = (
     /* aria-label 로 이름을 준다 — 패널이 뜬 것을 보조기술이 알 수 있어야 한다 */
     <aside className="src-panel" aria-label="출처 원문" data-status={status}>
       <header className="src-head">
@@ -66,14 +71,16 @@ export function SourcePanel({
               <span>{evidence.tableTitle ?? evidence.sectionName}</span>
             )}
           </p>
-          <h2 className="src-title">{evidence.documentTitle}</h2>
+          {/* ★ 제목은 **파일명**이다 (2026-09-03). 받은 파일과 화면에서 본 문서가 같은
+              것인지 이름으로 확인하는 자리다. 문서명은 아래 지면 머리가 그대로 말한다 */}
+          <h2 className="src-title">{evidence.fileName ?? evidence.documentTitle}</h2>
         </div>
         <button type="button" className="src-close" aria-label="원문 닫기" onClick={onClose}>
           <X size={18} aria-hidden />
         </button>
       </header>
 
-      {/* 도구 줄 — 쪽 이동과 확대·축소. 원문을 볼 수 없는 상태에서는 조작할 것이 없다 */}
+      {/* 도구 줄 — 쪽 이동과 원문 다운로드. 원문을 볼 수 없는 상태에서는 조작할 것이 없다 */}
       {status === 'ready' && (
         <div className="src-tools">
           <div className="src-pager">
@@ -101,28 +108,31 @@ export function SourcePanel({
             </button>
           </div>
 
-          <div className="src-zoom">
+          {/* ★ 확대·축소를 걷고 이 자리를 다운로드에 준다 (2026-09-03).
+              뷰어가 실제로 붙으면 확대는 뷰어가 제 방식으로 진다 — 껍데기가 배율을
+              따로 들고 있으면 두 배율이 어긋난다. 원문을 통째로 받는 길은 뷰어가
+              대신해 주지 못하므로 화면이 갖는다 */}
+          <div className="src-tools-right">
+            {/* 전체보기 — 좁은 화면에서는 패널이 이미 화면을 다 쓰므로 감춘다 (CSS) */}
             <button
               type="button"
-              className="src-tool"
-              aria-label="축소"
-              disabled={zoom <= ZOOM_STEPS[0]}
-              onClick={() => stepZoom(-1)}
+              className="src-expand"
+              aria-pressed={expanded}
+              onClick={() => setExpanded(!expanded)}
             >
-              <Minus size={16} aria-hidden />
+              {expanded ? <Minimize2 size={16} aria-hidden /> : <Maximize2 size={16} aria-hidden />}
+              {expanded ? '작게 보기' : '전체보기'}
             </button>
-            <button type="button" className="src-zoom-value" onClick={() => onZoomChange?.(100)}>
-              {zoom}%
-            </button>
-            <button
-              type="button"
-              className="src-tool"
-              aria-label="확대"
-              disabled={zoom >= ZOOM_STEPS[ZOOM_STEPS.length - 1]}
-              onClick={() => stepZoom(1)}
-            >
-              <Plus size={16} aria-hidden />
-            </button>
+            {canDownload && (
+              <button
+                type="button"
+                className="src-download"
+                onClick={() => onDownload?.(evidence)}
+              >
+                <Download size={16} aria-hidden />
+                원문 다운로드
+              </button>
+            )}
           </div>
         </div>
       )}
@@ -172,12 +182,16 @@ export function SourcePanel({
 
         {status === 'ready' && (
           /* 실제 문서 뷰어가 앉을 자리. 지금은 근거 구절을 원문 지면처럼 보여 준다 */
-          <div className="src-page-view" style={{ ['--src-zoom' as string]: zoom / 100 }}>
+          <div className="src-page-view">
             <div className="src-sheet">
               <p className="src-sheet-meta">
                 {evidence.documentTitle} · {current}쪽
               </p>
-              {evidence.blockType === 'table' ? (
+              {/* 원문 글자가 오면 **그 쪽을 그대로** 보여 준다. 줄바꿈이 지면의 것이라
+                  `white-space` 로 살린다. 없으면 답변이 인용한 구절만 보여 준다 */}
+              {pageText ? (
+                <div className="src-sheet-page">{pageText}</div>
+              ) : evidence.blockType === 'table' ? (
                 <div
                   className="src-sheet-table"
                   dangerouslySetInnerHTML={{ __html: evidence.chunkContent }}
@@ -186,7 +200,9 @@ export function SourcePanel({
                 <p className="src-sheet-text">{evidence.chunkContent}</p>
               )}
               {/* ★ 캡션(단위·주·출처) 생략 금지 — 빠지면 수치가 맞아도 오독된다 (NFR-008) */}
-              {evidence.caption && <p className="src-sheet-caption">{evidence.caption}</p>}
+              {!pageText && evidence.caption && (
+                <p className="src-sheet-caption">{evidence.caption}</p>
+              )}
             </div>
           </div>
         )}
@@ -209,4 +225,20 @@ export function SourcePanel({
       </div>
     </aside>
   )
+
+  /* 크게 보기 — **부품을 새로 만들지 않는다.** 위 패널을 그대로 창 안에 앉힌다.
+     좁은 화면에서 패널이 화면을 덮는 것도 같은 마크업이 CSS 로 그렇게 서는 것이라
+     (SourcePanel.css 의 767 분기) 이 셋이 한 코드다.
+     창의 X 는 **창만 닫는다** — 원문 자체는 옆 패널로 돌아간다 */
+  if (expanded) {
+    return (
+      <Modal.Root open size="lg" onOpenChange={(o) => !o && setExpanded(false)}>
+        <Modal.Content className="src-modal" aria-label="출처 원문 전체보기">
+          {panel}
+        </Modal.Content>
+      </Modal.Root>
+    )
+  }
+
+  return panel
 }

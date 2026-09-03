@@ -15,7 +15,10 @@ export default defineConfig({
     // RATIS_AI 전용 고정 포트. KISA 5200, IDC 5300, NDMS 5400, CSMS 5500 이 이미 잡혀 있어
     // 5600 으로 못박고, strictPort 로 조용히 밀리지 않게 한다.
     port: 5600,
-    strictPort: true
+    strictPort: true,
+    // 같은 Wi-Fi 의 휴대폰에서 열어 본다. 기본값(localhost)이면 이 기기 밖에서 안 잡힌다.
+    // 브라우저 개발자도구의 모바일 흉내로는 실제 스크롤바·주소창·터치 타깃을 못 본다.
+    host: true
   },
   test: {
     projects: [{

@@ -1,77 +1,77 @@
 @charset "utf-8";
 /* 빈 상태. 기준: design.md §5 (본문 80 / 카드 안 56 / 표 안 24 · 표면 gray-5) */
 
-.klid-empty-state {
+.ratis-empty-state {
   text-align: center;
 }
-.klid-empty-state[data-size='md'],
-.klid-empty-state[data-size='sm'] {
-  border: 0.1rem solid var(--krds-color-light-gray-20);
+.ratis-empty-state[data-size='md'],
+.ratis-empty-state[data-size='sm'] {
+  border: 0.1rem solid var(--ratis-gray-20);
   border-radius: 1.6rem;
-  background-color: var(--krds-color-light-gray-5);
+  background-color: var(--ratis-gray-5);
 }
-.klid-empty-state[data-size='md'] {
+.ratis-empty-state[data-size='md'] {
   /* 빈 상태 세로 여백 80/56 — 패딩 척도는 40 이 최대라 토큰이 없다 (design.md §5) */
   padding: 8rem 0;
 }
-.klid-empty-state[data-size='sm'] {
+.ratis-empty-state[data-size='sm'] {
   padding: 5.6rem 0;
 }
 
-.klid-empty-state .icon {
+.ratis-empty-state .icon {
   display: block;
   margin: 0 auto;
-  color: var(--krds-color-light-gray-30);
+  color: var(--ratis-gray-30);
 }
-.klid-empty-state[data-size='md'] .icon {
-  width: var(--krds-size-height-6);
-  height: var(--krds-size-height-6);
+.ratis-empty-state[data-size='md'] .icon {
+  width: var(--ratis-space-40);
+  height: var(--ratis-space-40);
 }
-.klid-empty-state[data-size='sm'] .icon {
-  width: var(--krds-size-height-5);
-  height: var(--krds-size-height-5);
+.ratis-empty-state[data-size='sm'] .icon {
+  width: var(--ratis-space-32);
+  height: var(--ratis-space-32);
 }
 
-.klid-empty-state .title {
+.ratis-empty-state .title {
   margin: 0;
   font-weight: 600;
-  color: var(--krds-color-light-gray-70);
+  color: var(--ratis-gray-70);
 }
-.klid-empty-state[data-size='md'] .title {
-  font-size: var(--krds-pc-font-size-heading-xsmall);
+.ratis-empty-state[data-size='md'] .title {
+  font-size: var(--ratis-font-xl);
 }
-.klid-empty-state[data-size='sm'] .title {
-  font-size: var(--krds-pc-font-size-heading-xxsmall);
+.ratis-empty-state[data-size='sm'] .title {
+  font-size: var(--ratis-font-lg);
 }
-.klid-empty-state .icon + .title {
-  margin-top: var(--krds-gap-5);
-}
-
-.klid-empty-state .desc {
-  margin: var(--krds-gap-2) 0 0;
-  font-size: var(--krds-pc-font-size-body-medium);
-  color: var(--krds-color-light-gray-50);
+.ratis-empty-state .icon + .title {
+  margin-top: var(--ratis-space-16);
 }
 
-.klid-empty-state .action {
-  margin-top: var(--krds-gap-6);
+.ratis-empty-state .desc {
+  margin: var(--ratis-space-4) 0 0;
+  font-size: var(--ratis-font-lg);
+  color: var(--ratis-gray-50);
+}
+
+.ratis-empty-state .action {
+  margin-top: var(--ratis-space-20);
   display: flex;
   justify-content: center;
 }
 
 /* xs: 표면 없이 텍스트만 (표 셀·좁은 패널) */
-.klid-empty-state[data-size='xs'] {
-  padding: var(--krds-padding-8) var(--krds-padding-3);
-  font-size: var(--krds-pc-font-size-body-small);
-  color: var(--krds-color-light-gray-50); /* 대비 하한 (design.md §8) */
+.ratis-empty-state[data-size='xs'] {
+  padding: var(--ratis-space-24) var(--ratis-space-8);
+  font-size: var(--ratis-font-md);
+  color: var(--ratis-gray-50); /* 대비 하한 (design.md §8) */
 }
-.klid-empty-state[data-size='xs'] .desc {
+.ratis-empty-state[data-size='xs'] .desc {
   display: block;
-  margin-top: var(--krds-gap-2);
+  margin-top: var(--ratis-space-4);
   font-size: inherit;
   color: inherit;
 }
-.klid-empty-state[data-size='xs'] .action {
-  margin-top: var(--krds-gap-3);
+.ratis-empty-state[data-size='xs'] .action {
+  margin-top: var(--ratis-space-8);
   display: block;
 }

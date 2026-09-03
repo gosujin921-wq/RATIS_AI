@@ -11,7 +11,7 @@ import './Card.css'
  *
  * 치수 기준: design.md §5 표면(흰 면 · slate 보더 · 라운드 16) · §6 그리드 간격(카드 16).
  * 카드 전체가 링크라 안에 다른 링크·버튼을 넣지 않는다 (중첩 링크 금지).
- * 여러 장을 늘어놓을 때는 함께 정의된 `.klid-card-grid` 를 쓴다.
+ * 여러 장을 늘어놓을 때는 함께 정의된 `.ratis-card-grid` 를 쓴다.
  */
 export function Card({
   href,
@@ -54,7 +54,7 @@ export function Card({
   return (
     <a
       href={withBase(href)}
-      className={cx('klid-card', className)}
+      className={cx('ratis-card', className)}
       data-compact={compact || undefined}
       style={style}
     >

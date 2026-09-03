@@ -33,7 +33,7 @@ export function DetailCard({
   className?: string
 } & Pick<HTMLAttributes<HTMLElement>, 'aria-label'>) {
   return (
-    <Tag className={cx('klid-detail-card', className)} {...rest}>
+    <Tag className={cx('ratis-detail-card', className)} {...rest}>
       {children}
     </Tag>
   )
@@ -52,12 +52,12 @@ function Head({
 }) {
   return (
     <header>
-      <h2 className="klid-detail-subject">
+      <h2 className="ratis-detail-subject">
         {badge}
         {title}
       </h2>
       {meta && meta.length > 0 && (
-        <dl className="klid-detail-meta">
+        <dl className="ratis-detail-meta">
           {meta.map((m) => (
             <div key={m.label}>
               <dt>{m.label}</dt>
@@ -72,7 +72,7 @@ function Head({
 
 /** 본문. 위 구분선으로 헤더와 나뉜다 */
 function Body({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={cx('klid-detail-body', className)}>{children}</div>
+  return <div className={cx('ratis-detail-body', className)}>{children}</div>
 }
 
 export type DetailRowItem = {
@@ -103,7 +103,7 @@ function Rows({
 }) {
   if (items.length === 0) return null
   return (
-    <dl className={cx('klid-detail-rows', className)} aria-label={ariaLabel}>
+    <dl className={cx('ratis-detail-rows', className)} aria-label={ariaLabel}>
       {items.map((item) => (
         <div key={item.label} className="row">
           <dt>{item.label}</dt>
@@ -135,7 +135,7 @@ function Files({
 
   if (layout === 'panel') {
     return (
-      <div className="klid-detail-files-panel">
+      <div className="ratis-detail-files-panel">
         <h3>
           <Paperclip aria-hidden />
           {/* 이름과 건수를 한 덩이로 묶는다 — 묶지 않으면 줄의 gap 이 둘 사이에도 끼어
@@ -157,7 +157,7 @@ function Files({
   }
 
   return (
-    <div className="klid-detail-files">
+    <div className="ratis-detail-files">
       <h3>
         <Paperclip aria-hidden />
         첨부파일
@@ -166,7 +166,7 @@ function Files({
         {items.map((file) => (
           <li key={file.name}>
             <a href={`#${file.name}`}>{file.name}</a>
-            <span className="klid-detail-file-size">({file.size})</span>
+            <span className="ratis-detail-file-size">({file.size})</span>
           </li>
         ))}
       </ul>
@@ -181,7 +181,7 @@ function Files({
  */
 function Actions({ children, align = 'center' }: { children: ReactNode; align?: 'center' | 'start' | 'end' }) {
   return (
-    <div className="klid-detail-action" data-align={align}>
+    <div className="ratis-detail-action" data-align={align}>
       {children}
     </div>
   )

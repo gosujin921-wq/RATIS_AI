@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
-import { Button, Modal } from 'krds-react'
+import { Modal } from '../ui/Modal'
+import { Button } from '../ui/Button'
 import './Dialog.css'
 
 /**
@@ -51,19 +52,51 @@ import './Dialog.css'
  *   되돌릴 수 없는 창이라고 안전한 쪽을 앞세우지 않는다 — 같은 자리의 버튼이 창마다 자리를
  *   바꾸면 사용자는 매번 어느 쪽이 무엇인지 다시 읽는다. **자리는 고정이고 무게는 색이 진다.**
  */
+/**
+ * 설명을 **문장 단위로** 끊어 세운다.
+ *
+ * 한 덩이로 흘리면 「지워집니다. 되돌릴」처럼 문장이 줄 가운데서 이어져, 읽는 호흡과
+ * 줄바꿈이 어긋난다. 사실이 하나씩 제 줄에 서면 눈이 문장 끝에서 쉰다.
+ *
+ * ★ `<br>` 을 박지 않는다. 폭이 바뀌면 엉뚱한 자리에서 끊긴 채로 남는다 — 문장마다
+ *   블록으로 세우고, 그 안에서만 접히게 한다.
+ * ★ 조각(ReactNode)으로 온 설명은 그대로 둔다. 어디서 끊을지는 그것을 지은 쪽이 안다.
+ */
+function DescLines({ desc }: { desc: ReactNode }) {
+  if (typeof desc !== 'string') return <>{desc}</>
+  const lines = desc.split(/(?<=[.!?])\s+/).filter(Boolean)
+  return (
+    <>
+      {lines.map((line, i) => (
+        <span key={i} className="ratis-dialog-line">
+          {line}
+        </span>
+      ))}
+    </>
+  )
+}
+
 export function Dialog({
   open,
   onOpenChange,
+  onClose,
   icon,
   title,
+  tone = 'default',
   alert,
   desc,
   children,
   main,
   sub,
+  confirmLabel,
+  onConfirm,
+  cancelLabel = '취소',
 }: {
   open: boolean
-  onOpenChange: (open: boolean) => void
+  /** 창이 여닫히는 것을 위로 알린다. `onClose` 만 넘겨도 된다 */
+  onOpenChange?: (open: boolean) => void
+  /** 닫기 한 가지만 필요할 때. 확인 창에서는 이쪽이 짧다 */
+  onClose?: () => void
   /**
    * 글리프만 넘긴다 — 감싸는 칩은 이 창이 갖는다 (크기·면·색이 창마다 갈리지 않게).
    * **없어도 된다.** 하던 일의 연장인 창은 그림 없이 제목부터 선다.
@@ -71,6 +104,12 @@ export function Dialog({
   icon?: ReactNode
   /** **타이틀** — 무슨 일이 일어났는가. 창의 이름이자 보조기술이 읽는 이름이다 */
   title: string
+  /**
+   * 위험 톤 — **되돌릴 수 없는 걸음**을 묻는 창에 쓴다 (삭제 · 영구 제거).
+   * 메인 버튼만 붉어진다. **취소는 그대로 둔다** — 되돌리는 길이 붉으면 무엇이 위험한
+   * 걸음인지 뒤바뀐다.
+   */
+  tone?: 'default' | 'danger'
   /**
    * **서브텍스트 아래**에 서는 경고 상자(`Alert`). 설명이 무슨 일이 일어나는지 말하고,
    * 상자는 그 때문에 **지금 걸리는 것**을 짚는다 (2026-08-25 확정 — 종전에는 제목 바로 아래
@@ -82,7 +121,7 @@ export function Dialog({
    * **서브텍스트** — 한두 줄로 끝낸다. 더 길어지면 이 창이 아니라 화면이 할 말이다.
    * 낱말 강조가 섞일 수 있어 글자만이 아니라 조각도 받는다 (세션 만료의 남은 시간 등).
    */
-  desc: ReactNode
+  desc?: ReactNode
   /**
    * 서브텍스트 아래 붙는 **추가 내용** — 목록이나 인증 버튼처럼 문장으로 안 되는 것.
    * **구분선으로 나뉘고 왼쪽 정렬로 선다** — 위는 창이 하는 말이고 여기는 그 말이 가리키는
@@ -98,41 +137,63 @@ export function Dialog({
   main?: Step
   /** **서브 버튼** — 테두리(secondary). 없으면 걸음이 하나뿐인 창이 된다 */
   sub?: Step
+  /**
+   * 확인 창 지름길 — `main`·`sub` 를 손으로 짜지 않고 「무엇을 하는가」만 준다.
+   * 확인하면 그 일을 하고 창이 닫히고, 취소는 닫기만 한다.
+   */
+  confirmLabel?: string
+  onConfirm?: () => void
+  cancelLabel?: string
 }) {
-  const mainButton = main ? <StepButton step={main} /> : null
-  const subButton = sub ? <StepButton step={sub} variant="secondary" /> : null
+  const close = () => {
+    onClose?.()
+    onOpenChange?.(false)
+  }
+
+  /* 지름길로 온 것을 걸음으로 편다 — 아래는 한 가지 모양만 안다 */
+  const mainStep: Step | undefined =
+    main ??
+    (confirmLabel
+      ? { label: confirmLabel, onClick: () => { onConfirm?.(); close() } }
+      : undefined)
+  const subStep: Step | undefined =
+    sub ?? (confirmLabel ? { label: cancelLabel, close: true } : undefined)
+
+  const mainButton = mainStep ? <StepButton step={mainStep} tone={tone} /> : null
+  const subButton = subStep ? <StepButton step={subStep} variant="secondary" /> : null
   /** 걸음이 있는지. 본문 **아래 여백**을 걸음 줄이 갖느냐를 가른다 (Dialog.css) */
   const hasSteps = mainButton || subButton ? 'yes' : 'none'
   return (
-    <Modal.Root size="sm" open={open} onOpenChange={onOpenChange}>
-      {/* ★ 창의 **이름**을 직접 잇는다. 킷은 `role="dialog" aria-modal="true"` 까지만 주고
-          `aria-labelledby` 를 걸지 않아, 그대로 두면 보조기술이 "대화상자" 라고만 읽고 제목을
-          읽지 않는다 (krds-react 1.1.1 실측 — `Modal.Header title` 을 쓴 다른 창들도 같다) */}
+    <Modal.Root size="sm" open={open} onOpenChange={(o) => !o && close()}>
+      {/* ★ 창의 **이름**을 직접 잇는다. `role="dialog" aria-modal` 만으로는 보조기술이
+          「대화상자」라고만 읽고 제목을 읽지 않는다 */}
       <Modal.Content
-        className="klid-dialog"
+        className="ratis-dialog"
         data-mark={icon ? 'yes' : 'none'}
         data-steps={hasSteps}
         aria-labelledby={TITLE_ID}
       >
-        {/* ★ 킷 타입 결함 우회 — `Modal.Header` 의 `title` 은 타입이 `React.ComponentProps<'div'>`
-            (HTML title 속성 = string) 와 `{ title?: ReactNode }` 의 교집합이라 **문자열만** 받는다.
-            글리프를 함께 얹으려면 children 으로 넘겨야 한다 — 킷은 title 이 없으면 children 을
-            그대로 그리고, `Modal.Title` 이 같은 `<h2 class="modal-title">` 을 낸다.
-            DOM 은 title 을 넘긴 것과 같다 (krds-react 1.1.1 확인) */}
         <Modal.Header>
-          {icon ? <span className="klid-dialog-mark">{icon}</span> : null}
+          {icon ? <span className="ratis-dialog-mark">{icon}</span> : null}
           <Modal.Title id={TITLE_ID}>{title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>{desc}</p>
-          {alert ? <div className="klid-dialog-alert">{alert}</div> : null}
-          {children ? <div className="klid-dialog-extra">{children}</div> : null}
+          {/* 설명이 따로 없으면 children 이 그 자리다 — 확인 창은 문장 한둘이 전부라
+              설명과 자료를 갈라 둘 이유가 없다 */}
+          <p>
+            <DescLines desc={desc ?? children} />
+          </p>
+          {alert ? <div className="ratis-dialog-alert">{alert}</div> : null}
+          {desc && children ? <div className="ratis-dialog-extra">{children}</div> : null}
         </Modal.Body>
-        {/* 걸음이 하나도 없으면 아랫동을 세우지 않는다 — 빈 푸터는 창 아래에 여백만 남긴다 */}
+        {/* 걸음이 하나도 없으면 아랫동을 세우지 않는다 — 빈 푸터는 창 아래에 여백만 남긴다.
+            ★ 메인은 **오른쪽**이다 (2026-09-03). 읽는 방향의 끝이 「그래서 무엇을 하는가」의
+              자리이고, 되돌리는 길(취소)이 그 앞에 선다. 종전에는 메인이 왼쪽이라 눈이
+              먼저 닿는 자리에 되돌릴 수 없는 걸음이 있었다 */}
         {hasSteps === 'yes' ? (
           <Modal.Footer>
-            {mainButton}
             {subButton}
+            {mainButton}
           </Modal.Footer>
         ) : null}
       </Modal.Content>
@@ -154,14 +215,30 @@ export type Step = {
   disabled?: boolean
 }
 
-/** 걸음 하나를 버튼으로. 크기는 md(44) 고정이다 — 작은 창(sm 400) 공통값 (design.md §5) */
-function StepButton({ step, variant }: { step: Step; variant?: 'secondary' }) {
+/** 걸음 하나를 버튼으로. 크기는 sm(36) 이다 — 창이 400 폭이라 md(44)는 두 개가 서면
+    아랫동이 창의 절반을 먹는다 (2026-09-03 한 급 낮춤) */
+function StepButton({
+  step,
+  variant,
+  tone,
+}: {
+  step: Step
+  variant?: 'secondary'
+  /** 위험 톤은 **메인 걸음에만** 실린다 — 서브(취소)는 안전한 쪽이라 색을 주지 않는다 */
+  tone?: 'default' | 'danger'
+}) {
   const button = step.href ? (
-    <Button as="a" href={step.href} size="medium" variant={variant}>
+    <Button as="a" href={step.href} size="small" variant={variant} tone={variant ? undefined : tone}>
       {step.label}
     </Button>
   ) : (
-    <Button size="medium" variant={variant} disabled={step.disabled} onClick={step.onClick}>
+    <Button
+      size="small"
+      variant={variant}
+      tone={variant ? undefined : tone}
+      disabled={step.disabled}
+      onClick={step.onClick}
+    >
       {step.label}
     </Button>
   )
@@ -172,4 +249,4 @@ function StepButton({ step, variant }: { step: Step; variant?: 'secondary' }) {
  * 제목 id. 창은 화면에 하나만 떠 있으므로 고정값으로 둔다 — 같은 페이지에 이 창이 둘 이상
  * 뜨는 일은 없다 (뜨면 뒤에 뜬 것이 앞을 덮는다).
  */
-const TITLE_ID = 'klid-dialog-title'
+const TITLE_ID = 'ratis-dialog-title'

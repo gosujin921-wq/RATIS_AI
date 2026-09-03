@@ -5,7 +5,7 @@
   gap: 1rem;
   font-size: 1.5rem;
   line-height: 1.75;
-  color: var(--krds-color-light-gray-80);
+  color: var(--ratis-gray-80);
 }
 
 .answer-body > p {
@@ -19,7 +19,7 @@
 .answer-h3 {
   margin: 0.8rem 0 0;
   font-weight: 700;
-  color: var(--krds-color-light-gray-90);
+  color: var(--ratis-gray-90);
 }
 
 .answer-h2 {
@@ -50,14 +50,14 @@
 .answer-quote {
   margin: 0;
   padding: 0.8rem 0 0.8rem 1.6rem;
-  border-left: 3px solid var(--krds-color-light-primary-20);
-  color: var(--krds-color-light-gray-60);
+  border-left: 3px solid var(--ratis-blue-20);
+  color: var(--ratis-gray-60);
 }
 
 /* 표가 화면보다 넓으면 가로로 민다 (기획 §11) */
 .answer-table {
   overflow-x: auto;
-  border: 1px solid var(--krds-color-light-gray-20);
+  border: 1px solid var(--ratis-gray-20);
   border-radius: 0.8rem;
 }
 
@@ -69,15 +69,15 @@
 
 .answer-table :is(th, td) {
   padding: 1.2rem;
-  border-bottom: 1px solid var(--krds-color-light-gray-10);
+  border-bottom: 1px solid var(--ratis-gray-10);
   text-align: left;
   white-space: nowrap;
 }
 
 .answer-table th {
-  background: var(--krds-color-light-gray-5);
+  background: var(--ratis-gray-5);
   font-weight: 600;
-  color: var(--krds-color-light-gray-70);
+  color: var(--ratis-gray-70);
 }
 
 .answer-table tr:last-child :is(th, td) {

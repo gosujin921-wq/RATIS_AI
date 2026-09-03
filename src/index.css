@@ -1,24 +1,94 @@
 /* =============================================================================
-   앱 전역 스타일
+   앱 전역 스타일 — 리셋과 바탕.
 
-   KRDS(krds-react/dist/index.css)가 리셋·타이포·토큰을 전부 제공하므로
-   여기에는 앱 자체 스타일만 최소한으로 둔다.
-
-   ★ 주의: KRDS 는 html { font-size: 62.5% } (1rem = 10px) 를 전역에 깐다.
-     rem 값은 10px 기준으로 계산할 것. Tailwind 등 다른 프레임워크의
-     제네릭 클래스와 섞으면 조용히 깨진다 (KLID_Portal design 브랜치에서 확인된 제약).
+   ★ **1rem = 10px 다.** `html { font-size: 62.5% }` 를 여기서 깐다. 이 앱의 모든 치수는
+     그 기준으로 적혀 있다 (2.4rem = 24px). 종전에는 이 선언이 정부 킷 CSS 에서 왔는데,
+     킷을 걷어내면서 우리가 갖는다 — 이 한 줄이 빠지면 화면의 모든 값이 1.6배로 튄다.
+     Tailwind 같은 다른 프레임워크의 제네릭 클래스와 섞으면 조용히 깨진다.
+   ★ 색·치수 토큰은 styles/ratis-tokens.css 가 정본이다.
    ============================================================================= */
+
+/* ★ **모든 요소를 border-box 로 센다.** 폭 100% 에 패딩·보더가 있는 칸(입력·표·카드)이
+   제 칸을 넘지 않게 하는 기준선이다. 종전에는 이 선언이 정부 킷 CSS 에서 왔는데, 킷을
+   걷어내면서 함께 사라져 피드백 입력칸이 상자 밖으로 30px 삐져나왔다 (2026-09-03 실측) */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 62.5%;
+}
 
 body {
   margin: 0;
-  /* ★ 앱 바깥 바탕 — CI 두 색을 아주 옅게 흘린 면.
-     셸이 이 위에 **떠 있는 카드**로 앉는다 (AppShell.css 의 .ratis-shell).
+  /* 서체 — 라틴·숫자 Roboto / 한글 Pretendard GOV. Roboto 에 한글 글리프가 없어 자동 폴백된다.
+     로드는 index.html · preview-head.html */
+  font-family: Roboto, 'Pretendard GOV', system-ui, sans-serif;
+  font-size: var(--ratis-font-lg);
+  line-height: 1.5;
+  color: var(--ratis-text-body);
+  /* 자간 — 전역 -0.5px (Pretendard 한글 보정, design.md §2) */
+  letter-spacing: -0.05rem;
+  -webkit-font-smoothing: antialiased;
+  /* ★ 앱 바깥 바탕 — 입력창 스윕과 **같은 팔레트**를 아주 옅게 흘린 면.
+     본문은 흰 라운드 카드로 이 위에 뜨고, 사이드바는 면을 깔지 않아 이 바탕이 그대로
+     비친다 (AppShell.css 의 .ratis-side). 즉 여기서 정한 색이 곧 사이드바 색이다.
      화면 끝까지 흰 면이 이어지면 대화·사이드바·바깥이 한 덩어리로 붙어 보이는데,
      바탕이 한 겹 깔리면 「지금 보는 것이 이 카드 안」이라는 경계가 생긴다.
-     채도는 낮게 — 바탕이 눈에 들면 정작 읽어야 할 대화가 뒤로 밀린다 */
+
+     ★ 색은 민트(--ratis-teal-50)와 블루 둘뿐이다. 입력창 스윕이 초록 → 청록 → 파랑으로
+       흐르는데, 넓은 바탕에 그 세 색을 다 풀면 스윕이 바탕에 묻혀 강조를 잃는다.
+       바탕은 스윕의 **뒤쪽 두 색만** 받아 같은 계열임을 말하고, 초록은 스윕에 남긴다.
+
+     ★ 기조는 블루다. 민트는 왼쪽 아래로만 조금 번지게 둔다 — 사이드바가 왼쪽 기둥
+       전체를 쓰는 탓에, 민트를 위쪽에 두면 로고·메뉴가 통째로 민트 면 위에 앉는다.
+
+     채도는 낮게 — 바탕이 눈에 들면 정작 읽어야 할 대화가 뒤로 밀린다.
+     ⚠ 알파를 색값에 박지 않고 color-mix 로 판다. 팔레트가 바뀌면 바탕도 따라와야 한다.
+
+     ⚠ 크기를 rem 으로 잡지 않는다. 사이드바는 창 높이를 다 쓰는 기둥인데 rem 은 창이
+       길어져도 그대로라, 44rem(440px)짜리 워시는 세로 1300 창에서 위 3분의 1만 덮고
+       가운데는 베이스 단색으로 남는다 — 창을 키울수록 색이 빠져 보인다.
+       %(fixed 라 뷰포트 기준)로 잡아야 창 크기와 무관하게 같은 그림이 된다.
+
+     ★ 중심을 화면 밖(-6% / 104%)에 둔다. 모서리에 두면 가장 진한 한 점이 화면 안에 들어와
+       「구석에 켜진 조명」처럼 보인다. 밖으로 밀면 화면에는 번진 자락만 들어온다 */
   background:
-    radial-gradient(60rem 40rem at 12% 8%, rgb(39 57 150 / 7%), transparent 60%),
-    radial-gradient(52rem 36rem at 88% 92%, rgb(145 199 61 / 8%), transparent 60%),
-    linear-gradient(160deg, #f6f7fb 0%, #f2f4f9 100%);
+    radial-gradient(
+      78% 68% at -6% -4%,
+      color-mix(in srgb, var(--ratis-blue-40) 20%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      82% 76% at -8% 104%,
+      color-mix(in srgb, var(--ratis-teal-50) 27%, transparent),
+      transparent 72%
+    ),
+    radial-gradient(
+      58% 54% at 104% 100%,
+      color-mix(in srgb, var(--ratis-blue-40) 13%, transparent),
+      transparent 66%
+    ),
+    linear-gradient(160deg, #f2f5fc 0%, #eaeff8 100%);
   background-attachment: fixed;
+}
+
+/* ★ 전역 유틸. 화면 CSS 가 아니라 여기 산다 (2026-09-03 이동).
+   종전에는 ChatPage.css 안에 있어서, 그 화면이 뜨지 않는 자리
+   (스토리북의 낱개 부품)에서는 규칙이 없어 **보조기술용 글자가 그대로 보였다.**
+   대화 목록의 「고정됨:」이 핀 아이콘 옆에 글자로 찍힌 것이 그 사고다. */
+/* 시각적으로 숨기되 스크린리더는 읽는다 — display:none 이면 안 읽힌다 */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }

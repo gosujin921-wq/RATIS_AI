@@ -1,0 +1,102 @@
+@charset "utf-8";
+/* 차트 공용 — 축 글자·격자 기본값 (design.md §2 타이포 · §8 색) */
+
+.ratis-chart {
+  width: 100%;
+}
+
+/* 축 글자는 보조 본문 14 · slate-600. 격자보다 라벨이 먼저 읽혀야 한다 */
+.ratis-chart text {
+  font-size: 1.4rem;
+  fill: var(--ratis-gray-70);
+}
+
+/* 격자선은 가장 옅게 — 값을 읽는 보조선이지 내용이 아니다 (design.md §5 구분선 위계) */
+.ratis-chart .recharts-cartesian-grid line {
+  stroke: var(--ratis-gray-10);
+}
+.ratis-chart .recharts-cartesian-axis-line,
+.ratis-chart .recharts-cartesian-axis-tick-line {
+  stroke: var(--ratis-gray-20);
+}
+
+/* 범례 */
+.ratis-chart .recharts-legend-item-text {
+  font-size: 1.4rem;
+  color: var(--ratis-gray-70);
+}
+
+/* 범례 글자 — Recharts 가 계열 색을 인라인 style 로 박아서, 연한 막대 색이 글자에도 온다
+   (막대 primary-40 이 글자로 오면 3.4:1 로 본문 하한 4.5 미달). 글자는 항상 본문 색으로 고정한다.
+   ★ 인라인 style 은 선택자로 못 이겨서 !important 를 쓴다 — 문서화 예외 */
+.ratis-chart .recharts-legend-item-text {
+  color: var(--ratis-gray-70) !important;
+}
+
+/* 오른쪽 건수 줄 — 축 라벨(보조)과 달리 이건 **값**이라 순위 막대 목록의 건수와 같은 급으로
+   세운다 (15 · 강조 · slate-900). 숫자는 자릿수가 흔들리지 않게 tabular (design.md §2)
+   ★ 축 그룹이 아니라 **글자 자체**에 클래스를 건다 — 눈금 글자는 축 <g> 밖의 겹침 층에
+     그려져서 축에 건 클래스로는 닿지 않는다 (2026-09-01 실측) */
+.ratis-chart .ratis-axis-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  fill: var(--ratis-gray-90);
+  font-variant-numeric: tabular-nums;
+}
+/* 단위(건)는 수를 거들 뿐이라 한 급 작고 옅다 — 순위 막대 목록과 같은 짜임 */
+.ratis-chart .ratis-axis-value .unit {
+  font-size: 1.3rem;
+  font-weight: 400;
+  fill: var(--ratis-gray-60);
+}
+
+/* ── 그림 밖 범례 (TrendChartLegend) ──
+   카드 제목 줄로 올린 범례. 표식은 그림이 쓰는 어휘 그대로다 —
+   누적은 점 달린 선(primary-60), 신규는 둥근 막대(primary-40) */
+.ratis-chart-legend {
+  display: flex;
+  align-items: center;
+  gap: var(--ratis-space-16);
+  font-size: 1.4rem;
+  color: var(--ratis-gray-70);
+}
+.ratis-chart-legend > li {
+  display: flex;
+  align-items: center;
+  gap: var(--ratis-space-4);
+}
+.ratis-chart-legend .mark {
+  flex: none;
+}
+/* 선 위에 점 하나 — 그림의 누적선(2px)과 같은 굵기·색 */
+.ratis-chart-legend .mark.line {
+  position: relative;
+  width: 1.6rem;
+  height: 0.2rem;
+  background-color: var(--ratis-blue-60);
+}
+.ratis-chart-legend .mark.line::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0.7rem;
+  height: 0.7rem;
+  transform: translate(-50%, -50%);
+  border: 0.2rem solid var(--ratis-blue-60);
+  border-radius: var(--ratis-radius-max);
+  background-color: var(--ratis-gray-0);
+}
+/* 막대는 그림의 신규 막대와 같은 면·라운드 */
+.ratis-chart-legend .mark.bar {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0.3rem;
+  background-color: var(--ratis-blue-40);
+}
+/* 두 흐름 차트(PairTrendChart)의 견주는 계열 — 그림의 연한 막대와 같은 색.
+   앞세우는 계열은 위 `.mark.bar`(primary-40)를 그대로 쓴다 — 추이 차트의 신규 막대와
+   같은 색이라 표식 하나가 두 차트를 겸한다. 계열을 가르는 것은 진하기다 */
+.ratis-chart-legend .mark.bar.soft {
+  background-color: var(--ratis-blue-20);
+}

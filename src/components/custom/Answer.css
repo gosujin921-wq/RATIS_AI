@@ -1,0 +1,141 @@
+@charset "utf-8";
+/* AI 답변 한 건 — 안내 줄 · 본문 · 고지 · 액션. KRDS 1rem = 10px 기준 그대로 (1rem = 10px) */
+/* ── 답변 — 카드가 아니라 배경 위 텍스트 (ChatGPT·Claude 관례) ───────── */
+.chat-answer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+
+.chat-answer-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+
+.chat-answer-body p {
+  margin: 0;
+  font-size: 1.5rem;
+  line-height: 1.65;
+  color: var(--ratis-gray-90);
+}
+
+
+/* 답변별 고지 */
+/* ── 답변 안내 줄 (외부 LLM 응답 · 차단) ──
+   면·선 없이 글로만 선다. 위 배지가 이미 근거 유형을 말한 뒤라 면까지 두르면 같은 말이
+   두 번 되고, 답변 본문보다 무거워진다.
+   아래 고지(.chat-disclaimer)와 **같은 꼴이되 한 급 진하다** — 둘이 같은 회색이면
+   읽고 넘어가야 하는 안내가 상시 잔글씨에 묻힌다.
+   여러 줄로 넘어가도 글리프는 **첫 줄에 선다** — 덩어리 가운데에 세우면 글이 길어질수록
+   아래로 흘러 글머리와 어긋난다 (Alert 이 표식을 세우는 것과 같은 까닭) */
+.chat-notice {
+  display: flex;
+  align-items: flex-start;
+  /* 아이콘과 글 사이 — 4. 글리프가 글의 머리글자처럼 붙어 한 덩어리로 읽힌다 */
+  gap: 0.4rem;
+  margin: 0;
+  font-size: 1.4rem;
+  line-height: 1.55;
+  color: var(--ratis-gray-70);
+}
+
+/* 글리프를 첫 줄 한가운데에 — 글과 같은 활자를 물려 높이를 한 줄로 잡는다 (실측 상수 없음) */
+.chat-notice svg {
+  flex: none;
+  height: 1lh;
+}
+
+
+/* 차단 — 답변을 못 받은 자리다. 면이 없으니 성격은 **색과 글리프**가 짊어진다.
+   배지(차단됨)와 같은 갈래로 물들여 둘이 짝으로 읽히게 한다.
+   danger-50(#dc2626)은 흰 바탕에서 4.83:1 로 본문 대비 기준(4.5)을 넘는다 —
+   면 위에 얹던 색을 그대로 맨바닥에 내리면 대비가 모자라는 일이 흔해 값을 확인해 두었다 */
+.chat-notice[data-tone='danger'] {
+  color: var(--ratis-red-50);
+}
+
+
+/* 범위를 좁혀 못 찾음 — 못 받은 게 아니라 **다시 해 볼 여지가 있는** 상태다.
+   차단(빨강)과 갈라 보이되 평범한 안내(회색)보다는 눈에 걸려야 한다 */
+.chat-notice[data-tone='warning'] {
+  color: var(--ratis-amber-60);
+}
+
+
+/* 상시 고지 — 안내 줄(.chat-notice)과 **같은 꼴, 한 급 옅게**다.
+   ★ 글리프는 덩어리 가운데가 아니라 **첫 줄에 선다.** 좁은 화면에서 이 문구는 두 줄로
+     접히는데, 가운데에 세우면 줄이 늘수록 아래로 흘러 글머리와 어긋난다 —
+     읽는 눈에는 표식이 문장 사이에 끼어든 것으로 보인다 (.chat-notice 와 같은 까닭).
+   ★ 줄높이를 여기서 박는다. 아래 `1lh` 가 이 값을 보고 첫 줄 높이를 잡으므로,
+     물려받은 값에 기대면 부모가 바뀔 때 글리프 자리가 같이 흔들린다 */
+.chat-disclaimer {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ratis-space-4);
+  margin: 0;
+  font-size: 1.3rem;
+  line-height: 1.55;
+  color: var(--ratis-gray-50);
+}
+
+
+/* 글리프를 첫 줄 한가운데에 — 글과 같은 활자를 물려 높이를 한 줄로 잡는다 (실측 상수 없음) */
+.chat-disclaimer svg {
+  flex: none;
+  height: 1lh;
+}
+
+
+/* 액션 행 — **답변에는 늘 서 있다.**
+   종전에는 마지막 답변만 상시고 나머지는 턴 hover 였다. 그러면 지난 답변을 복사하려면
+   먼저 마우스를 올려 아이콘이 있다는 걸 발견해야 한다 — 있는 줄 모르면 찾지 않는다.
+   질문 쪽(.chat-question-actions)만 hover 로 남긴다 */
+.chat-actions {
+  display: flex;
+  gap: var(--ratis-space-4);
+  /* ★ 글리프를 **본문 글머리에 맞춘다.** 아이콘 버튼은 상자가 글리프보다 크므로 상자 왼쪽을
+     본문에 맞추면 글리프만 안쪽으로 밀려, 답변 한 덩어리에서 이 줄만 들여쓴 것으로 보인다.
+     상자를 그 차이만큼 왼쪽으로 되돌려 **글리프 왼쪽 = 본문 왼쪽**을 만든다.
+     ★ 값을 적지 않고 사다리에서 계산한다 — 모바일에서 상자가 44 로 커지면(토큰 분기)
+       되돌릴 폭도 같이 커져야 한다 */
+  margin-left: calc((var(--ratis-iconbtn-box-sm) - var(--ratis-iconbtn-glyph-sm)) / -2);
+}
+
+
+/* ── 액션 아이콘 (답변·질문 공용) ──
+   글자를 떼고 글리프만 세운다. 이름은 aria-label·title 이 진다 (ChatPage.tsx CopyButton).
+   IconButton 기본 톤은 gray-60 인데, 라벨이 사라진 자리에서는 배경에 묻혀 "누를 수 있는 것"
+   으로 안 읽힌다. 한 단 진한 **다크 그레이(gray-70)** 로 세우고 hover 에서 gray-90 까지 간다.
+   ★ 특정도를 [data-tone] 까지 얹어 (0,3,0) 으로 맞춘다 — IconButton.css 의
+     `.ratis-icon-btn[data-tone='default']` 과 같은 (0,2,0) 이면 파일 로드 순서에 색이 걸린다 */
+.chat-action.ratis-icon-btn[data-tone='default'] {
+  color: var(--ratis-gray-70);
+}
+
+.chat-action.ratis-icon-btn[data-tone='default']:hover {
+  background-color: var(--ratis-gray-10);
+  color: var(--ratis-gray-90);
+}
+
+
+/* 보고서 — 답변을 정리해 받는 링크 한 줄 (2026-09-03).
+   ⚠ 파일인지 링크인지 미확정이라 지금은 **링크 모양 그대로** 둔다. 카드로 세우면
+     이미 되는 기능처럼 보인다 */
+.chat-report {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1.2rem;
+  font-size: 1.4rem;
+  color: var(--ratis-blue-60);
+  text-decoration: underline;
+  text-underline-offset: 0.3rem;
+}
+
+
+.chat-report:hover {
+  color: var(--ratis-blue-70);
+}
