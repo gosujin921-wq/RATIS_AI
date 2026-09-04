@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Check, Frown, Smile, X } from 'lucide-react'
+import { Check, Frown, Info, Smile, X } from 'lucide-react'
 import type { Feedback, FeedbackReason } from '../../api/types'
 import { FEEDBACK_REASONS } from '../../api/types'
 import { Button } from '../ui/Button'
@@ -10,15 +10,18 @@ import './FeedbackBar.css'
 /**
  * 답변 피드백 (기획 §9).
  *
- * **누르는 것이 곧 답이다.** 걸음을 하나라도 줄인다 — 답변마다 서는 물음이라, 보내기까지
- * 두 번 눌러야 하면 대부분 지나친다.
- *
  *   도움이 됐어요            → 바로 끝
- *   도움이 안 됐어요 → 사유   → 사유를 누르면 바로 끝
- *   도움이 안 됐어요 → 기타   → 적는 칸이 열리고, 그때만 「보내기」가 선다
+ *   도움이 안 됐어요 → 사유   → 고르고 「제출」로 확정
  *
- * ★ 「보내기」는 **적을 것이 있을 때만** 있다. 고르는 것으로 끝나는 자리에 확인 단추를
- *   두면 「골랐는데 왜 안 보내졌지」가 생긴다.
+ * ★ **부정 피드백은 고르는 것으로 끝나지 않는다** (2026-09-04). 사유를 누르는 즉시
+ *   보내면 잘못 누른 것을 되돌릴 수 없다. 누르는 것은 고르는 데까지고, 확정은 「제출」이
+ *   맡는다. 「취소」로 물음 앞자리까지 돌아간다.
+ * ★ 사유는 **하나만** 선다. 다시 누르면 풀리고, 다른 것을 누르면 그리로 옮겨 간다.
+ *   여러 개를 받으면 통계에서 한 건이 여러 사유로 세어져 무엇이 문제였는지 흐려진다.
+ * ★ 「도움이 됐어요」는 확인 단계 없이 그대로 보낸다. 되돌릴 것이 없는 한 번의 뜻이라,
+ *   여기까지 두 걸음으로 만들면 대부분 지나친다.
+ * ★ 보내기 전에 **어디에 쓰이는지 알린다.** 질문과 답변이 함께 넘어가는 일이라 고지 없이
+ *   거둘 수 없다. 링크 없이 문구만 둔다.
  * ★ 「오류 신고」를 두지 않는다. 신고를 눌러도 열리는 것이 부정 피드백과 같은 사유 목록이라,
  *   사용자가 평가인지 신고인지 스스로 갈라야 할 이유가 없었다. 화면·기능 오류는 사유
  *   목록에 그대로 남아 있다.
@@ -29,12 +32,14 @@ import './FeedbackBar.css'
 const DONE_HOLD_MS = 4000
 /** 사라지는 데 걸리는 시간. CSS 의 `[data-leaving]` 애니메이션과 같은 값이어야 한다 */
 const LEAVE_MS = 260
+/** 제출 전 고지. 질문·답변이 함께 넘어간다는 사실을 이 자리에서 알린다 */
+const CONSENT_NOTICE = '제출하신 의견과 해당 질문·답변은 향후 답변 품질 개선에 사용됩니다.'
 
 export function FeedbackBar({ id, onSubmit }: { id: string; onSubmit?: (f: Feedback) => void }) {
   /** 사유를 묻는 중인가 (「도움이 안 됐어요」를 누른 뒤) */
   const [asking, setAsking] = useState(false)
-  /** 「기타」를 골라 적는 칸이 열렸는가 */
-  const [writing, setWriting] = useState(false)
+  /** 고른 사유. 하나뿐이고, 고르지 않았으면 null */
+  const [reason, setReason] = useState<FeedbackReason | null>(null)
   const [comment, setComment] = useState('')
   const [done, setDone] = useState(false)
   const [dismissed, setDismissed] = useState(false)
@@ -65,6 +70,26 @@ export function FeedbackBar({ id, onSubmit }: { id: string; onSubmit?: (f: Feedb
     setDone(true)
   }
 
+  /* 물음 앞자리로 되돌린다. 고른 것과 적은 것을 함께 지운다 — 남겨 두면 다시 열었을 때
+     지난번 선택이 이미 켜져 있어 「내가 골랐던가」가 생긴다 */
+  const cancel = () => {
+    setAsking(false)
+    setReason(null)
+    setComment('')
+  }
+
+  const writing = reason === '기타'
+  const canSubmit = reason !== null && (!writing || comment.trim().length > 0)
+
+  const submit = () => {
+    if (!canSubmit || reason === null) return
+    finish({
+      helpful: false,
+      reasons: [reason],
+      ...(writing ? { comment: comment.trim() } : {}),
+    })
+  }
+
   if (done) {
     return (
       <div className="chat-feedback-box" role="status" data-leaving={leaving || undefined}>
@@ -75,6 +100,7 @@ export function FeedbackBar({ id, onSubmit }: { id: string; onSubmit?: (f: Feedb
   }
 
   const titleId = `${id}-feedback`
+  const noticeId = `${id}-feedback-notice`
 
   return (
     <div className="chat-feedback-box" role="group" aria-labelledby={titleId}>
@@ -111,37 +137,26 @@ export function FeedbackBar({ id, onSubmit }: { id: string; onSubmit?: (f: Feedb
           </button>
       </div>
 
-      {/* 2차 — 사유. **고르는 것이 아니라 누르는 것**이라 칩이 아니라 걸음으로 세운다.
-          누르면 그 사유로 바로 보내진다 */}
+      {/* 2차 — 사유. **누르면 골라질 뿐 보내지지 않는다.** 하나만 서고, 같은 것을 다시
+          누르면 풀린다 */}
       {asking && (
         <div className="chat-feedback-row" role="group" aria-label="그렇게 생각한 이유">
-          {FEEDBACK_REASONS.map((r) =>
-            r === '기타' ? (
-              <button
-                key={r}
-                type="button"
-                className="chat-feedback-pick"
-                aria-pressed={writing}
-                onClick={() => setWriting(true)}
-              >
-                기타
-              </button>
-            ) : (
-              <button
-                key={r}
-                type="button"
-                className="chat-feedback-pick"
-                onClick={() => finish({ helpful: false, reasons: [r as FeedbackReason] })}
-              >
-                {r}
-              </button>
-            ),
-          )}
+          {FEEDBACK_REASONS.map((r) => (
+            <button
+              key={r}
+              type="button"
+              className="chat-feedback-pick"
+              aria-pressed={reason === r}
+              onClick={() => setReason((prev) => (prev === r ? null : r))}
+            >
+              {r}
+            </button>
+          ))}
         </div>
       )}
 
-      {/* 3차 — 「기타」에서만 열린다. 적을 것이 있으니 여기서만 보내기가 선다 */}
-      {writing && (
+      {/* 3차 — 「기타」에서만 열린다. 목록에 없는 사유를 적는 자리다 */}
+      {asking && writing && (
         <div className="chat-feedback-form">
           <Textarea
             wrapClassName="small"
@@ -151,16 +166,29 @@ export function FeedbackBar({ id, onSubmit }: { id: string; onSubmit?: (f: Feedb
             value={comment}
             onChange={setComment}
           />
+        </div>
+      )}
+
+      {/* 4차 — 고지와 확정. 고지는 **버튼 바로 위**에 선다. 누르기 직전에 읽히지 않으면
+          알린 것이 아니다 */}
+      {asking && (
+        <div className="chat-feedback-confirm">
+          <p className="chat-feedback-notice" id={noticeId}>
+            <Info size={16} aria-hidden className="chat-feedback-notice-icon" />
+            {CONSENT_NOTICE}
+          </p>
           <div className="chat-feedback-steps">
+            <Button variant="text" size="small" onClick={cancel}>
+              취소
+            </Button>
             <Button
               variant="primary"
               size="small"
-              disabled={comment.trim().length === 0}
-              onClick={() =>
-                finish({ helpful: false, reasons: ['기타'], comment: comment.trim() })
-              }
+              disabled={!canSubmit}
+              aria-describedby={noticeId}
+              onClick={submit}
             >
-              보내기
+              제출
             </Button>
           </div>
         </div>

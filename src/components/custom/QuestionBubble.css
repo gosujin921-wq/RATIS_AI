@@ -1,5 +1,5 @@
 @charset "utf-8";
-/* 질문 말풍선과 수정 폼. KRDS 1rem = 10px 기준 그대로 (1rem = 10px) */
+/* 질문 말풍선. KRDS 1rem = 10px 기준 그대로 (1rem = 10px) */
 /* ── 질문 — 우측 말풍선 ──────────────────────────────────────────────── */
 .chat-question {
   align-self: flex-end;
@@ -15,7 +15,7 @@
 }
 
 
-/* ── 질문 수정 (기획 §6.1) ──────────────────────────────────────────── */
+/* ── 질문 줄 ────────────────────────────────────────────────────────── */
 .chat-question-row {
   display: flex;
   align-items: center;
@@ -24,8 +24,8 @@
 }
 
 
-/* 복사·수정은 말풍선 왼쪽에 숨어 있다가 마우스·초점이 닿을 때 나온다.
-   버튼 하나가 아니라 **묶음**을 여닫는다 — 낱개로 걸면 둘 중 초점이 간 것만 나타나고
+/* 복사는 말풍선 왼쪽에 숨어 있다가 마우스·초점이 닿을 때 나온다.
+   버튼 하나가 아니라 **묶음**을 여닫는다 — 낱개로 걸면 초점이 간 것만 나타나고
    나머지는 계속 투명해, 키보드로 옮겨 다닐 때 아이콘이 하나씩 깜빡인다 */
 .chat-question-actions {
   order: -1;
@@ -39,24 +39,6 @@
 .chat-turn:hover .chat-question-actions,
 .chat-question-actions:focus-within {
   opacity: 1;
-}
-
-
-.chat-question-edit {
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-  padding: 1.2rem;
-  border: 1px solid var(--ratis-blue-30);
-  border-radius: 1.2rem;
-  background: var(--ratis-gray-0);
-}
-
-
-.chat-question-edit-steps {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.8rem;
 }
 
 

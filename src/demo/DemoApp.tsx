@@ -151,18 +151,6 @@ export function DemoApp() {
     setActiveConversationId(null)
   }
 
-  /**
-   * 질문 수정 후 다시 전송 (기획 §6.1). 고친 턴부터 **뒤를 걷고** 새로 묻는다 —
-   * 앞 답변을 남기면 뒤 대화가 고치기 전 질문을 전제로 이어져 문맥이 어긋난다.
-   */
-  const editResend = (messageId: string, next: string) => {
-    const at = messages.findIndex((m) => m.id === messageId)
-    if (at < 0) return
-    cancel()
-    setMessages((prev) => prev.slice(0, at))
-    ask(next)
-  }
-
   /** 대화 삭제 — 실연동 시 삭제 API 를 부른다. 열려 있던 대화면 시작 화면으로 되돌린다 */
   const deleteConversation = (id: string) => {
     setConversations((prev) => prev.filter((c) => c.conversationId !== id))
@@ -212,7 +200,6 @@ export function DemoApp() {
         onAsk={ask}
         onFeedback={(f) => console.info('[데모] 피드백', f)}
         onStop={pendingQuestion ? cancel : undefined}
-        onEditResend={editResend}
         /* 실연동 시 파일 응답을 받아 저장한다 (제공 방식은 개발 협의 항목) */
         onDownloadSource={(e) => console.info('[데모] 원문 다운로드', e.fileName)}
         /* 원문 지면 — scripts/extract-source-pages.py 가 실제 PDF 에서 뽑아 둔 글자다.

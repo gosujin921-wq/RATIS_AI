@@ -44,7 +44,6 @@ export function ChatPage({
   onAsk,
   onFeedback,
   onStop,
-  onEditResend,
   onDownloadSource,
   getPageText,
   problem,
@@ -74,8 +73,6 @@ export function ChatPage({
   onFeedback?: (feedback: Feedback) => void
   /** 생성 중단. 넘기지 않으면 중단 버튼이 서지 않는다 */
   onStop?: () => void
-  /** 질문 수정 후 다시 전송 (기획 §6.1). 그 턴부터 뒤를 걷고 새로 묻는다 */
-  onEditResend?: (messageId: string, query: string) => void
   /**
    * 원문 파일 하나를 받는다. 근거 카드의 「다운로드」와 원문 패널이 **같은 걸음**을 쓴다 —
    * 두 자리가 같은 파일을 주는데 핸들러가 갈리면 한쪽만 고쳐지는 사고가 난다
@@ -211,11 +208,7 @@ export function ChatPage({
 
                 {messages.map((m) => (
                   <div key={m.id} className="chat-turn">
-                    <QuestionBubble
-                      question={m.question}
-                      disabled={pending}
-                      onResend={onEditResend && ((next) => onEditResend(m.id, next))}
-                    />
+                    <QuestionBubble question={m.question} />
                     <Answer
                       message={m}
                       onFeedback={onFeedback}
