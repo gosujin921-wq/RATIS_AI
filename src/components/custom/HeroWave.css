@@ -1,0 +1,54 @@
+@charset "utf-8";
+/* 시작 화면 심볼 — 파동 + 도달. 1rem = 10px
+   모양·치수는 HeroWave.tsx (협회 참고 그림 실측), 움직임은 motion/react. 여기는 **색**뿐이다.
+   규칙은 design.md §16. */
+.hero-wave {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* 코어 — 딥 네이비 (협회 색 표 「심볼 중심 코어」) */
+.hero-wave-core {
+  fill: var(--ratis-blue-70);
+}
+
+/* 링 둘 — 참고 그림처럼 안쪽이 진하고 바깥이 옅다. 굵기는 컴포넌트가 움직이므로 여기 적지 않는다 */
+.hero-wave-ring-in,
+.hero-wave-ring-out {
+  fill: none;
+}
+
+.hero-wave-ring-in {
+  stroke: var(--ratis-blue-50);
+}
+
+.hero-wave-ring-out {
+  stroke: var(--ratis-blue-30);
+}
+
+/* 파동 — 가는 그라데이션 선. 색은 defs 의 stop 이 토큰에서 받는다 */
+.hero-wave-wave {
+  fill: none;
+  stroke-width: 2;
+}
+
+.hero-wave-grad-from {
+  stop-color: var(--ratis-blue-50);
+}
+
+.hero-wave-grad-to {
+  stop-color: var(--ratis-accent);
+}
+
+/* 도달점과 잔물결 — 틸 포인트 (협회 색 표 「심볼 도달점」) */
+.hero-wave-point {
+  fill: var(--ratis-accent);
+}
+
+.hero-wave-ripple {
+  fill: none;
+  stroke: var(--ratis-accent);
+  stroke-width: 1.5;
+}

@@ -1,128 +1,129 @@
 @charset "utf-8";
-/* 근거 목록 — 접이식 묶음과 그 안의 카드. KRDS 1rem = 10px 기준 그대로 (1rem = 10px) */
+/* 답변 쪽 근거 줄 — 머리 + 인용 칩. 1rem = 10px
+   카드는 여기 없다 (EvidenceCard.css · 패널). */
 
 .chat-evidences {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--ratis-space-8);
 }
 
-
-
-
-.chat-evidences-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
+/* 머리 — 면이 없는 글자 조작. 접이식 토글과 같은 급이되 화살이 **오른쪽**을 본다:
+   여기서 펼쳐지는 게 아니라 옆(패널)으로 간다 */
+.chat-evidences-head {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ratis-space-4);
+  align-self: flex-start;
+  min-height: var(--ratis-tap-min);
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: var(--ratis-font-md);
+  font-weight: var(--ratis-weight-bold);
+  color: var(--ratis-text-body);
+  cursor: pointer;
 }
 
-
-/* ── 근거 카드 ───────────────────────────────────────────────────────── */
-.chat-evidence-card {
-  background: #fff;
-  border: 1px solid var(--ratis-gray-20);
-  border-radius: 1.2rem;
-  padding: 1.6rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  align-items: flex-start;
+.chat-evidences-head:hover {
+  color: var(--ratis-text-brand);
 }
 
+.chat-evidences-head:focus-visible {
+  outline: none;
+  box-shadow: var(--ratis-focus-ring);
+  border-radius: var(--ratis-radius-tag);
+}
 
-/* 출처 계층 — 카테고리 › 표 제목 › 쪽 */
-.chat-evidence-path {
+.chat-evidences-chips {
   display: flex;
   flex-wrap: wrap;
+  gap: var(--ratis-space-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* 인용 칩 — 각진 태그다 (design.md §4 「사각 태그 = 출처」). 캡슐이면 위 추천 질문·
+   버튼과 같은 모양이 되어 「누르면 무엇이 되는가」가 안 갈린다.
+   문서 이름은 길어서 한 줄로 자른다 — 전체 이름은 title 과 패널 카드가 말한다 */
+.chat-evidence-chip {
+  display: inline-flex;
   align-items: center;
-  gap: 0.4rem 0.6rem;
-  margin: 0;
-  font-size: 1.2rem;
-  color: var(--ratis-gray-50);
+  gap: var(--ratis-space-6);
+  max-width: 100%;
+  height: 3.2rem;
+  padding-inline: var(--ratis-space-8) var(--ratis-space-10);
+  border: 0.1rem solid var(--ratis-border-subtle);
+  border-radius: var(--ratis-radius-tag);
+  background: var(--ratis-surface-page);
+  font: inherit;
+  font-size: var(--ratis-font-sm);
+  color: var(--ratis-text-body);
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    color 0.15s ease;
 }
 
-
-.chat-evidence-path span + span::before {
-  content: '›';
-  margin-right: 0.6rem;
-  color: var(--ratis-gray-40);
+.chat-evidence-chip:hover {
+  border-color: var(--ratis-border-brand);
+  background: var(--ratis-surface-tint);
+  color: var(--ratis-text-brand);
 }
 
-
-.chat-evidence-head {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  color: var(--ratis-blue-60);
+.chat-evidence-chip:focus-visible {
+  outline: none;
+  box-shadow: var(--ratis-focus-ring);
 }
 
-
-.chat-evidence-doc {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--ratis-gray-90);
-  margin: 0;
+.chat-evidence-chip > svg {
+  flex: none;
+  color: var(--ratis-text-subtle);
 }
 
-
-.chat-evidence-text {
-  margin: 0;
-  font-size: 1.4rem;
-  line-height: 1.55;
-  color: var(--ratis-gray-80);
+.chat-evidence-chip:hover > svg {
+  color: inherit;
 }
 
-
-/* 표 근거 — 넓으면 카드 안에서만 가로 스크롤 (AC-037) */
-.chat-evidence-table {
-  align-self: stretch;
-  overflow-x: auto;
+/* 순번 — 패널 카드와 같은 번호. 칩 안에서는 글자 하나라 면 없이 진하게만 */
+.chat-evidence-chip-index {
+  flex: none;
+  font-weight: var(--ratis-weight-bold);
+  font-variant-numeric: tabular-nums;
+  color: var(--ratis-text-brand);
 }
 
-
-.chat-evidence-table table {
-  border-collapse: collapse;
-  width: 100%;
-  font-size: 1.3rem;
-  background: #fff;
-}
-
-
-.chat-evidence-table th,
-.chat-evidence-table td {
-  border: 1px solid var(--ratis-gray-20);
-  padding: 0.6rem 1rem;
-  text-align: right;
+.chat-evidence-chip-title {
+  min-width: 0;
+  max-width: 28rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-
-.chat-evidence-table th:first-child,
-.chat-evidence-table td:first-child {
-  text-align: left;
+.chat-evidence-chip-page {
+  flex: none;
+  color: var(--ratis-text-subtle);
+  font-variant-numeric: tabular-nums;
 }
 
-
-.chat-evidence-table thead th {
-  background: var(--ratis-gray-5);
-  font-weight: 600;
-  text-align: center;
+.chat-evidence-chip:hover .chat-evidence-chip-page {
+  color: inherit;
 }
 
-
-/* ★ 캡션(단위·주·출처) — 점선으로 분리해 고정 배치. 생략 금지 (NFR-008) */
-.chat-evidence-caption {
-  align-self: stretch;
-  margin: 0;
-  padding-top: 0.8rem;
-  border-top: 1px dashed var(--ratis-gray-30);
-  font-size: 1.3rem;
-  color: var(--ratis-gray-60);
-}
-
-/* 보는 걸음과 받는 걸음이 한 줄에 나란히 — 카드 맨 아래 */
-.chat-evidence-steps {
-  display: flex;
-  align-items: center;
-  gap: var(--ratis-space-8);
+@media (max-width: 767px) {
+  /* 좁은 화면 — 칩이 폭을 다 쓰고 제목이 남는 만큼만 잘린다 */
+  .chat-evidences-chips > li {
+    width: 100%;
+  }
+  .chat-evidence-chip {
+    width: 100%;
+  }
+  .chat-evidence-chip-title {
+    flex: 1;
+    max-width: none;
+  }
 }

@@ -1,0 +1,151 @@
+@charset "utf-8";
+/* 시작 화면 심볼 둘째 타입 — 유리 구슬 터짐 → 링. 1rem = 10px
+   자리·박자는 HeroOrbs.tsx (docs/mov2.mov 실측), 여기는 **무대와 구슬의 재질**뿐이다.
+   규칙은 design.md §16.
+
+   ★ 구슬의 무지개색은 팔레트 밖 히어로 한정 연출색이다 (ratis-effects.css 의 글로우 톤과 같은 취급).
+     이 블록의 스코프 변수로만 두고 밖으로 내보내지 않는다. 무대와 파랑 계열은 토큰이다. */
+.hero-orbs {
+  --hero-orbs-violet: #8b5cf6;
+  --hero-orbs-magenta: #e879f9;
+  --hero-orbs-gold: #fbbf24;
+  --hero-orbs-peach: #fdba74;
+  --hero-orbs-sky: #7dd3fc;
+  --hero-orbs-blue: var(--ratis-blue-45);
+  --hero-orbs-deep: var(--ratis-blue-60);
+  --hero-orbs-white: #ffffff;
+
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: var(--ratis-radius-panel);
+  /* 무대 — 위는 거의 검은 남색, 아래로 갈수록 파랗다 (영상의 위 어두운 면 · 아래 밝은 면) */
+  background:
+    radial-gradient(70% 55% at 50% 30%, color-mix(in srgb, var(--ratis-blue-95) 70%, var(--ratis-gray-95)), transparent 100%),
+    linear-gradient(180deg, var(--ratis-blue-95) 0%, var(--ratis-blue-90) 55%, var(--ratis-blue-60) 100%);
+  isolation: isolate;
+}
+
+/* 바닥의 큰 빛 — 아래쪽 파란 덩어리 */
+.hero-orbs-glow {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 150%;
+  height: 90%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    var(--ratis-blue-50),
+    color-mix(in srgb, var(--ratis-blue-50) 55%, transparent) 45%,
+    transparent 100%
+  );
+  filter: blur(1.2rem);
+}
+
+/* 장면 — 무대 높이에 맞춘 정사각. 자리 % 가 여기 기준이라 무대가 넓어도 링이 원으로 선다.
+   넘치는 구슬(다가오는 큰 것)은 무대(overflow hidden)가 자른다 */
+.hero-orbs-scene {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 100%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+}
+
+/* 자리 겹 — 장면 % 로 놓이고, 링에서는 접선 방향으로 돌며 width 로 알약이 된다.
+   흐림·투명도는 안쪽 겹(구슬)이 진다 */
+.hero-orbs-sat,
+.hero-orbs-core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+}
+
+.hero-orbs-core {
+  z-index: 2;
+}
+
+/* 다가오는 큰 구슬은 가운데 구슬을 가리지 않는다 — 영상에서도 가운데 구슬이 늘 위에 있다 */
+.hero-orbs-sat-near {
+  z-index: 1;
+}
+
+/* 구슬 재질 — 왼쪽 위 하이라이트 · 오른쪽 아래 어두운 테 · 얇은 유리 테두리 · 바깥 빛 */
+.hero-orbs-ball {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  /* 캡슐 — 자리 겹의 width 가 늘어나면 양 끝이 둥근 알약이 된다 */
+  border-radius: var(--ratis-radius-max);
+  will-change: transform, filter;
+  /* 바깥 빛은 box-shadow 다 — motion 이 filter(blur) 를 인라인으로 움직여 drop-shadow 를 덮는다 */
+  box-shadow:
+    inset 0 0 0 0.1rem color-mix(in srgb, var(--hero-orbs-white) 45%, transparent),
+    inset -0.6rem -0.8rem 1.6rem color-mix(in srgb, var(--ratis-blue-95) 45%, transparent),
+    inset 0.4rem 0.5rem 1rem color-mix(in srgb, var(--hero-orbs-white) 35%, transparent),
+    0 0 1.2rem var(--hero-orbs-glow);
+}
+
+.hero-orbs-ball::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle at 30% 26%,
+    color-mix(in srgb, var(--hero-orbs-white) 95%, transparent) 0%,
+    color-mix(in srgb, var(--hero-orbs-white) 45%, transparent) 14%,
+    transparent 36%
+  );
+}
+
+.hero-orbs-ball-blue {
+  background:
+    radial-gradient(circle at 70% 78%, var(--hero-orbs-magenta), transparent 55%),
+    radial-gradient(circle at 25% 65%, var(--hero-orbs-sky), transparent 50%),
+    linear-gradient(135deg, var(--hero-orbs-blue), var(--hero-orbs-violet));
+  --hero-orbs-glow: color-mix(in srgb, var(--hero-orbs-blue) 55%, transparent);
+}
+
+.hero-orbs-ball-gold {
+  background:
+    radial-gradient(circle at 78% 30%, var(--hero-orbs-blue), transparent 50%),
+    radial-gradient(circle at 30% 70%, var(--hero-orbs-magenta), transparent 55%),
+    linear-gradient(160deg, var(--hero-orbs-gold), var(--hero-orbs-peach) 60%, var(--hero-orbs-violet));
+  --hero-orbs-glow: color-mix(in srgb, var(--hero-orbs-gold) 45%, transparent);
+}
+
+.hero-orbs-ball-violet {
+  background:
+    radial-gradient(circle at 75% 70%, var(--hero-orbs-gold), transparent 50%),
+    radial-gradient(circle at 30% 30%, var(--hero-orbs-sky), transparent 45%),
+    linear-gradient(135deg, var(--hero-orbs-violet), var(--hero-orbs-magenta));
+  --hero-orbs-glow: color-mix(in srgb, var(--hero-orbs-violet) 55%, transparent);
+}
+
+.hero-orbs-ball-aqua {
+  background:
+    radial-gradient(circle at 70% 75%, var(--hero-orbs-violet), transparent 55%),
+    radial-gradient(circle at 30% 35%, var(--hero-orbs-white), transparent 40%),
+    linear-gradient(135deg, var(--hero-orbs-sky), var(--hero-orbs-blue));
+  --hero-orbs-glow: color-mix(in srgb, var(--hero-orbs-sky) 50%, transparent);
+}
+
+/* 가운데 유리구슬 — 거의 흰 유리에 파랑·금이 비쳐 든다 */
+.hero-orbs-ball-glass {
+  background:
+    radial-gradient(circle at 70% 72%, color-mix(in srgb, var(--hero-orbs-gold) 70%, transparent), transparent 45%),
+    radial-gradient(circle at 25% 70%, color-mix(in srgb, var(--hero-orbs-blue) 80%, transparent), transparent 50%),
+    radial-gradient(circle at 65% 30%, color-mix(in srgb, var(--hero-orbs-magenta) 55%, transparent), transparent 45%),
+    radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--hero-orbs-white) 92%, transparent), color-mix(in srgb, var(--hero-orbs-white) 70%, transparent));
+  box-shadow:
+    inset 0 0 0 0.15rem color-mix(in srgb, var(--hero-orbs-white) 85%, transparent),
+    inset -0.5rem -0.6rem 1.4rem color-mix(in srgb, var(--hero-orbs-deep) 30%, transparent),
+    0 0 2.4rem color-mix(in srgb, var(--hero-orbs-white) 55%, transparent),
+    0 0 6rem color-mix(in srgb, var(--hero-orbs-blue) 40%, transparent);
+}

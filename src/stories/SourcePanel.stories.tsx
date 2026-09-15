@@ -1,9 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import type { Evidence } from '../api/types'
 import { SourcePanel } from '../components/custom/SourcePanel'
+import { EV_TABLE, EV_TEXT } from './chat-mocks'
 
 /**
- * 출처 원문 패널 (기획 §5.5).
+ * 근거 패널 — 목록 모드와 원문 모드 (기획 §5.5 · 2026-09-14 협회 의견).
+ *
+ * PC 에서는 답변이 오면 **목록 모드가 저절로** 대화 오른쪽에 선다. 카드의 「원문 보기」가
+ * 같은 패널을 원문 모드로 바꾸고, 머리의 「근거 목록」이 되돌린다.
  *
  * ★ **페이지를 벗어나지 않는다.** 근거를 확인하려고 대화를 떠나면 돌아왔을 때 어디를
  *   읽고 있었는지 잃는다. 그래서 창이 아니라 옆에 서는 패널이다.
@@ -46,6 +50,7 @@ const meta = {
     ),
   ],
   args: {
+    view: 'page',
     evidence: EVIDENCE,
     page: 13,
     pageCount: 410,
@@ -56,7 +61,28 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const Ready: Story = { name: '원문 표시', args: { status: 'ready' } }
+/** 답변이 오면 PC 에서 저절로 서는 모습. 카드마다 원문 보기·다운로드가 나란히 선다 */
+export const List: Story = {
+  name: '근거 목록',
+  args: {
+    view: 'list',
+    evidences: [EV_TABLE, EV_TEXT],
+    evidence: null,
+    onSelect: (e) => console.info('[스토리] 원문 보기', e.chunkId),
+  },
+}
+
+/** 근거가 없는 답변(외부 응답 등)에서 「근거 n건」을 눌렀을 때 — 빈 상태를 글로 말한다 */
+export const ListEmpty: Story = {
+  name: '근거 목록 · 없음',
+  args: { view: 'list', evidences: [], evidence: null },
+}
+
+/** 목록에서 온 원문 — 머리에 「근거 목록」 되돌아가기가 선다 */
+export const Ready: Story = {
+  name: '원문 표시',
+  args: { status: 'ready', onBack: () => console.info('[스토리] 근거 목록으로') },
+}
 
 export const Loading: Story = { name: '불러오는 중', args: { status: 'loading' } }
 

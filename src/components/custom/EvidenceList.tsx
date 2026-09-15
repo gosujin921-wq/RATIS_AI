@@ -1,91 +1,68 @@
-import { useState } from 'react'
-import { Download, FileText, Table2 } from 'lucide-react'
+import { ChevronRight, FileText, Table2 } from 'lucide-react'
 import type { Evidence } from '../../api/types'
-import { Button } from '../ui/Button'
-import { Disclosure } from '../ui/Disclosure'
 import './EvidenceList.css'
 
-function EvidenceCard({
-  evidence,
-  onOpenSource,
-  onDownload,
-}: {
-  evidence: Evidence
-  onOpenSource?: (e: Evidence) => void
-  onDownload?: (e: Evidence) => void
-}) {
-  const Icon = evidence.blockType === 'table' ? Table2 : FileText
-  return (
-    <article className="chat-evidence-card">
-      {/* 출처 계층 — 카테고리 › 문서 › 구역·표 › 쪽 (법률구조공단 브레드크럼 방식) */}
-      <p className="chat-evidence-path">
-        <span>{evidence.categoryName}</span>
-        {(evidence.tableTitle ?? evidence.sectionName) && <span>{evidence.tableTitle ?? evidence.sectionName}</span>}
-        {evidence.pageNo !== null && <span>{evidence.pageNo}쪽</span>}
-      </p>
-      <header className="chat-evidence-head">
-        <Icon size={16} aria-hidden />
-        <h4 className="chat-evidence-doc">{evidence.documentTitle}</h4>
-      </header>
-      {evidence.blockType === 'table' ? (
-        <div className="chat-evidence-table" dangerouslySetInnerHTML={{ __html: evidence.chunkContent }} />
-      ) : (
-        <p className="chat-evidence-text">{evidence.chunkContent}</p>
-      )}
-      {/* ★ 캡션(단위·주·출처) 생략 금지 — 빠지면 수치가 맞아도 오독된다 (NFR-008) */}
-      {evidence.caption && <p className="chat-evidence-caption">{evidence.caption}</p>}
-      {/* 보는 걸음과 받는 걸음이 **한 줄에 나란히** 선다 (2026-09-03).
-          종전에는 받기가 묶음 줄에 있었는데, 근거가 여럿일 때 어느 문서를 받는 것인지
-          그 자리에서 알 수 없었다. 카드마다 두면 무엇을 받는지 카드가 말한다.
-          확인만 할 사람은 패널로(페이지를 벗어나지 않는다 · 기획 §5.5), 자료로 쓸 사람은 파일로 */}
-      <div className="chat-evidence-steps">
-        <Button variant="tertiary" size="small" onClick={() => onOpenSource?.(evidence)}>
-          원문 보기
-        </Button>
-        {onDownload && evidence.fileUrl && (
-          <Button variant="tertiary" size="small" onClick={() => onDownload(evidence)}>
-            <Download size={14} aria-hidden />
-            다운로드
-          </Button>
-        )}
-      </div>
-    </article>
-  )
-}
-
-/** 답변 소속 근거 — 접이식. 대화가 쌓여도 각 답변이 자기 근거를 들고 있다 */
+/**
+ * 답변 쪽 근거 줄 — 「근거 n건」 머리와 인용 칩.
+ *
+ * 2026-09-14 협회 의견 「근거를 우측 화면에 바로 띄워 달라」로 자리가 갈렸다:
+ *   오른쪽 패널   근거 카드 전부 (EvidenceCard) — PC 에서는 답변이 오면 저절로 열린다
+ *   여기(답변)    무엇을 인용했는지 **한 줄로** — 문서 이름과 쪽만 적은 칩
+ *
+ * 종전에는 여기가 접이식이었다. 접힌 채로는 근거가 있다는 사실만 보이고 무엇인지는
+ * 눌러야 알았고, 펼치면 답변 하나가 화면 두 장이 됐다. 카드가 패널로 가니 답변은 짧고
+ * 근거는 늘 옆에 있다.
+ *
+ * 칩을 누르면 그 근거의 **원문 화면**이 패널에 선다. 머리(근거 n건)를 누르면 목록 모드다 —
+ * 좁은 화면에서는 패널이 저절로 열리지 않으므로 이 머리가 목록으로 가는 유일한 길이다.
+ * 칩의 번호는 패널 카드의 순번과 같다.
+ */
 export function EvidenceList({
   evidences,
   id,
   onOpenSource,
-  onDownload,
+  onOpenList,
 }: {
   evidences: Evidence[]
   id: string
+  /** 칩 하나 → 그 근거의 원문 */
   onOpenSource?: (e: Evidence) => void
-  /** 근거 하나의 원문 파일을 받는다. 단추는 그 카드 안에 선다 */
-  onDownload?: (e: Evidence) => void
+  /** 머리 → 이 답변의 근거 목록 */
+  onOpenList?: () => void
 }) {
-  const [open, setOpen] = useState(false)
+  const headId = `${id}-evidences`
   return (
-    /* aria-expanded·aria-controls·패널 id 를 손으로 잇지 않는다 — Disclosure 가 진다 */
-    <Disclosure
-      className="chat-evidences"
-      id={id}
-      buttonText={`근거 ${evidences.length}건`}
-      expanded={open}
-      onToggle={setOpen}
-    >
-      <div className="chat-evidences-list">
-        {evidences.map((e) => (
-          <EvidenceCard
-            key={e.chunkId}
-            evidence={e}
-            onOpenSource={onOpenSource}
-            onDownload={onDownload}
-          />
-        ))}
-      </div>
-    </Disclosure>
+    <div className="chat-evidences">
+      <button
+        type="button"
+        className="chat-evidences-head"
+        id={headId}
+        onClick={onOpenList}
+        aria-label={`근거 ${evidences.length}건 목록 열기`}
+      >
+        근거 {evidences.length}건
+        <ChevronRight size={14} aria-hidden />
+      </button>
+      <ul className="chat-evidences-chips" aria-labelledby={headId}>
+        {evidences.map((e, i) => {
+          const Icon = e.blockType === 'table' ? Table2 : FileText
+          return (
+            <li key={e.chunkId}>
+              <button
+                type="button"
+                className="chat-evidence-chip"
+                onClick={() => onOpenSource?.(e)}
+                title={e.documentTitle}
+              >
+                <span className="chat-evidence-chip-index">{i + 1}</span>
+                <Icon size={14} aria-hidden />
+                <span className="chat-evidence-chip-title">{e.documentTitle}</span>
+                {e.pageNo !== null && <span className="chat-evidence-chip-page">{e.pageNo}쪽</span>}
+              </button>
+            </li>
+          )
+        })}
+      </ul>
+    </div>
   )
 }

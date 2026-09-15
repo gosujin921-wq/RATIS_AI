@@ -11,12 +11,14 @@ export function Answer({
   message,
   onFeedback,
   onOpenSource,
-  onDownloadEvidence,
+  onOpenEvidences,
 }: {
   message: ChatMessage
   onFeedback?: (f: Feedback) => void
+  /** 인용 칩 → 그 근거의 원문 (패널) */
   onOpenSource?: (e: Evidence) => void
-  onDownloadEvidence?: (e: Evidence) => void
+  /** 「근거 n건」 → 이 답변의 근거 목록 (패널) */
+  onOpenEvidences?: () => void
 }) {
   return (
     <div className="chat-answer">
@@ -60,12 +62,14 @@ export function Answer({
       {/* 제목·목록·표·인용까지 그린다 (기획 §7) */}
       {message.answer && <AnswerBody className="chat-answer-body" text={message.answer} />}
 
+      {/* 근거 — 답변에는 인용 칩 한 줄만 선다. 카드(내용·다운로드)는 오른쪽 패널이 든다
+          (2026-09-14 협회 의견 「근거를 우측 화면에 바로」). 다운로드 걸음도 패널로 갔다 */}
       {message.evidences.length > 0 && (
         <EvidenceList
           evidences={message.evidences}
           id={message.id}
           onOpenSource={onOpenSource}
-          onDownload={onDownloadEvidence}
+          onOpenList={onOpenEvidences}
         />
       )}
 

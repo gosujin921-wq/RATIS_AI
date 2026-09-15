@@ -14,20 +14,57 @@
   overflow-wrap: anywhere;
 }
 
-/* 답변 안 제목은 h3·h4 다 — 대화 로그가 h2 아래에 있어 그 밑을 이어받는다 */
+/* ── 제목·소제목 — 굵기가 아니라 **라벨**로 본문과 갈린다 (2026-09-14 협회 의견) ──
+   답변 안 제목은 h3·h4 다 — 대화 로그가 h2 아래에 있어 그 밑을 이어받는다.
+
+   종전에는 굵게만 했다. 본문에도 **강조**가 섞이니 소제목과 강조 문장이 같은 무게로
+   읽혀 「어디서 단락이 갈리는가」를 눈이 다시 찾아야 했다. 라벨은 면을 갖는다 — 글줄
+   사이에 면이 하나 서면 단락 경계가 훑는 눈에 먼저 들어온다.
+
+   ★ 두 급이 한 문법이다. ##(h3) 는 틴트 면 + 포인트 마커, ###(h4) 는 면 없이 마커만.
+     둘 다 마커가 「이 줄은 제목」이라고 말하고, 면의 유무가 급을 가른다.
+   ★ 배지(Badge)를 쓰지 않는다. 배지는 상태·갈래를 한 낱말로 말하는 표식이고 글자 13·500 이다.
+     제목은 문장이 될 수 있고 급(600)이 다르다 — 같은 부품에 두 뜻을 싣지 않는다.
+   ★ 치수는 배지 md 와 같은 사다리다 (높이 3.2 · 라운드 tag). 새 숫자를 만들지 않는다 */
 .answer-h2,
 .answer-h3 {
-  margin: 0.8rem 0 0;
-  font-weight: 700;
-  color: var(--ratis-gray-90);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ratis-space-8);
+  align-self: flex-start;
+  margin: var(--ratis-space-8) 0 0;
+  font-weight: var(--ratis-weight-bold);
+  line-height: 1.4;
+  color: var(--ratis-text-brand);
+}
+
+/* 첫 제목은 위 여백이 없다 — 본문 첫 줄이 제목이면 위가 비어 보인다 */
+.answer-body > :is(.answer-h2, .answer-h3):first-child {
+  margin-top: 0;
+}
+
+/* 마커 — 포인트색 네모 하나. 글리프를 새로 그리지 않고 **틸 점**으로 「제목」을 표시한다.
+   시작 화면 심볼의 도달점과 같은 색·같은 뜻(여기가 한 갈래의 시작)이다 */
+.answer-h2::before,
+.answer-h3::before {
+  content: '';
+  flex: none;
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 0.2rem;
+  background: var(--ratis-accent);
 }
 
 .answer-h2 {
-  font-size: 1.7rem;
+  min-height: 3.2rem;
+  padding-inline: var(--ratis-space-12);
+  border-radius: var(--ratis-radius-tag);
+  background: var(--ratis-surface-tint);
+  font-size: var(--ratis-font-lg);
 }
 
 .answer-h3 {
-  font-size: 1.5rem;
+  font-size: var(--ratis-font-md);
 }
 
 .answer-ul,

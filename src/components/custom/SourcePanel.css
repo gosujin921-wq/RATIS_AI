@@ -70,6 +70,38 @@
   background: var(--ratis-gray-10);
 }
 
+/* 되돌아가기 — 머리 맨 위 한 줄. 면이 없는 글자 조작이라 캡슐이 아니다 */
+.src-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ratis-space-4);
+  margin: 0 0 var(--ratis-space-8);
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: var(--ratis-font-sm);
+  color: var(--ratis-text-muted);
+  cursor: pointer;
+}
+
+.src-back:hover {
+  color: var(--ratis-text-brand);
+}
+
+.src-back:focus-visible {
+  outline: none;
+  box-shadow: var(--ratis-focus-ring);
+  border-radius: var(--ratis-radius-tag);
+}
+
+/* ── 목록 모드 — 근거 카드가 세로로 쌓인다 ───────────────────────────── */
+.src-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ratis-space-12);
+}
+
 /* ── 도구 줄 ──────────────────────────────────────────────────────────── */
 .src-tools {
   flex: none;

@@ -12,6 +12,7 @@ import { MSG_BLOCKED, MSG_EXTERNAL, MSG_INTERNAL, MSG_NARROWED, MSG_REPORT } fro
  *   안내 줄 문구가 외부·차단을 말한다.
  * ★ 차단만 성격이 갈린다 — 글리프 ✕, 색 danger, 즉시 읽어 준다(alert). 나머지 안내는
  *   응답과 함께 확정되는 말이라 하던 말이 끝나고 읽는다(status).
+ * ★ 근거는 **인용 칩 한 줄**만 선다 (2026-09-14). 카드는 오른쪽 패널이 든다.
  * ★ 피드백은 **답변마다** 묻는다 (2026-09-03). 마지막 답변에만 두면 이어 물은 대화에서
  *   앞 답변은 평가할 길이 없어 대화당 한 건만 쌓인다.
  */
@@ -20,7 +21,7 @@ const meta = {
   component: Answer,
   tags: ['autodocs'],
   decorators: [(Story) => <div style={{ maxWidth: '76rem' }}><Story /></div>],
-  args: { message: MSG_INTERNAL, onOpenSource: () => {}, onDownloadEvidence: () => {} },
+  args: { message: MSG_INTERNAL, onOpenSource: () => {}, onOpenEvidences: () => {} },
 } satisfies Meta<typeof Answer>
 
 export default meta

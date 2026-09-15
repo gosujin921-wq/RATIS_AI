@@ -1,0 +1,71 @@
+@charset "utf-8";
+/* 시작 화면 심볼 셋째 타입 — 씨앗 → 링 → 방울 → 코어 → 회전. 1rem = 10px
+   박자·기하는 HeroDrop.tsx (docs/mov.mov 60fps 실측), 여기는 **층 쌓기와 색·선**뿐이다.
+   규칙은 design.md §16.
+
+   ★ 무대(어두운 박스)가 없다 — 시작 화면 바닥(gray-5) 위에 바로 선다 (2026-09-14 결정).
+     영상의 흰빛 발광은 밝은 바닥에서 뒤집힌다: 가장 밝던 것이 가장 진한 blue-70 이 된다.
+   ★ 3D 회전은 HTML 층(div)이 진다. SVG 요소의 3D transform 은 브라우저가 평면으로 눕히므로
+     링 층 자체를 돌린다. perspective 는 여기 한 곳. */
+.hero-drop {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* 링이 옆면을 보일 때 앞뒤 원근이 살짝 나게 — 값이 작으면 타원이 찌그러진다 */
+  perspective: 60rem;
+}
+
+/* 층 — 셋(유령 링 · 본 링 · 코어)이 같은 자리에 겹친다. 회전 원점은 층의 중심 = 링의 중심 */
+.hero-drop-layer {
+  position: absolute;
+  inset: 0;
+  transform-origin: center;
+  will-change: transform;
+}
+
+.hero-drop-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* 링 — 선(blue-50). 후광은 같은 길을 넓고 옅게 한 번 더 그린 것 */
+.hero-drop-ring {
+  fill: none;
+  stroke: var(--ratis-blue-50);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.hero-drop-ring-glow {
+  fill: none;
+  stroke: var(--ratis-blue-10);
+  stroke-width: 14;
+  stroke-linecap: round;
+}
+
+/* 유령 링 — 빠른 회전의 잔상. 본 링과 같은 굵기, 옅은 색 */
+.hero-drop-ghost {
+  fill: none;
+  stroke: var(--ratis-blue-20);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+/* 코어 = 씨앗 = 방울 머리·꼬리. 한 색이라 한 몸으로 읽힌다 */
+.hero-drop-core {
+  fill: var(--ratis-blue-70);
+}
+
+.hero-drop-halo {
+  fill: var(--ratis-blue-10);
+}
+
+/* 안쪽 가는 링 — 회전 끝자락에 코어 둘레로 잠깐 퍼진다. 첫 타입의 도달점과 같은 포인트색 */
+.hero-drop-inner {
+  fill: none;
+  stroke: var(--ratis-accent);
+  stroke-width: 1.5;
+}

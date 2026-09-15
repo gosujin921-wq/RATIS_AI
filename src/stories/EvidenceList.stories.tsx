@@ -3,20 +3,26 @@ import { EvidenceList } from '../components/custom/EvidenceList'
 import { EV_TABLE, EV_TEXT } from './chat-mocks'
 
 /**
- * 근거 목록 — 답변이 인용한 원문. 접이식이라 대화가 쌓여도 각 답변이 자기 근거를 들고 있다.
+ * 답변 쪽 근거 줄 — 「근거 n건」 머리와 인용 칩 (2026-09-14 협회 의견 반영).
  *
- * ★ 출처 계층을 **카테고리 › 구역·표 › 쪽** 으로 적는다. 문서명만 있으면 그 문서 어디를
- *   봐야 하는지 알 수 없다.
- * ★ **캡션(단위·주·출처)을 생략하지 않는다** (NFR-008). 빠지면 수치가 맞아도 오독된다.
- * ★ 원문을 통째로 받는 자리는 **묶음 줄 하나**다. 카드마다 다운로드를 세우면 근거 세 건짜리
- *   답변에 같은 단추가 셋 선다.
+ * 카드(인용 내용·캡션·다운로드)는 여기 없다 — 오른쪽 패널의 목록 모드가 든다
+ * (SourcePanel「근거 목록」· EvidenceCard). 답변에는 무엇을 인용했는지 한 줄만 남는다.
+ *
+ * ★ 칩은 **각진 태그**다 (design.md §4 「사각 태그 = 출처」). 위 추천 질문·버튼과 모양이
+ *   갈려야 「누르면 무엇이 되는가」가 읽힌다.
+ * ★ 칩 번호 = 패널 카드 순번. 답변과 패널을 오가며 같은 근거를 찾는 열쇠다.
  */
 const meta = {
   title: 'AI chat/대화/EvidenceList',
   component: EvidenceList,
   tags: ['autodocs'],
   decorators: [(Story) => <div style={{ maxWidth: '76rem' }}><Story /></div>],
-  args: { evidences: [EV_TABLE, EV_TEXT], id: 'story', onDownload: () => {} },
+  args: {
+    evidences: [EV_TABLE, EV_TEXT],
+    id: 'story',
+    onOpenSource: (e) => console.info('[스토리] 원문', e.chunkId),
+    onOpenList: () => console.info('[스토리] 근거 목록'),
+  },
 } satisfies Meta<typeof EvidenceList>
 
 export default meta
@@ -24,10 +30,17 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = { name: '근거 2건' }
 
-export const TableOnly: Story = { name: '표 하나', args: { evidences: [EV_TABLE] } }
+export const One: Story = { name: '근거 1건', args: { evidences: [EV_TABLE] } }
 
-/** 받을 파일이 없는 근거는 「원문 보기」만 선다 */
-export const NoFile: Story = {
-  name: '파일 없는 근거',
-  args: { evidences: [{ ...EV_TEXT, fileUrl: undefined }] },
+/** 근거가 넷이면 칩이 줄을 접는다. 제목은 한 줄로 잘리고 전체 이름은 패널이 말한다 */
+export const Many: Story = {
+  name: '근거 4건',
+  args: {
+    evidences: [
+      EV_TABLE,
+      EV_TEXT,
+      { ...EV_TABLE, chunkId: 'ev-3', pageNo: 21 },
+      { ...EV_TEXT, chunkId: 'ev-4', pageNo: 33 },
+    ],
+  },
 }

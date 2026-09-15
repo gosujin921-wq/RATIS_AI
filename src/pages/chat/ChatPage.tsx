@@ -3,6 +3,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react'
 import type { Category, ChatMessage, ChatProblem, Evidence, Feedback } from '../../api/types'
 import { Button } from '../../components/ui/Button'
 import { IconButton } from '../../components/custom/IconButton'
+import { useMediaQuery } from '../../components/custom/useMediaQuery'
 import { useReducedMotion } from '../../components/custom/useReducedMotion'
 import { Answer } from '../../components/custom/Answer'
 import { ChatIntro } from '../../components/custom/ChatIntro'
@@ -10,6 +11,7 @@ import { Composer } from '../../components/custom/Composer'
 import { PendingAnswer } from '../../components/custom/PendingAnswer'
 import { ProblemBanner } from '../../components/custom/ProblemBanner'
 import { QuestionBubble } from '../../components/custom/QuestionBubble'
+import { SuggestedQuestions } from '../../components/custom/SuggestedQuestions'
 import type { SourceStatus } from '../../components/custom/SourcePanel'
 import { SourcePanel } from '../../components/custom/SourcePanel'
 import './ChatPage.css'
@@ -28,6 +30,12 @@ import './ChatPage.css'
  *   ① 근거 유형 INTERNAL / EXTERNAL / BLOCKED — 문구로 구분 (AC-085)
  *   ② 「접근 가능한 자료 없음」과 「근거를 못 찾음」은 다른 문구 (AC-016)
  *   ③ scopeNarrowed → 범위를 넓혀 재시도 안내 (AC-034)
+ *
+ * 오른쪽 근거 패널 (2026-09-14 협회 의견 「근거를 우측 화면에 바로」):
+ *   PC(1280~)  답변이 오면 그 답변의 근거 목록이 **저절로** 옆에 선다. 닫으면 그 답변에는
+ *              다시 열지 않고, 다음 답변이 오면 다시 선다
+ *   그 아래    저절로 열지 않는다 — 덮는 패널이라 답변을 가린다. 답변의 「근거 n건」·인용 칩이
+ *              열어 준다
  */
 
 /** 대기가 이만큼 넘어가면 지연 안내를 덧붙인다 (NFR-001 목표 10초보다 앞서) */
@@ -36,9 +44,18 @@ const SLOW_HINT_MS = 8000
 /** 질의문 최대 길이 (AC-025) */
 const QUERY_MAX = 2000
 
+/** 근거 패널이 대화 옆에 나란히 서는 폭 — SourcePanel.css · ChatPage.css 의 분기와 같은 값 */
+const SPLIT_VIEW_QUERY = '(min-width: 1280px)'
+
+/** 오른쪽 패널의 상태. null 이면 닫힘 */
+type Panel =
+  | { view: 'list'; messageId: string }
+  | { view: 'page'; evidence: Evidence; from: string | null }
+
 export function ChatPage({
   messages,
   categories = [],
+  suggestions = [],
   pendingQuestion,
   pendingAnswer,
   onAsk,
@@ -55,6 +72,11 @@ export function ChatPage({
    * 비어 오면 그 자리를 그리지 않는다 — 고를 것이 없는 필터는 자리만 먹는다.
    */
   categories?: Category[]
+  /**
+   * 시작 화면 추천 질문 (2026-09-14). 입력창 아래 칩으로 서고, 누르면 바로 보낸다.
+   * 비어 오면 줄을 그리지 않는다. ⚠ 어디서 오는지는 개발 협의 항목이다 (기획 §14).
+   */
+  suggestions?: readonly string[]
   /** 응답 대기 중인 질문 — 있으면 스트림 끝에 「답변 생성 중」 턴을 그린다 */
   pendingQuestion?: string | null
   /**
@@ -74,7 +96,7 @@ export function ChatPage({
   /** 생성 중단. 넘기지 않으면 중단 버튼이 서지 않는다 */
   onStop?: () => void
   /**
-   * 원문 파일 하나를 받는다. 근거 카드의 「다운로드」와 원문 패널이 **같은 걸음**을 쓴다 —
+   * 원문 파일 하나를 받는다. 패널의 근거 카드와 원문 도구 줄이 **같은 걸음**을 쓴다 —
    * 두 자리가 같은 파일을 주는데 핸들러가 갈리면 한쪽만 고쳐지는 사고가 난다
    */
   onDownloadSource?: (evidence: Evidence) => void
@@ -102,13 +124,17 @@ export function ChatPage({
   /** 한 화면 넘게 내려왔는가. 「맨 위로」는 그때만 선다 */
   const [deep, setDeep] = useState(false)
   const reduceMotion = useReducedMotion()
+  /** 패널이 대화 옆에 나란히 서는 폭인가. 저절로 여는 것은 이때뿐이다 */
+  const splitView = useMediaQuery(SPLIT_VIEW_QUERY)
 
-  /* 원문 패널 — 기획 §5.5. 화면을 떠나지 않고 근거를 확인한다.
-     상태를 화면이 들고 있는 까닭: 실제 뷰어(PDF)는 개발 영역이라 아직 없고, 그 자리가
+  /* 오른쪽 근거 패널 — 기획 §5.5. 화면을 떠나지 않고 근거를 확인한다.
+     원문 상태를 화면이 들고 있는 까닭: 실제 뷰어(PDF)는 개발 영역이라 아직 없고, 그 자리가
      가질 수 있는 상태를 화면이 먼저 잡아 둬야 나중에 붙일 때 레이아웃이 안 흔들린다 */
-  const [source, setSource] = useState<Evidence | null>(null)
+  const [panel, setPanel] = useState<Panel | null>(null)
   const [sourceStatus, setSourceStatus] = useState<SourceStatus>('ready')
   const [sourcePage, setSourcePage] = useState<number | null>(null)
+  /** 사용자가 닫은 답변. 그 답변에는 패널을 다시 저절로 열지 않는다 */
+  const dismissedRef = useRef<string | null>(null)
 
   const streamRef = useRef<HTMLDivElement>(null)
   /** 바닥 근처에 있을 때만 새 턴을 따라 내려간다 — 위를 읽는 중이면 끌어내리지 않는다 */
@@ -117,13 +143,35 @@ export function ChatPage({
   const pending = Boolean(pendingQuestion)
   const empty = messages.length === 0 && !pending
 
-  const openSource = (e: Evidence) => {
-    setSource(e)
+  const openList = (messageId: string) => setPanel({ view: 'list', messageId })
+
+  const openSource = (e: Evidence, from: string | null) => {
+    setPanel({ view: 'page', evidence: e, from })
     setSourcePage(e.pageNo)
     /* 여는 순간엔 늘 로딩부터다 — 뷰어가 붙으면 이 자리가 실제 로드 결과로 바뀐다 */
     setSourceStatus('loading')
     setTimeout(() => setSourceStatus('ready'), 600)
   }
+
+  const closePanel = () => {
+    if (panel) dismissedRef.current = panel.view === 'list' ? panel.messageId : panel.from
+    setPanel(null)
+  }
+
+  /* 답변이 오면 PC 에서는 그 답변의 근거 목록이 저절로 선다. 마지막 답변이 근거 없는
+     답변(외부 응답·차단)이면 열지 않는다 — 빈 목록을 띄울 이유가 없다.
+     대화가 비면(새 대화) 패널도 걷는다 */
+  useEffect(() => {
+    if (messages.length === 0) {
+      setPanel(null)
+      dismissedRef.current = null
+      return
+    }
+    if (!splitView) return
+    const last = messages[messages.length - 1]
+    if (last.evidences.length === 0 || dismissedRef.current === last.id) return
+    setPanel({ view: 'list', messageId: last.id })
+  }, [messages, splitView])
 
   const scrollToBottom = () => {
     const el = streamRef.current
@@ -166,13 +214,13 @@ export function ChatPage({
 
   /* 패널은 Esc 로도 닫는다 — 덮고 있는 화면에서 나가는 길이 X 하나뿐이면 갇힌다 */
   useEffect(() => {
-    if (!source) return
+    if (!panel) return
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setSource(null)
+      if (e.key === 'Escape') closePanel()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [source])
+  }, [panel])
 
   /* 대기가 길어지면 지연 안내 */
   useEffect(() => {
@@ -182,17 +230,26 @@ export function ChatPage({
     return () => clearTimeout(t)
   }, [pendingQuestion])
 
-  const submit = () => {
-    const trimmed = query.trim()
+  const ask = (text: string) => {
+    const trimmed = text.trim()
     if (trimmed.length === 0 || pending) return
     stickBottomRef.current = true // 내가 보낸 질문은 항상 따라간다
     onAsk?.(trimmed, scope.length > 0 ? scope : undefined)
+  }
+
+  const submit = () => {
+    ask(query)
     setQuery('')
   }
 
+  /* 패널에 실을 것 — 목록 모드면 그 답변의 근거, 원문 모드면 근거 하나 */
+  const panelMessage =
+    panel?.view === 'list' ? messages.find((m) => m.id === panel.messageId) : undefined
+  const panelEvidence = panel?.view === 'page' ? panel.evidence : null
+
   return (
-    /* 대화와 원문 패널이 나란히 선다. 패널이 없으면 대화가 폭을 다 쓴다 */
-    <div className="chat-layout" data-source={source ? 'open' : undefined}>
+    /* 대화와 근거 패널이 나란히 선다. 패널이 없으면 대화가 폭을 다 쓴다 */
+    <div className="chat-layout" data-source={panel ? 'open' : undefined}>
       <div className="chat-page" data-empty={empty}>
         {/* ── 대화 스트림 — 이 영역 하나만 스크롤한다 ─────────────────── */}
         <div className="chat-scroll" ref={streamRef} onScroll={handleStreamScroll}>
@@ -212,8 +269,8 @@ export function ChatPage({
                     <Answer
                       message={m}
                       onFeedback={onFeedback}
-                      onOpenSource={openSource}
-                      onDownloadEvidence={onDownloadSource}
+                      onOpenSource={(e) => openSource(e, m.id)}
+                      onOpenEvidences={() => openList(m.id)}
                     />
                   </div>
                 ))}
@@ -268,24 +325,34 @@ export function ChatPage({
               onScopeChange={setScope}
               maxLength={QUERY_MAX}
             />
+            {/* 추천 질문 — 시작 화면에서만, 입력창 바로 아래 (2026-09-14). 누르면 바로 보낸다 */}
+            {empty && <SuggestedQuestions questions={suggestions} onPick={ask} disabled={pending} />}
           </div>
         </div>
       </div>
 
-      <SourcePanel
-        evidence={source}
-        status={sourceStatus}
-        page={sourcePage}
-        pageText={source && sourcePage ? getPageText?.(source, sourcePage) : undefined}
-        pageCount={source?.pageCount}
-        onPageChange={setSourcePage}
-        onDownload={onDownloadSource}
-        onRetry={() => {
-          setSourceStatus('loading')
-          setTimeout(() => setSourceStatus('ready'), 600)
-        }}
-        onClose={() => setSource(null)}
-      />
+      {panel && (
+        <SourcePanel
+          view={panel.view}
+          evidences={panelMessage?.evidences ?? []}
+          onSelect={(e) => openSource(e, panel.view === 'list' ? panel.messageId : panel.from)}
+          onBack={panel.view === 'page' && panel.from ? () => openList(panel.from!) : undefined}
+          evidence={panelEvidence}
+          status={sourceStatus}
+          page={sourcePage}
+          pageText={
+            panelEvidence && sourcePage ? getPageText?.(panelEvidence, sourcePage) : undefined
+          }
+          pageCount={panelEvidence?.pageCount}
+          onPageChange={setSourcePage}
+          onDownload={onDownloadSource}
+          onRetry={() => {
+            setSourceStatus('loading')
+            setTimeout(() => setSourceStatus('ready'), 600)
+          }}
+          onClose={closePanel}
+        />
+      )}
     </div>
   )
 }

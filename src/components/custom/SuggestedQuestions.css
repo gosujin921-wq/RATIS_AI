@@ -1,0 +1,88 @@
+@charset "utf-8";
+/* 추천 질문 줄 — 입력창 아래 캡슐 단추들. 1rem = 10px
+
+   ★ 치수는 칩 sm 과 같은 사다리에서 온다 (컨트롤 높이 sm · 좌우 여백 sm). 같은 줄 높이의
+     물건이 화면에 이미 있으니 새 숫자를 만들지 않는다.
+   ★ 입력창 빛무리가 아래로 3rem 흘러내려 이 줄의 첫 칩까지 닿는다 (Composer.css) —
+     그래서 위 간격을 그 안쪽(1.6)에 둔다. 더 벌리면 빛이 칩에 못 닿고 허공에서 끝난다 */
+.chat-suggest {
+  margin-top: var(--ratis-space-16);
+}
+
+.chat-suggest-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--ratis-space-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* 캡슐 단추. 켜짐 상태가 없다 — 누르면 사라지는 명령이라 hover 만 있다 */
+.chat-suggest-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ratis-space-6);
+  height: var(--ratis-control-height-sm);
+  padding-inline: var(--ratis-control-padding-sm);
+  border: 0.1rem solid var(--ratis-border-default);
+  border-radius: var(--ratis-radius-max);
+  background: var(--ratis-surface-card);
+  font: inherit;
+  font-size: var(--ratis-font-md);
+  font-weight: var(--ratis-weight-medium);
+  color: var(--ratis-text-body);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+/* 글리프는 포인트색 — 「AI 가 골라 둔 것」이라는 표식. 글자까지 물들이지 않는다 */
+.chat-suggest-chip > svg {
+  flex: none;
+  color: var(--ratis-accent);
+}
+
+.chat-suggest-chip:hover:not(:disabled) {
+  border-color: var(--ratis-border-brand);
+  background: var(--ratis-surface-tint);
+  color: var(--ratis-text-brand);
+}
+
+.chat-suggest-chip:focus-visible {
+  outline: none;
+  box-shadow: var(--ratis-focus-ring);
+}
+
+.chat-suggest-chip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 좁은 화면 — 질문 한 줄이 캡슐 하나를 넘어간다. 가운데 정렬을 풀고 왼쪽에 세워
+   여러 줄로 접힌 글이 들쭉날쭉 보이지 않게 한다. 캡슐은 라운드 스퀘어가 된다 —
+   두 줄 글에 알약 곡선을 두르면 위아래가 부푼 것으로 보인다 (Composer 의 같은 규칙) */
+@media (max-width: 767px) {
+  .chat-suggest-list {
+    justify-content: flex-start;
+  }
+
+  .chat-suggest-chip {
+    height: auto;
+    min-height: var(--ratis-control-height-sm);
+    padding-block: var(--ratis-space-8);
+    border-radius: var(--ratis-radius-pop);
+    white-space: normal;
+    text-align: left;
+    line-height: 1.5;
+  }
+
+  .chat-suggest-chip > svg {
+    align-self: flex-start;
+    margin-top: 0.3rem;
+  }
+}

@@ -50,10 +50,15 @@ export const Semantic: Story = {
         <Swatch name="--ratis-text-disabled" />
         <Swatch name="--ratis-text-brand" />
       </Group>
-      <Group title="주 실행 — 한 곳에서만 정한다">
-        <Swatch name="--ratis-action-fill" note="보내기 · primary 버튼" />
+      <Group title="주 실행 — 한 곳에서만 정한다 (2026-09-14 그린 → 틸)">
+        <Swatch name="--ratis-action-fill" note="보내기 · primary 버튼 — teal-60, 흰 글자 4.83:1" />
         <Swatch name="--ratis-action-fill-hover" />
-        <Swatch name="--ratis-action-fill-pressed" note="65 — 대비 때문에 만든 커스텀 슬롯" />
+        <Swatch name="--ratis-action-fill-pressed" />
+      </Group>
+      <Group title="포인트 — 면이 아니라 표식에 드는 틸">
+        <Swatch name="--ratis-accent" note="소제목 라벨 마커 · 심볼 도달점 · 강조 글리프 (흰 글자 금지)" />
+        <Swatch name="--ratis-accent-surface" />
+        <Swatch name="--ratis-accent-border" />
       </Group>
       <Group title="상태 — 면 · 선 · 글자 세 벌">
         <Swatch name="--ratis-danger-surface" />
@@ -80,15 +85,12 @@ export const Ramps: Story = {
     <div style={{ maxWidth: '64rem' }}>
       <Ramp prefix="gray" steps={[0, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]} />
       <Ramp prefix="blue" steps={[5, 10, 20, 30, 40, 45, 50, 60, 70, 80, 90, 95]} />
-      <Ramp prefix="green" steps={[5, 10, 20, 30, 40, 50, 60, 65, 70, 80, 90]} />
+      <Ramp prefix="teal" steps={[5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95]} />
       <Ramp prefix="navy" steps={[5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95]} />
       <Ramp prefix="red" steps={[5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95]} />
       <Ramp prefix="amber" steps={[5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95]} />
       <Ramp prefix="emerald" steps={[5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95]} />
       <Ramp prefix="graphic" steps={[10, 30, 50, 70, 90]} />
-      <Group title="teal — 장식 전용">
-        <Swatch name="--ratis-teal-50" note="입력창 스윕 · 바탕 워시. 글자·테두리 금지" />
-      </Group>
     </div>
   ),
 }

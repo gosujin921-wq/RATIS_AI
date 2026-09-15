@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ChatMessage, ChatProblem, ChatProblemKind, ConversationSummary } from '../api/types'
 import { AppShell } from '../app/AppShell'
 import { ChatPage } from '../pages/chat/ChatPage'
-import { DEMO_CATEGORIES, DEMO_CONVERSATIONS, DEMO_ME, DEMO_THREADS, makeDemoReply } from './data/chat'
+import { DEMO_CATEGORIES, DEMO_CONVERSATIONS, DEMO_ME, DEMO_SUGGESTIONS, DEMO_THREADS, makeDemoReply } from './data/chat'
 import { SOURCE_PAGES } from './data/source-pages'
 
 /**
@@ -195,6 +195,7 @@ export function DemoApp() {
       <ChatPage
         messages={messages}
         categories={DEMO_CATEGORIES}
+        suggestions={DEMO_SUGGESTIONS}
         pendingQuestion={pendingQuestion}
         pendingAnswer={pendingAnswer}
         onAsk={ask}

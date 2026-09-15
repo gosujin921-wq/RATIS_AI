@@ -49,6 +49,14 @@ const CONVERSATIONS: ConversationSummary[] = [
   { conversationId: 'c7', title: '산업체 안전관리자 배치 기준', lastConversedAt: ago(12, 13, 2) },
 ]
 
+/** 시작 화면 추천 질문 — 협회 「디자인 시안 의견」(2026-09-14)의 예시 그대로 */
+const SUGGESTIONS = [
+  '최근 5년 방사선 이용기관 수 추이는?',
+  '국내 방사성의약품 시장 규모와 전망은?',
+  '방사선 종사자 규모와 분야별 분포는?',
+  '방사선 산업의 최근 이슈는?',
+]
+
 /** 목록에서 고른 대화에 실리는 턴들. 없는 대화를 고르면 빈 스트림이다 */
 const THREADS: Record<string, ChatMessage[]> = {
   p1: [MSG_INTERNAL, MSG_REPORT],
@@ -69,6 +77,8 @@ interface LayoutArgs {
   /** 오류·제한 띠 (기획 §10.3). 대화를 갈아 끼우지 않고 입력창 위에 얹힌다 */
   problem: ChatProblem | null
   categories: Category[]
+  /** 시작 화면 추천 질문. 누르면 바로 보낸다 */
+  suggestions: string[]
 }
 
 /**
@@ -83,6 +93,7 @@ function ChatLayout({
   pendingQuestion,
   problem,
   categories,
+  suggestions,
 }: LayoutArgs) {
   const [convs, setConvs] = useState(conversations)
   const [active, setActive] = useState(activeConversationId)
@@ -139,6 +150,7 @@ function ChatLayout({
       <ChatPage
         messages={thread}
         categories={categories}
+        suggestions={suggestions}
         pendingQuestion={asking}
         problem={problem}
         /* 대기 상태까지만 간다 (위 주석 참고). 멈추기를 누르면 그 턴이 걷힌다 */
@@ -178,16 +190,20 @@ const meta = {
     pendingQuestion: null,
     problem: null,
     categories: CATEGORIES,
+    suggestions: SUGGESTIONS,
   },
 } satisfies Meta<typeof ChatLayout>
 
 export default meta
 type Story = StoryObj<typeof meta>
 
-/** 들어오면 만나는 화면 — 오브와 문구, 그리고 입력창 하나. 사이드바에 지난 대화가 남아 있다 */
+/** 들어오면 만나는 화면 — 파동 심볼과 문구, 입력창, 그 아래 추천 질문 넷. 사이드바에 지난 대화가 남아 있다 */
 export const Default: Story = { name: '기본 (새 대화)' }
 
-/** 턴이 쌓인 상태. 스트림과 입력창이 같은 폭을 쓰는지 여기서 본다 */
+/**
+ * 턴이 쌓인 상태. 스트림과 입력창이 같은 폭을 쓰는지 여기서 본다.
+ * 1280 이상에서는 마지막 답변의 **근거 목록이 오른쪽에 저절로** 선다 (2026-09-14).
+ */
 export const Conversation: Story = {
   name: '대화 중',
   args: { activeConversationId: 'p1', messages: [MSG_INTERNAL, MSG_REPORT] },
@@ -204,15 +220,19 @@ export const Pending: Story = {
 }
 
 /**
- * 근거의 「원문 보기」로 패널을 연다. 1280 이상에서는 대화 오른쪽에 붙는 분할 뷰라
- * 대화가 좁아지되 사라지지 않는다 — 답변과 원문을 나란히 읽는 자리다.
+ * 근거 목록에서 「원문 보기」로 원문 모드를 연다. 1280 이상에서는 목록이 이미 저절로 서
+ * 있고, 그 아래 폭에서는 답변의 「근거 n건」이 먼저 목록을 띄운다 — 둘 다 같은 걸음으로
+ * 원문에 닿는다. 분할 뷰라 대화가 좁아지되 사라지지 않는다.
  */
 export const SourceOpen: Story = {
   name: '원문 패널 열림',
   args: { activeConversationId: 'c1', messages: [MSG_INTERNAL] },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    await userEvent.click(await canvas.findByRole('button', { name: /근거 \d+건/ }))
+    /* 좁은 화면에서는 목록이 저절로 안 선다 — 머리를 눌러 띄운다 (넓은 화면에서는 이미 서 있다) */
+    if (canvas.queryAllByRole('button', { name: '원문 보기' }).length === 0) {
+      await userEvent.click(await canvas.findByRole('button', { name: /근거 \d+건/ }))
+    }
     /* 근거가 여러 건이면 「원문 보기」도 그 수만큼 선다. 첫 카드를 연다 */
     const open = await canvas.findAllByRole('button', { name: '원문 보기' })
     await userEvent.click(open[0])
